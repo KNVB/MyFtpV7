@@ -63,6 +63,15 @@ public class MyFileManager extends FileManager
 			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
 		
 	}
+	@Override
+	public void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, PathNotFoundException,	InterruptedException, QuotaExceedException 
+	{
+		// TODO Auto-generated method stub
+		User user=fs.getUser();
+		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.WRITE_PERMISSION);
+		logger.debug("serverPath="+serverPath);
+		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("502_Command_Not_Implemeneted"));
+	}
 
 	@Override
 	public void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, InterruptedException, PathNotFoundException 
@@ -329,11 +338,5 @@ public class MyFileManager extends FileManager
 			}
 		}
 		dbo=null;
-	}
-	@Override
-	public void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,	InterruptedException, QuotaExceedException 
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }
