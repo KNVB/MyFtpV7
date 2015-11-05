@@ -40,6 +40,7 @@ public abstract class FileManager
 	public abstract void showFullDirList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
 	public abstract void showFileNameList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
 	public abstract void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
+	public abstract void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException,QuotaExceedException;
 	public abstract void close();
 
 }

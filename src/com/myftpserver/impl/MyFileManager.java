@@ -14,6 +14,7 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
+import com.myftpserver.exception.QuotaExceedException;
 
 
 public class MyFileManager extends FileManager 
@@ -328,5 +329,11 @@ public class MyFileManager extends FileManager
 			}
 		}
 		dbo=null;
+	}
+	@Override
+	public void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,	InterruptedException, QuotaExceedException 
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
