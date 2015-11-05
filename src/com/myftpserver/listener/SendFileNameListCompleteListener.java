@@ -35,7 +35,7 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	public void operationComplete(ChannelFuture ch) throws Exception 
 	{
 		// TODO Auto-generated method stub
-		fs.getConfig().getLogger().debug("File name list transfered to "+clientIp+" Completed.");
+		fs.getConfig().getLogger().debug("File name list transfered to "+remoteIp+" Completed.");
 		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok")); 
 		//fs.getConfig().getLogger().debug("File name list transfered to "+clientIp+" Completed.");
 		ch.channel().close();
