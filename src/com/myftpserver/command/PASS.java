@@ -8,6 +8,7 @@ import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
 import com.myftpserver.interfaces.FtpCommandInterface;
+import com.myftpserver.interfaces.UserManager;
 import com.myftpserver.exception.*;
 
 

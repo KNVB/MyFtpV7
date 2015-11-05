@@ -22,7 +22,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	
 	private int clientDataPortNo=-1;
 	private PassiveServer passiveServer=null;
-	private FtpCommandHandler ftpCommandHandler=null; 
+	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String clientIp=new String(),commandString=new String();
 	private boolean isLogined=false;
 	public boolean isPassiveModeTransfer=false;
@@ -36,7 +36,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.clientIp=remoteIp;
 		this.logger=s.getLogger();
 		this.isPassiveModeTransfer=false;
-		this.ftpCommandHandler=new FtpCommandHandler(this);
+		this.ftpCommandHandler=new FtpCommandExecutor(this);
 		this.ch=ch;
 	}
 	public Channel getChannel() 

@@ -5,8 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.exception.AccessDeniedException;
@@ -30,7 +30,7 @@ public class RETR implements FtpCommandInterface {
 		{
 			fm.getFile(fs,ctx,param);
 		} 
-		catch (InterruptedException|AccessDeniedException | PathNotFoundException | QuotaExceedException err) 
+		catch (InterruptedException|AccessDeniedException | PathNotFoundException err) 
 		{
 			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());

@@ -2,6 +2,7 @@ package com.util;
 
 import com.myftpserver.*;
 import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.UserManager;
 
 import org.apache.log4j.Logger;
 

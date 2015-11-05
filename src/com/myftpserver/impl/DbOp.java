@@ -9,6 +9,7 @@ import com.myftpserver.*;
 import com.myftpserver.exception.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.UserManager;
 
 import org.apache.log4j.Logger;
 

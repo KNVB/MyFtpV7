@@ -4,6 +4,7 @@ package com.myftpserver.impl;
 import com.myftpserver.*;
 import com.myftpserver.exception.*;
 import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.UserManager;
 
 import java.sql.*;
 import java.util.Vector;

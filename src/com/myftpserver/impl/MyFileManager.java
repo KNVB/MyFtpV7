@@ -10,9 +10,8 @@ import com.util.Utility;
 import com.myftpserver.User;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
-import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
-import com.myftpserver.exception.QuotaExceedException;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
 
@@ -65,7 +64,7 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, PathNotFoundException,QuotaExceedException, InterruptedException 
+	public void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, InterruptedException, PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
 		User user=fs.getUser();
