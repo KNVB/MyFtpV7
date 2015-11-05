@@ -12,7 +12,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 @Sharable
-public class FtpSession  extends SimpleChannelInboundHandler<String>
+public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 {
 	private User user;
 	private Channel ch;
@@ -28,7 +28,7 @@ public class FtpSession  extends SimpleChannelInboundHandler<String>
 	public boolean isPassiveModeTransfer=false;
 	private String userName=new String(),txMode="I",currentPath=new String();
 	
-	public FtpSession(Channel ch,MyFtpServer s, String remoteIp)
+	public FtpSessionHandler(Channel ch,MyFtpServer s, String remoteIp)
 	{
 		super();
 		this.s=s;
@@ -78,7 +78,7 @@ public class FtpSession  extends SimpleChannelInboundHandler<String>
     }
 	public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) 
     {
-        s.getLogger().debug(FtpSession.class.getName()+" exception occur:");
+        s.getLogger().debug(FtpSessionHandler.class.getName()+" exception occur:");
         s.getLogger().debug(cause.getMessage());
         //cause.printStackTrace();
     }

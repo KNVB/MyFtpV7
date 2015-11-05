@@ -1,8 +1,9 @@
 package com.myftpserver.command;
 import com.myftpserver.*;
 import com.util.*;
-import com.myftpserver.handler.FtpSession;
-
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.*;
 
 import org.apache.log4j.Logger;
@@ -12,14 +13,14 @@ public class CWD implements FtpCommandInterface
 {
 
 	@Override
-	public String helpMessage(FtpSession fs) 
+	public String helpMessage(FtpSessionHandler fs) 
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void execute(FtpSession fs, ChannelHandlerContext ctx,String param, Logger logger)
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger)
 	{
 		// TODO Auto-generated method stub
 		FileManager fm=fs.getConfig().getFileManager();

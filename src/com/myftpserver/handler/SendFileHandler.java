@@ -18,8 +18,8 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf>
 	String fileName;
 	ChannelHandlerContext responseCtx;
 	PassiveServer txServer=null;
-	FtpSession fs;
-	public SendFileHandler(String fileName,FtpSession fs,ChannelHandlerContext responseCtx, PassiveServer txServer)
+	FtpSessionHandler fs;
+	public SendFileHandler(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer txServer)
 	{
 		this.fs=fs;
 		this.fileName=fileName;

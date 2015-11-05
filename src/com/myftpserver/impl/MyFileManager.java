@@ -8,10 +8,10 @@ import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
 import com.myftpserver.User;
-import com.myftpserver.FileManager;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -39,7 +39,7 @@ public class MyFileManager extends FileManager
 		}
 	}
 	@Override
-	public long getPathSize(FtpSession fs, String clientPath)throws AccessDeniedException, PathNotFoundException 
+	public long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
 		long pathSize=0;
@@ -49,7 +49,7 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void changeDirectory(FtpSession fs, String inPath)throws AccessDeniedException, PathNotFoundException 
+	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
 		String clientPath=null,serverPath;
@@ -65,7 +65,7 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void downloadFile(FtpSession fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, PathNotFoundException,QuotaExceedException, InterruptedException 
+	public void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, PathNotFoundException,QuotaExceedException, InterruptedException 
 	{
 		// TODO Auto-generated method stub
 		User user=fs.getUser();
@@ -97,7 +97,7 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void showFileNameList(FtpSession fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException 
+	public void showFileNameList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException 
 	{
 		// TODO Auto-generated method stub
 		String serverPath=new String();
@@ -130,7 +130,7 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void showFullDirList(FtpSession fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException 
+	public void showFullDirList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException 
 	{
 		// TODO Auto-generated method stub
 		String serverPath=new String();
@@ -160,7 +160,7 @@ public class MyFileManager extends FileManager
 	}
 //----------------------------------------------------------------------------------------------------------	
 	@SuppressWarnings("unchecked")
-	private StringBuilder getFullDirList(FtpSession fs, String serverPath) throws AccessDeniedException, PathNotFoundException 
+	private StringBuilder getFullDirList(FtpSessionHandler fs, String serverPath) throws AccessDeniedException, PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
 		StringBuilder resultString=new StringBuilder();
@@ -192,7 +192,7 @@ public class MyFileManager extends FileManager
     	{}
     	return resultString;
 	}
-	private StringBuilder getFileNameList(FtpSession fs, String serverPath) 
+	private StringBuilder getFileNameList(FtpSessionHandler fs, String serverPath) 
 	{
 		// TODO Auto-generated method stub
 		StringBuilder resultString=new StringBuilder();
@@ -223,7 +223,7 @@ public class MyFileManager extends FileManager
     	{}
     	return resultString;
 	}
-	private void addVirtualDirectoryList(FtpSession fs,Hashtable<String, String> clientPathACL,TreeMap<String,String> nameList) throws AccessDeniedException, PathNotFoundException, IOException 
+	private void addVirtualDirectoryList(FtpSessionHandler fs,Hashtable<String, String> clientPathACL,TreeMap<String,String> nameList) throws AccessDeniedException, PathNotFoundException, IOException 
 	{
 		int index;
 		String virDir,parentDir,currentPath=fs.getCurrentPath();

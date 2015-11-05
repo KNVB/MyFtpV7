@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
+import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.*;
 
 
@@ -14,14 +15,14 @@ public class PASS implements FtpCommandInterface
 {
 
 	@Override
-	public String helpMessage(FtpSession fs) 
+	public String helpMessage(FtpSessionHandler fs) 
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void execute(FtpSession fs, ChannelHandlerContext ctx, String param,	Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,	Logger logger) 
 	{
 		// TODO Auto-generated method stub
 		Configuration config=fs.getConfig();

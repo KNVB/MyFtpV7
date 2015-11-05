@@ -5,16 +5,17 @@ import io.netty.channel.ChannelHandlerContext;
 
 import org.apache.log4j.Logger;
 
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FtpCommandInterface;
 import com.util.Utility;
 
 public class FtpCommandHandler 
 {
-	FtpSession thisSession=null;
+	FtpSessionHandler thisSession=null;
 	Configuration config=null;
 	org.apache.log4j.Logger logger=null;
 	Channel ch=null;
-	public FtpCommandHandler (FtpSession fs)
+	public FtpCommandHandler (FtpSessionHandler fs)
 	{
 		this.thisSession=fs;
 		this.config=fs.getConfig();

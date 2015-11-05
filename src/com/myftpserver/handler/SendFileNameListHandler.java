@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.util.Utility;
 import com.myftpserver.PassiveServer;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,11 +14,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf> 
 {
 	private PassiveServer passiveServer=null;
-	private FtpSession fs;
+	private FtpSessionHandler fs;
 	private StringBuilder fileNameList;
 	private ChannelHandlerContext responseCtx;
 
-	public SendFileNameListHandler(StringBuilder fileNameList,ChannelHandlerContext ctx, FtpSession fs,PassiveServer txServer) 
+	public SendFileNameListHandler(StringBuilder fileNameList,ChannelHandlerContext ctx, FtpSessionHandler fs,PassiveServer txServer) 
 	{
 		// TODO Auto-generated constructor stub
 		this.fs=fs;

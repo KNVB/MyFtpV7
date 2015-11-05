@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 
 import com.util.Utility;
 import com.myftpserver.MyFtpServer;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandChannelClosureListener;
 
 import io.netty.channel.Channel;
@@ -39,7 +39,7 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getConfig().getCommandChannelConnectionTimeOut(), 30, 0));
 
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
-			ch.pipeline().addLast("MyHandler",new FtpSession(ch,s,remoteIp));
+			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));
 		}
 		
 	}

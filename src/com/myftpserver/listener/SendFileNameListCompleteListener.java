@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import com.util.Utility;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -14,13 +14,13 @@ import io.netty.channel.ChannelHandlerContext;
 public class SendFileNameListCompleteListener implements ChannelFutureListener  
 {
 	String clientIp;
-	FtpSession fs;
+	FtpSessionHandler fs;
 	ChannelHandlerContext responseCtx;
 	Logger logger;
 	String remoteIp;
 	Configuration config;
 	PassiveServer passiveServer=null;
-	public SendFileNameListCompleteListener(FtpSession fs,ChannelHandlerContext rCtx,PassiveServer txServer) 
+	public SendFileNameListCompleteListener(FtpSessionHandler fs,ChannelHandlerContext rCtx,PassiveServer txServer) 
 	{
 		// TODO Auto-generated constructor stub
 		this.fs=fs;

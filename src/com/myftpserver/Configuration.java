@@ -2,7 +2,7 @@ package com.myftpserver;
 
 import com.util.*;
 import com.myftpserver.UserManager;
-import com.myftpserver.FileManager;
+import com.myftpserver.interfaces.FileManager;
 
 import java.util.Stack;
 import java.util.Locale;

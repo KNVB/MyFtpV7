@@ -4,12 +4,12 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.log4j.Logger;
 
 import com.myftpserver.*;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.util.Utility;
-public class USER implements com.myftpserver.FtpCommandInterface
+public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 {
 	@Override
-	public void execute(FtpSession fs,ChannelHandlerContext ctx, String param, Logger logger) 
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger) 
 	{
 		// TODO Auto-generated method stub
 		Configuration config=fs.getConfig();
@@ -27,7 +27,7 @@ public class USER implements com.myftpserver.FtpCommandInterface
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 	@Override
-	public String helpMessage(com.myftpserver.handler.FtpSession fs) 
+	public String helpMessage(com.myftpserver.handler.FtpSessionHandler fs) 
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -7,7 +7,7 @@ import java.nio.file.*;
 import org.apache.log4j.Logger;
 
 import com.myftpserver.PassiveServer;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.SessionClosureListener;
 import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.SendFileNameListCompleteListener;
@@ -25,11 +25,11 @@ public class Utility
 		//ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SendResponseToUserListener(logger,remoteIp,ftpMessage));
 		ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new CommandCompleteListener(logger,remoteIp,ftpMessage));
 	}
-	public static void sendFileNameList(Channel ch,ChannelHandlerContext responseCtx,StringBuilder fileNameList,FtpSession fs,PassiveServer passiveServer)
+	public static void sendFileNameList(Channel ch,ChannelHandlerContext responseCtx,StringBuilder fileNameList,FtpSessionHandler fs,PassiveServer passiveServer)
 	{
 		ch.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs,responseCtx,passiveServer));
 	}		
-	public static void disconnectFromClient(FtpSession fs, Logger logger,String remoteIp,String goodByeMessage)
+	public static void disconnectFromClient(FtpSessionHandler fs, Logger logger,String remoteIp,String goodByeMessage)
 	{
 		fs.getChannel().writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SessionClosureListener(fs,null,logger,remoteIp,goodByeMessage));
 	}

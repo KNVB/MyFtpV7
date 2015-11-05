@@ -1,23 +1,24 @@
 package com.myftpserver.command;
 
 import com.util.Utility;
-import com.myftpserver.handler.FtpSession;
-import com.myftpserver.FtpCommandInterface;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FtpCommandInterface;
 
 import org.apache.log4j.Logger;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public class PORT implements FtpCommandInterface 
 {
 	String temp=new String();
 	@Override
-	public String helpMessage(FtpSession fs) {
+	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void execute(FtpSession fs, ChannelHandlerContext ctx, String param,Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger) 
 	{
 		// TODO Auto-generated method stub
 		param=param.trim();

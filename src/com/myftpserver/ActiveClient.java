@@ -10,7 +10,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 
 import com.myftpserver.channelinitializer.ActiveChannelInitializer;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 /**
  * 
  * @author SITO3
@@ -18,9 +18,9 @@ import com.myftpserver.handler.FtpSession;
  */
 public class ActiveClient 
 {
-	FtpSession fs;
+	FtpSessionHandler fs;
 	ChannelHandlerContext responseCtx;
-	public ActiveClient(FtpSession fs, ChannelHandlerContext ctx)
+	public ActiveClient(FtpSessionHandler fs, ChannelHandlerContext ctx)
 	{
 		this.fs=fs;
 		this.responseCtx=ctx;

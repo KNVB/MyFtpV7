@@ -7,7 +7,8 @@ import java.util.*;
 
 import com.myftpserver.*;
 import com.myftpserver.exception.*;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
 
 import org.apache.log4j.Logger;
 
@@ -223,7 +224,7 @@ public class DbOp {
 	{
 		return queryRealPath(userName,"/",virPath,permission);
 	}
-	public String getRealPath(FtpSession fs,String virPath,String permission) throws AccessDeniedException,PathNotFoundException
+	public String getRealPath(FtpSessionHandler fs,String virPath,String permission) throws AccessDeniedException,PathNotFoundException
 	{
 		return queryRealPath(fs.getUserName(),fs.getCurrentPath(),virPath,permission);
 	}

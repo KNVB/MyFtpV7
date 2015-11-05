@@ -2,7 +2,7 @@ package com.myftpserver.channelinitializer;
 
 import com.myftpserver.MyFtpServer;
 import com.myftpserver.PassiveServer;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
@@ -17,11 +17,11 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private PassiveServer txServer=null;
 	private int mode;
 	private StringBuilder fileNameList;
-	private FtpSession fs;
+	private FtpSessionHandler fs;
 	private boolean isSendFile=false;
 	private String fileName;
 	private ChannelHandlerContext responseCtx;
-	public ActiveChannelInitializer(FtpSession fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
+	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
 	{
 		if (mode==MyFtpServer.SENDFILE)
 			isSendFile=true;
@@ -31,7 +31,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 		this.fileName=fileName;
 		this.responseCtx=responseCtx;
 	}
-	public ActiveChannelInitializer(FtpSession fs,ChannelHandlerContext responseCtx, StringBuilder fileNameList) 
+	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, StringBuilder fileNameList) 
 	{
 		// TODO Auto-generated constructor stub
 		this.fs=fs;

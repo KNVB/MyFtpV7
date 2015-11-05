@@ -2,9 +2,13 @@ package com.myftpserver.command;
 
 import com.util.Utility;
 import com.myftpserver.*;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
+
+
 
 
 
@@ -15,13 +19,13 @@ import io.netty.channel.ChannelHandlerContext;
 public class NLST implements FtpCommandInterface {
 
 	@Override
-	public String helpMessage(FtpSession fs) {
+	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void execute(FtpSession fs, ChannelHandlerContext ctx, String param,Logger logger)	
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger)	
 	{
 		String clientPath=new String();
 		String p[]=param.split(" ");

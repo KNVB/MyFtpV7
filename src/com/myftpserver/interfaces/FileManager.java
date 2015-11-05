@@ -1,9 +1,10 @@
-package com.myftpserver;
+package com.myftpserver.interfaces;
 
 import org.apache.log4j.Logger;
 
+import com.myftpserver.Configuration;
 import com.myftpserver.exception.*;
-import com.myftpserver.handler.FtpSession;
+import com.myftpserver.handler.FtpSessionHandler;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -34,11 +35,11 @@ public abstract class FileManager
 	}
 	 
 
-	public abstract long getPathSize(FtpSession fs, String clientPath)throws AccessDeniedException, PathNotFoundException;
-	public abstract void changeDirectory(FtpSession fs,String inPath) throws AccessDeniedException, PathNotFoundException;
-	public abstract void showFullDirList(FtpSession fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
-	public abstract void showFileNameList(FtpSession fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
-	public abstract void downloadFile(FtpSession fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,QuotaExceedException, InterruptedException;
+	public abstract long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException;
+	public abstract void changeDirectory(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException;
+	public abstract void showFullDirList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract void showFileNameList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,QuotaExceedException, InterruptedException;
 	public abstract void close();
 
 }
