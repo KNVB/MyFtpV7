@@ -1,8 +1,8 @@
 package com.myftpserver.command;
-import com.myftpserver.*;
+
+import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
-import com.util.Utility;
 
 import io.netty.channel.ChannelHandlerContext;
 
