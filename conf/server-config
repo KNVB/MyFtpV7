@@ -1,0 +1,14 @@
+#FTP Server Configurations
+fileManager.classname=com.myftpserver.impl.MyFileManager
+userManager.classname=com.myftpserver.impl.MyUserManager
+port=21
+encoding=UTF-8
+maxConnection=1
+supportPassiveMode=true
+#passivePortRange=1234,4567-4576,4466
+passivePortRange=1232-1234
+#client connection time out in second
+#commandChannelConnectionTimeOut=900
+commandChannelConnectionTimeOut=10
+ftpMessageLocale=en_us
+#ftpMessageLocale=zh_tw
