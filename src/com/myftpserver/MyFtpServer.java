@@ -13,7 +13,6 @@ import java.util.Stack;
 import com.myftpserver.Configuration;
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
 
-import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -132,7 +131,6 @@ public class MyFtpServer
 //-------------------------------------------------------------------------------------------
 	public void start()
 	{
-		Channel ch=null;
 		try 
         {
 			ServerBootstrap bootStrap = new ServerBootstrap();
@@ -140,11 +138,10 @@ public class MyFtpServer
             bootStrap.channel(NioServerSocketChannel.class);
             bootStrap.childHandler(new CommandChannelInitializer(this));
             bootStrap.localAddress(config.getServerPort());         
-            //ch = bootStrap.bind().sync().channel();
-            bootStrap.bind();
             logger.info("My FTP Server is started.");
+
             // Wait until the server socket is closed.
-            //ch.closeFuture().sync();
+            bootStrap.bind();
         } 
         catch (Exception e) 
         {

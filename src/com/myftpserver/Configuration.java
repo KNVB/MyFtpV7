@@ -148,4 +148,8 @@ public class Configuration
 	{
 		return fileManager;
 	}
+	public MyFtpServer getFtpServer() 
+	{
+		return ftpServer;
+	}
 }
