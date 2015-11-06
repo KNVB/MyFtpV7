@@ -175,7 +175,6 @@ public class MyFileManager extends FileManager
 		StringBuilder resultString=new StringBuilder();
 		TreeMap<String,String> result=new TreeMap<String,String>();
 		Hashtable<String, String> clientPathACL=fs.getUser().getClientPathACL();
-		//Hashtable<String, String> serverPathACL=fs.getUser().getServerPathACL();
 		Hashtable<Path, String> serverPathACL=fs.getUser().getServerPathACL();
 		logger.debug("Server Path ACL size="+serverPathACL.size());
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
