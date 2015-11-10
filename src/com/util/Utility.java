@@ -103,5 +103,4 @@ public class Utility
 	        logger.debug("System type="+result);
 	        return result;
 	}
-	
 }

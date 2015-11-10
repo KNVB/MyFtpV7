@@ -33,13 +33,11 @@ public abstract class FileManager
 		this.config=c;
 		this.logger=config.getLogger();
 	}
-	 
-
 	public abstract long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException;
 	public abstract void changeDirectory(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException;
-	public abstract void showFullDirList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
-	public abstract void showFileNameList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
-	public abstract void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
+	public abstract StringBuilder getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract StringBuilder getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
 	public abstract void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException,QuotaExceedException;
 	public abstract void close();
 

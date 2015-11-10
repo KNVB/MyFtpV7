@@ -12,6 +12,7 @@ import com.myftpserver.exception.PathNotFoundException;
 
 
 
+
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -27,9 +28,11 @@ public class NLST implements FtpCommandInterface {
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger)	
 	{
-		String clientPath=new String();
-		String p[]=param.split(" ");
 		boolean fullList=false;
+		Configuration config=fs.getConfig();
+		String p[]=param.split(" ");
+		String clientPath=new String();
+		StringBuilder resultList=new StringBuilder();
 		FileManager fm=fs.getConfig().getFileManager();
 		switch (p.length)
 		{
@@ -48,9 +51,20 @@ public class NLST implements FtpCommandInterface {
 		try
 		{
 			if (fullList)
-				fm.showFullDirList(fs,ctx,clientPath);
+				resultList=fm.getFullDirList(fs,clientPath);
 			else
-				fm.showFileNameList(fs,ctx,clientPath);
+				resultList=fm.getFileNameList(fs,clientPath);
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
+			if (fs.isPassiveModeTransfer)
+			{
+				logger.debug("Passive mode");
+			}
+			else
+			{
+				logger.debug("Active mode");
+				ActiveClient activeClient=new ActiveClient(fs,ctx);
+				activeClient.sendFileNameList(resultList);
+			}
 		}
 		catch (AccessDeniedException|PathNotFoundException err)
 		{

@@ -67,36 +67,23 @@ public class MyFileManager extends FileManager
 	public void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, PathNotFoundException,	InterruptedException, QuotaExceedException 
 	{
 		// TODO Auto-generated method stub
-		User user=fs.getUser();
+		//User user=fs.getUser();
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.WRITE_PERMISSION);
 		logger.debug("serverPath="+serverPath);
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("502_Command_Not_Implemeneted"));
 	}
 
 	@Override
-	public void getFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String clientPath) throws AccessDeniedException, InterruptedException, PathNotFoundException 
+	public String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, InterruptedException, PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
 		User user=fs.getUser();
+		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		logger.debug("serverPath="+serverPath);
 		if (isReadableServerPath(user.getServerPathACL(),Paths.get(serverPath)))
 		{	
-			if (fs.isPassiveModeTransfer)
-			{
-				logger.debug("File download in passive mode");
-				//Utility.sendFileToClient(fs.getPassiveChannelContext(),fs,Paths.get(serverPath));
-				//PassiveModeTx passiveModeTx=new PassiveModeTx(fs.getPassiveChannelContext());
-				//passiveModeTx.transFile(Paths.get(serverPath),ctx,fs.getTransferMode());
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("502_Command_Not_Implemeneted"));
-			}
-			else
-			{
-				logger.debug("File download in active mode");
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-				ActiveClient activeClient=new ActiveClient(fs,ctx);
-				activeClient.sendFile(serverPath);
-			}
+			return serverPath;
 		}
 		else
 		{	
@@ -104,79 +91,58 @@ public class MyFileManager extends FileManager
 		}
 		
 	}
-
 	@Override
-	public void showFileNameList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException 
+	public StringBuilder getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
 	{
 		// TODO Auto-generated method stub
 		String serverPath=new String();
 		StringBuilder fileNameList=new StringBuilder();
 		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
+		ArrayList<String> result=new ArrayList<String>();
+		Hashtable<String, String> clientPathACL=fs.getUser().getClientPathACL();
+		Hashtable<Path, String> serverPathACL=fs.getUser().getServerPathACL();
+		
+		logger.debug("Server Path ACL size="+serverPathACL.size());
 		config=fs.getConfig();
 		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		logger.debug("Server Path="+serverPath);
 		logger.debug("Server Path ACL="+fs.getUser().getServerPathACL());
-		fileNameList=getFileNameList(fs,serverPath);
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-		if (fs.isPassiveModeTransfer)
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
 		{
-			logger.debug("Passive mode");
-			
-			//PassiveModeTx passiveModeTx=new PassiveModeTx(fs.getPassiveChannelContext());
-			//passiveModeTx.transFileNameList(fs,ctx, fileNameList);
-			
-			//Utility.sendMessageToClient(fs.getPassiveChannelContext(),fs,fileNameList.toString());
-			
-			//fs.getPassiveChannel().close();
-			//Utility.sendMessageToClient(ctx,fs,config.getFtpMessage("502_Command_Not_Implemeneted"));
+			for (Path path : directoryStream) 
+            {
+				if (isReadableServerPath(serverPathACL,path))
+					result.add(path.getFileName().toString());
+            }
+			logger.debug("Client Path ACL size="+clientPathACL.size());
+			addVirtualDirectoryName(fs.getCurrentPath(),clientPathACL,result);
+			logger.debug("result1="+result.toString());
+			Collections.sort(result);
+			logger.debug("result2="+result.toString());
+			for (String temp :result)
+			{
+				fileNameList.append(temp+"\r\n");
+			}
 		}
-		else
-		{
-			logger.debug("Active mode");
-			ActiveClient activeClient=new ActiveClient(fs,ctx);
-			activeClient.sendFileNameList(fileNameList);
-		}		
+        catch (IOException ex) 
+    	{}
+		return fileNameList;
 	}
-
 	@Override
-	public void showFullDirList(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException 
+	public StringBuilder getFullDirList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
 	{
 		// TODO Auto-generated method stub
 		String serverPath=new String();
 		StringBuilder fileNameList=new StringBuilder();
 		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
-		config=fs.getConfig();
-		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		logger.debug("Server Path="+serverPath);
-		logger.debug("Server Path ACL="+fs.getUser().getServerPathACL());
-		fileNameList=getFullDirList(fs,serverPath);
-		if (fs.isPassiveModeTransfer)
-		{
-			logger.debug("Passive mode");
-			//Utility.sendMessageToClient(ctx,fs,config.getFtpMessage("502_Command_Not_Implemeneted"));
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-			//fs.getPassiveChannelContext().close().addListener(new PassiveTxCompleteListener(fs.getPassiveServer(),fs,ctx));
-			//PassiveModeTx passiveModeTx=new PassiveModeTx(fs.getPassiveChannelContext());
-			//passiveModeTx.transFileNameList(fs,ctx, fileNameList);
-		}
-		else
-		{
-			logger.debug("Active mode");
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs,ctx);
-			activeClient.sendFileNameList(fileNameList);
-		}
-	}
-//----------------------------------------------------------------------------------------------------------	
-	@SuppressWarnings("unchecked")
-	private StringBuilder getFullDirList(FtpSessionHandler fs, String serverPath) throws AccessDeniedException, PathNotFoundException 
-	{
-		// TODO Auto-generated method stub
-		StringBuilder resultString=new StringBuilder();
 		TreeMap<String,String> result=new TreeMap<String,String>();
 		Hashtable<String, String> clientPathACL=fs.getUser().getClientPathACL();
 		Hashtable<Path, String> serverPathACL=fs.getUser().getServerPathACL();
 		logger.debug("Server Path ACL size="+serverPathACL.size());
+		config=fs.getConfig();
+		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
+		logger.debug("Server Path="+serverPath);
+		logger.debug("Server Path ACL="+fs.getUser().getServerPathACL());
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
 		{
 			for (Path path : directoryStream) 
@@ -192,45 +158,16 @@ public class MyFileManager extends FileManager
 		    // Display elements
 		    while(i.hasNext()) 
 		    {
-		        Map.Entry<String,String> me = (Map.Entry<String, String>)i.next();
-		        resultString.append(me.getValue()+me.getKey()+"\r\n");
+		        @SuppressWarnings("unchecked")
+				Map.Entry<String,String> me = (Map.Entry<String, String>)i.next();
+		        fileNameList.append(me.getValue()+me.getKey()+"\r\n");
 		    }
 		}
         catch (IOException ex) 
     	{}
-    	return resultString;
+		return fileNameList;
 	}
-	private StringBuilder getFileNameList(FtpSessionHandler fs, String serverPath) 
-	{
-		// TODO Auto-generated method stub
-		StringBuilder resultString=new StringBuilder();
-		ArrayList<String> result=new ArrayList<String>();
-		Hashtable<String, String> clientPathACL=fs.getUser().getClientPathACL();
-		Hashtable<Path, String> serverPathACL=fs.getUser().getServerPathACL();
-		
-		logger.debug("Server Path ACL size="+serverPathACL.size());
-		
-		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
-		{
-			for (Path path : directoryStream) 
-            {
-				if (isReadableServerPath(serverPathACL,path))
-					result.add(path.getFileName().toString());
-            }
-			logger.debug("Client Path ACL size="+clientPathACL.size());
-			addVirtualDirectoryName(fs.getCurrentPath(),clientPathACL,result);
-			logger.debug("result1="+result.toString());
-			Collections.sort(result);
-			logger.debug("result2="+result.toString());
-			for (String temp :result)
-			{
-				resultString.append(temp+"\r\n");
-			}
-		}
-        catch (IOException ex) 
-    	{}
-    	return resultString;
-	}
+
 	private void addVirtualDirectoryList(FtpSessionHandler fs,Hashtable<String, String> clientPathACL,TreeMap<String,String> nameList) throws AccessDeniedException, PathNotFoundException, IOException 
 	{
 		int index;

@@ -47,6 +47,7 @@ public class DbOp {
 			if (rs.next())
 			{
 			  u=new User();
+			  u.setHomeDir(rs.getString("home_dir"));
 			  u.setName(rs.getString("user_name"));
 			  u.setPassword(rs.getString("password"));
 			  u.setQuota(rs.getInt("quota"));

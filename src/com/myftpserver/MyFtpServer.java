@@ -6,7 +6,6 @@ import org.apache.log4j.PropertyConfigurator;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.Properties;
 import java.util.Stack;
 
@@ -62,12 +61,12 @@ public class MyFtpServer
 		catch (FileNotFoundException e) 
 		{
 			// TODO Auto-generated catch block
-			logger.debug("file log4j.properties not found:"+e.getMessage());
+			System.out.println("file log4j.properties not found:"+e.getMessage());
 		} 
 		catch (IOException e) 
 		{
 			// TODO Auto-generated catch block
-			logger.debug("An exception occur when loading file log4j.properties.");
+			System.out.println("An exception occur when loading file log4j.properties.");
 		}
 		return result;
 	}

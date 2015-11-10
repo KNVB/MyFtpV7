@@ -29,6 +29,8 @@ public class LIST implements FtpCommandInterface
 		//logger.debug("Server currentPath:"+fs.getServerCurrentPath());
 		String p[]=param.split(" ");
 		String clientPath=new String();
+		Configuration config=fs.getConfig();
+		StringBuilder resultList=new StringBuilder();
 		FileManager fm=fs.getConfig().getFileManager();
 		switch (p.length)
 		{
@@ -54,7 +56,18 @@ public class LIST implements FtpCommandInterface
 		}
 		try
 		{
-			fm.showFullDirList(fs,ctx,clientPath);
+			resultList=fm.getFullDirList(fs,clientPath);
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
+			if (fs.isPassiveModeTransfer)
+			{
+				logger.debug("Passive mode");
+			}
+			else
+			{
+				logger.debug("Active mode");
+				ActiveClient activeClient=new ActiveClient(fs,ctx);
+				activeClient.sendFileNameList(resultList);
+			}
 		}
 		catch (InterruptedException|AccessDeniedException|PathNotFoundException err)
 		{
