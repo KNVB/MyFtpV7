@@ -113,6 +113,7 @@ public class DbOp {
 		String realPath=null,pathPerm;
 		String clientPath=virPath,restPath=new String(),sql;
 		sql="select phy_dir,permission from virdir_2_phydir where user_name=? and vir_dir=? and active=1";
+		
 		if (clientPath.indexOf("/")==-1)
 		{
 			clientPath=currentPath+clientPath;
@@ -124,7 +125,7 @@ public class DbOp {
 			clientPath=clientPath.substring(0,clientPath.length()-1);
 			}
 		}
-		
+		logger.debug("userName="+userName+",currentPath="+currentPath+",virPath="+virPath+",permission="+ permission);
 		try
 		{	
 			while(true)

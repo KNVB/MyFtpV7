@@ -1,5 +1,5 @@
 package com.myftpserver.command;
-import com.myftpserver.*;
+
 import com.util.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;

@@ -1,7 +1,6 @@
 package com.myftpserver.command;
 
 import com.util.Utility;
-import com.myftpserver.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 

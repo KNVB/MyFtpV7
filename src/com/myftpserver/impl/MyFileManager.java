@@ -8,7 +8,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
 import com.myftpserver.User;
-import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -256,7 +255,6 @@ public class MyFileManager extends FileManager
 		}
 		return result;
 	}
-
 	@Override
 	public void close() 
 	{
