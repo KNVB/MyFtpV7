@@ -10,6 +10,7 @@ import com.myftpserver.exception.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
+import com.util.Utility;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +48,7 @@ public class DbOp {
 			if (rs.next())
 			{
 			  u=new User();
-			  u.setHomeDir(rs.getString("home_dir"));
+			  //u.setHomeDir(rs.getString("home_dir"));
 			  u.setName(rs.getString("user_name"));
 			  u.setPassword(rs.getString("password"));
 			  u.setQuota(rs.getInt("quota"));
@@ -88,11 +89,18 @@ public class DbOp {
 				logger.debug("vir_dir="+rs.getString("vir_dir")+",phy_dir="+rs.getString("phy_dir")+",permission="+rs.getString("permission"));
 				if ((rs.getString("vir_dir")!=null) && (!rs.getString("vir_dir").equals("")))
 				{
-					user.addClientPathACL(rs.getString("vir_dir").trim(), rs.getString("permission").trim());
+					if (rs.getString("phy_dir")==null)
+						user.addClientPathACL(rs.getString("vir_dir").trim(), rs.getString("permission").trim() +"\tnull");
+					else	
+						user.addClientPathACL(rs.getString("vir_dir").trim(), rs.getString("permission").trim() +"\t"+rs.getString("phy_dir").trim());
 				}
-				if ((rs.getString("phy_dir")!=null) &&   (!rs.getString("phy_dir").equals("")))
+				if ((rs.getString("phy_dir")!=null) && (!rs.getString("phy_dir").equals("")))
 				{
-					user.addServerPathACL(rs.getString("phy_dir").trim(), rs.getString("permission").trim());
+					if (rs.getString("vir_dir")==null)
+						user.addServerPathACL(rs.getString("phy_dir").trim(), rs.getString("permission").trim()+"\tnull");
+					else	
+						user.addServerPathACL(rs.getString("phy_dir").trim(), rs.getString("permission").trim()+"\t"+rs.getString("vir_dir").trim());
+					
 				}
 			}
 		}
@@ -105,208 +113,29 @@ public class DbOp {
 			releaseResource(rs, stmt);
 		}
 	}
-	private String queryRealPath(String userName,String currentPath,String virPath,String permission)throws AccessDeniedException,PathNotFoundException
+	public String getRealPath(User user,String currentPath,String virPath,String permission)throws AccessDeniedException,PathNotFoundException 
 	{
-		int i,resultCode=-1;
-		ResultSet rs = null;
-		PreparedStatement stmt = null;
-		String realPath=null,pathPerm;
-		String clientPath=virPath,restPath=new String(),sql;
-		sql="select phy_dir,permission from virdir_2_phydir where user_name=? and vir_dir=? and active=1";
-		
-		if (clientPath.indexOf("/")==-1)
+		String realPath=null,pathPerm=null;
+		String clientPath=Utility.resolveClientPath(logger,currentPath, virPath);
+		Hashtable<String, String> clientPathACL=user.getClientPathACL();
+		Hashtable<Path, String> serverPathACL=user.getServerPathACL();
+		logger.debug("user ="+user.getName()+",currentPath="+currentPath+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath);
+		realPath=clientPathACL.get(clientPath);
+		if (realPath!=null)
 		{
-			clientPath=currentPath+clientPath;
-		}
-		else	
-		{
-			if (clientPath.endsWith("/") && (!clientPath.equals("/")))
-			{
-			clientPath=clientPath.substring(0,clientPath.length()-1);
-			}
-		}
-		logger.debug("userName="+userName+",currentPath="+currentPath+",virPath="+virPath+",permission="+ permission);
-		try
-		{	
-			while(true)
-			{
-				stmt=dbConn.prepareStatement(sql);
-				stmt.setString(1, userName);
-				stmt.setString(2, clientPath);
-				logger.debug("clientPath="+clientPath);
-				rs=stmt.executeQuery();
-				if (rs.next())
-				{
-					pathPerm=rs.getString("permission");
-					if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-					{
-						resultCode=FileManager.ACCESS_DENIED;
-						break;
-					}
-					else
-					{
-						if (pathPerm.indexOf(permission)==-1)
-						{
-							i=clientPath.lastIndexOf("/");
-							restPath=clientPath.substring(i)+restPath;
-							if (i==0)
-								i=1;
-							clientPath=clientPath.substring(0,i);
-						}
-						else
-						{
-							realPath=rs.getString("phy_dir");
-							if (!restPath.equals(""))
-							{
-								realPath+=restPath;
-							}
-							
-							if (!Files.exists(Paths.get(realPath)))
-								resultCode=FileManager.PATH_NOT_FOUND;
-							break;
-						}
-					}
-				}
-				else
-				{
-					if (clientPath.equals("/"))
-					{
-						resultCode=FileManager.ACCESS_DENIED;
-						break;
-					}
-					else
-					{
-						i=clientPath.lastIndexOf("/");
-						if (i==-1)
-							clientPath=currentPath;
-						else	
-						{
-							restPath=clientPath.substring(i)+restPath;
-							if (i==0)
-								i=1;
-							clientPath=clientPath.substring(0,i);
-						}
-					}
-				}
-			}
+			pathPerm=realPath.split("\t")[0];
+			realPath=realPath.split("\t")[1];
+			if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
+				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
 			
+				
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			resultCode=-2;
-		}
-		catch (StringIndexOutOfBoundsException se)
-		{
-			se.printStackTrace();
-			resultCode=-3;
-		}
-		finally
-		{
-			releaseResource(rs, stmt);
-			logger.debug("resultCode="+resultCode);
-			switch (resultCode)
-			{
-				case FileManager.ACCESS_DENIED:throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-				case FileManager.PATH_NOT_FOUND:throw new PathNotFoundException(config.getFtpMessage("450_Directory_Not_Found"));
-				default							:try
-												 {	
-													logger.debug("realPath="+realPath);
-													realPath=Paths.get(realPath).toRealPath().toString();
-												 }
-												 catch (Exception e)
-												 {
-													 e.printStackTrace();
-												 }
-			}
-		}
-		logger.debug("RealPath="+realPath);
+		logger.debug("user ="+user.getName()+",currentPath="+currentPath+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath+",realPath="+realPath+",pathPerm="+pathPerm);
 		return realPath;
 	}
-	public String getRealHomePath(String userName,String virPath,String permission) throws AccessDeniedException,PathNotFoundException
-	{
-		return queryRealPath(userName,"/",virPath,permission);
-	}
-	public String getRealPath(FtpSessionHandler fs,String virPath,String permission) throws AccessDeniedException,PathNotFoundException
-	{
-		return queryRealPath(fs.getUserName(),fs.getCurrentPath(),virPath,permission);
-	}
-	public Vector<User> listAllUser() 
+	public void getRealHomePath(String userName)throws AccessDeniedException,PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
-		User u;
-		ResultSet rs = null;
-		PreparedStatement stmt = null;
-		Vector<User> userList = new Vector<User>();
-
-		try {
-			stmt = dbConn.prepareStatement("select * from user");
-			rs = stmt.executeQuery();
-			while (rs.next()) {
-				u = new User();
-				u.setHomeDir(rs.getString("home_dir"));
-				u.setName(rs.getString("user_name"));
-				u.setPassword(rs.getString("password"));
-				u.setQuota(rs.getInt("quota"));
-				if (rs.getInt("active") > 0)
-					u.setActive(true);
-				else
-					u.setActive(false);
-				userList.add(u);
-			}
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-		finally 
-		{
-			releaseResource(rs, stmt);
-		}
-		return userList;
-	}
-	public boolean isReadable(String userName,Path path)
-	{
-		String sql="select permission from virdir_2_phydir ";
-		ResultSet rs = null;
-		boolean result=false;
-		PreparedStatement stmt = null;
-		sql+="where user_name=? and phy_dir ";
-		try
-		{
-			if (Files.isDirectory(path))
-			{
-				sql+=" like '"+path.toString()+"%'";
-			}
-			else
-			{
-				sql+=" ='"+path.toString()+"'";
-			}
-			stmt=dbConn.prepareStatement(sql);
-			stmt.setString(1, userName);
-			rs=stmt.executeQuery();
-			
-			if (rs.next())
-			{
-				if (rs.getString("permission").indexOf(FileManager.NO_ACCESS)==-1)
-				{
-					result=true;
-				}
-			}
-			else
-			{
-				result=true;
-			}
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-		finally 
-		{
-			releaseResource(rs, stmt);
-		}
-		return result;
 	}
 	public void close() throws Exception 
 	{
@@ -343,5 +172,4 @@ public class DbOp {
 		r = null;
 		s = null;
 	}
-	
 }
