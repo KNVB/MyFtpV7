@@ -8,11 +8,6 @@ import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
 
-
-
-
-
-
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
