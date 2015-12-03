@@ -56,6 +56,20 @@ public class Utility
         	dateString=(new SimpleDateFormat("MMM dd yyyy",fileLocale).format(fileDate.getTime()));
         return String.format("%s%5d %-9s%-9s%10d %-12s ",permission,node,user,group,Files.size(path),dateString);
 	}
+	public static final String getSystemType(Logger logger)
+	{
+		 String loc = System.getProperty("user.timezone");
+	        final int p = loc.indexOf("/");
+	        if (p > 0) {
+	            loc = loc.substring(0, p);
+	        }
+	        loc = loc + "/"+ System.getProperty("user.language");
+	        String result=System.getProperty("os.arch") + " "
+	                + System.getProperty("os.name") + " "
+	                + System.getProperty("os.version") + ", " + loc;
+	        logger.debug("System type="+result);
+	        return result;
+	}
 	public static final String resolveClientPath(Logger logger,String currentPath,String inPath)
     {        
 		Stack<String> pathStack=new Stack<String>();
@@ -89,18 +103,5 @@ public class Utility
         	result="/";
         return result;
     }	
-	public static final String getSystemType(Logger logger)
-	{
-		 String loc = System.getProperty("user.timezone");
-	        final int p = loc.indexOf("/");
-	        if (p > 0) {
-	            loc = loc.substring(0, p);
-	        }
-	        loc = loc + "/"+ System.getProperty("user.language");
-	        String result=System.getProperty("os.arch") + " "
-	                + System.getProperty("os.name") + " "
-	                + System.getProperty("os.version") + ", " + loc;
-	        logger.debug("System type="+result);
-	        return result;
-	}
+
 }

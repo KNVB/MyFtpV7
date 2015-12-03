@@ -1,21 +1,18 @@
 package com.myftpserver.impl;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.sql.*;
-import java.util.*;
 
 import com.myftpserver.*;
 import com.myftpserver.exception.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
-import com.util.Utility;
 
 import org.apache.log4j.Logger;
 
 
-public class DbOp {
+public class DbOp 
+{
 	private String jdbcDriver = new String();
 	private String jdbcURL = new String();
 	private Connection dbConn = null;
@@ -31,11 +28,12 @@ public class DbOp {
 		Class.forName(jdbcDriver);
 		dbConn = DriverManager.getConnection(jdbcURL);
 	}
-	public User login(String userName, String password) throws LoginFailureException
+	public User login(FtpSessionHandler fs, String password) throws LoginFailureException
 	{
 		User u=null;
 		int result=0;
 		String sql;
+		String userName=fs.getUserName();
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
 		try
@@ -113,29 +111,23 @@ public class DbOp {
 			releaseResource(rs, stmt);
 		}
 	}
-	public String getRealPath(User user,String currentPath,String virPath,String permission)throws AccessDeniedException,PathNotFoundException 
+	public String getRealPath(FtpSessionHandler fs,String virPath,String permission)throws AccessDeniedException,PathNotFoundException 
 	{
 		String realPath=null,pathPerm=null;
-		String clientPath=Utility.resolveClientPath(logger,currentPath, virPath);
-		Hashtable<String, String> clientPathACL=user.getClientPathACL();
-		Hashtable<Path, String> serverPathACL=user.getServerPathACL();
-		logger.debug("user ="+user.getName()+",currentPath="+currentPath+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath);
-		realPath=clientPathACL.get(clientPath);
-		if (realPath!=null)
-		{
-			pathPerm=realPath.split("\t")[0];
-			realPath=realPath.split("\t")[1];
-			if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-			
-				
-		}
-		logger.debug("user ="+user.getName()+",currentPath="+currentPath+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath+",realPath="+realPath+",pathPerm="+pathPerm);
+		
+		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), virPath);
+		User user=fs.getUser();
+		logger.debug(permission==null);
+		logger.debug("user ="+user.getName()+",currentPath="+fs.getCurrentPath()+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath);
+		realPath=Utility.getRealPath(fs,clientPath, permission);
+		logger.debug("user ="+user.getName()+",currentPath="+fs.getCurrentPath()+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath+",realPath="+realPath+",pathPerm="+pathPerm);
 		return realPath;
 	}
-	public void getRealHomePath(String userName)throws AccessDeniedException,PathNotFoundException 
+	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,PathNotFoundException 
 	{
 		// TODO Auto-generated method stub
+		fs.setCurrentPath("/");
+		getRealPath(fs,"/",FileManager.READ_PERMISSION);
 	}
 	public void close() throws Exception 
 	{

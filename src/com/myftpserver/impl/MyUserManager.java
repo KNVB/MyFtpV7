@@ -11,6 +11,7 @@ import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.InvalidHomeDirectoryException;
 import com.myftpserver.exception.LoginFailureException;
 import com.myftpserver.exception.PathNotFoundException;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.impl.DbOp;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
@@ -81,15 +82,16 @@ public class MyUserManager extends UserManager
 		return 0;
 	}
 	@Override
-	public User login(String userName, String password)
+	public User login(FtpSessionHandler fs, String password)
 			throws LoginFailureException, AccessDeniedException,
 			InvalidHomeDirectoryException {
 		// TODO Auto-generated method stub
-		User u=dbo.login(userName, password);
+		User u=dbo.login(fs, password);
 		try
 		{
-			dbo.getRealHomePath(userName);
 			dbo.loadACL(u);
+			fs.setUser(u);
+			dbo.getRealHomePath(fs);
 			logger.debug("Client path ACL size="+u.getClientPathACL().size());
 			logger.debug("Server path ACL size="+u.getServerPathACL().size());
 		}

@@ -5,6 +5,7 @@ import com.myftpserver.Configuration;
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
+import com.myftpserver.handler.FtpSessionHandler;
 
 import java.util.Vector;
 
@@ -29,7 +30,7 @@ public abstract class UserManager
 	public abstract int deleteUserGroup(UserGroup userGroup);
 	public abstract int addUserToUserGroup(User user,UserGroup userGroup);
 	public abstract int removeUserFromUserGroup(User user,UserGroup userGroup);
-	public abstract User login(String userName,String password)throws LoginFailureException, AccessDeniedException, InvalidHomeDirectoryException;
+	public abstract User login(FtpSessionHandler fs,String password)throws LoginFailureException, AccessDeniedException, InvalidHomeDirectoryException;
 	//public abstract void setConfig(Configuration config);
 	public abstract void close();
 	//public abstract void setConfig(Configuration c);
