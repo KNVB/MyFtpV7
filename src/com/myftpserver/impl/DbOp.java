@@ -113,11 +113,10 @@ public class DbOp
 	}
 	public String getRealPath(FtpSessionHandler fs,String virPath,String permission)throws AccessDeniedException,PathNotFoundException 
 	{
-		String realPath=null,pathPerm=null;
-		
-		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), virPath);
 		User user=fs.getUser();
-		logger.debug(permission==null);
+		String realPath=null,pathPerm=null;
+		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), virPath);
+
 		logger.debug("user ="+user.getName()+",currentPath="+fs.getCurrentPath()+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath);
 		realPath=Utility.getRealPath(fs,clientPath, permission);
 		logger.debug("user ="+user.getName()+",currentPath="+fs.getCurrentPath()+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath+",realPath="+realPath+",pathPerm="+pathPerm);

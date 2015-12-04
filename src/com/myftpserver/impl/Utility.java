@@ -149,8 +149,16 @@ public class Utility
 											  	  }
 												  else	  
 												  {
-													  pathPerm=result.split("\t")[0];
-													  result=result.split("\t")[1];
+													  if (result.endsWith("\t"))
+													  {
+														  pathPerm=result;
+														  result="null";
+													  }
+													  else
+													  {
+														  pathPerm=result.split("\t")[0];
+														  result=result.split("\t")[1];
+													  }
 													  if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
 													  {
 														  resultCode=FileManager.ACCESS_DENIED;
@@ -212,7 +220,7 @@ public class Utility
 	protected static void addVirtualDirectoryName(Logger logger,String currentPath,Hashtable<String, String> clientPathACL, ArrayList<String> nameList) 
 	{
 		int index;
-		String virDir,parentDir;
+		String virDir,parentDir,pathPerm;
 		Enumeration<String> clientPaths=clientPathACL.keys();
 		while (clientPaths.hasMoreElements())
 		{
@@ -223,8 +231,11 @@ public class Utility
 			{
 				index=virDir.lastIndexOf("/");
 				parentDir=virDir.substring(0,index+1);
-				logger.debug("Current Path="+currentPath+",Parent folder="+parentDir);
-				if (parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
+				pathPerm=clientPathACL.get(virDir);
+				index=pathPerm.indexOf("\t");
+				pathPerm=pathPerm.substring(0,index).trim();
+				logger.debug("Current Path="+currentPath+",Parent folder="+parentDir+",pathPerm="+pathPerm);
+				if ((pathPerm.indexOf(FileManager.NO_ACCESS)==-1) && parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
 				{
 					virDir=virDir.replaceAll(currentPath, "");
 					index=virDir.indexOf("/");
@@ -244,7 +255,7 @@ public class Utility
 	protected static void addVirtualDirectoryList(FtpSessionHandler fs,Hashtable<String, String> clientPathACL,DbOp dbo,TreeMap<String,String> nameList)  
 	{
 		int index;
-		String virDir,parentDir,currentPath=fs.getCurrentPath(),serverPath;
+		String virDir,parentDir,currentPath=fs.getCurrentPath(),serverPath,pathPerm;
 		Enumeration<String> clientPaths=clientPathACL.keys();
 		while (clientPaths.hasMoreElements())
 		{
@@ -255,7 +266,10 @@ public class Utility
 			{
 				index=virDir.lastIndexOf("/");
 				parentDir=virDir.substring(0,index+1);
-				if (parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
+				pathPerm=clientPathACL.get(virDir);
+				index=pathPerm.indexOf("\t");
+				pathPerm=pathPerm.substring(0,index).trim();
+				if ((pathPerm.indexOf(FileManager.NO_ACCESS)==-1) && parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
 				{
 					try
 					{

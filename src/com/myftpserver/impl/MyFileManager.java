@@ -7,12 +7,15 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
+
+import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -74,16 +77,30 @@ public class MyFileManager extends FileManager
 			throws AccessDeniedException, PathNotFoundException,
 			InterruptedException {
 		// TODO Auto-generated method stub
+		Boolean isVirDirOk;
 		User user=fs.getUser();
-		String serverPath=new String();
+		String serverPath=new String(),currentPath,pathPerm;
 		StringBuilder fileNameList=new StringBuilder();
+		Hashtable<String, String> clientPathACL=user.getClientPathACL();
 		TreeMap<String,String> result=new TreeMap<String,String>();
+		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
 		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);
+		logger.debug("serverPath="+serverPath);
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
 		{
 			for (Path path : directoryStream) 
             {
-				if (Utility.isReadableServerPath(user.getServerPathACL(),path))
+				pathPerm=clientPathACL.get(currentPath+path.getFileName());
+				isVirDirOk=true;
+				if (pathPerm!=null)
+				{
+					int i=pathPerm.indexOf("\t");
+					pathPerm=pathPerm.substring(0,i).trim();
+					logger.debug(currentPath+","+path.getFileName()+","+pathPerm);
+					if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
+						isVirDirOk=false;
+				}
+				if (isVirDirOk && Utility.isReadableServerPath(user.getServerPathACL(),path))
 	            	result.put((path.getFileName().toString()),Utility.formatPathName(path));
             }
 			logger.debug("Client Path ACL size="+user.getClientPathACL().size());
@@ -115,15 +132,30 @@ public class MyFileManager extends FileManager
 			InterruptedException {
 		// TODO Auto-generated method stub
 		User user=fs.getUser();
-		String serverPath=new String();
+		Boolean isVirDirOk;
+		String serverPath=new String(),currentPath,pathPerm;
+		Logger logger=fs.getConfig().getLogger();
 		ArrayList<String> result=new ArrayList<String>();
 		StringBuilder fileNameList=new StringBuilder();
+		Hashtable<String, String> clientPathACL=user.getClientPathACL();
+		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
 		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
 		{
 			for (Path path : directoryStream) 
             {
-				if (Utility.isReadableServerPath(user.getServerPathACL(),path))
+				//logger.debug(currentPath+","+path.getFileName());
+				pathPerm=clientPathACL.get(currentPath+path.getFileName());
+				isVirDirOk=true;
+				if (pathPerm!=null)
+				{
+					int i=pathPerm.indexOf("\t");
+					pathPerm=pathPerm.substring(0,i).trim();
+					logger.debug(currentPath+","+path.getFileName()+","+pathPerm);
+					if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
+						isVirDirOk=false;
+				}
+				if (isVirDirOk && Utility.isReadableServerPath(user.getServerPathACL(),path))
 					result.add(path.getFileName().toString());
             }
 			logger.debug("Client Path ACL size="+user.getClientPathACL().size());

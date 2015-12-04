@@ -40,7 +40,6 @@ public class PASS implements FtpCommandInterface
 				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)"+(um==null));
 				User user=um.login(fs, param);
 				message=config.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
-				logger.debug(user==null);
 				fs.setUser(user);
 				fs.setIsLogined(true);
 				fs.setCurrentPath("/");

@@ -29,6 +29,7 @@ public class NLST implements FtpCommandInterface {
 		String clientPath=new String();
 		StringBuilder resultList=new StringBuilder();
 		FileManager fm=fs.getConfig().getFileManager();
+		logger.debug("p.length="+p.length);
 		switch (p.length)
 		{
 			case 0:clientPath="";
@@ -43,6 +44,7 @@ public class NLST implements FtpCommandInterface {
 					break;
 		}
 		logger.debug("fullList="+fullList);
+
 		try
 		{
 			if (fullList)
@@ -63,12 +65,17 @@ public class NLST implements FtpCommandInterface {
 		}
 		catch (AccessDeniedException|PathNotFoundException err)
 		{
+			err.printStackTrace();
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		} 
 		catch (InterruptedException err) 
 		{
 			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+			err.printStackTrace();
+		}
+		catch (Exception err)
+		{
 			err.printStackTrace();
 		}
 	}
