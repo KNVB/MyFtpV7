@@ -1,5 +1,6 @@
 package com.myftpserver.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -87,7 +88,7 @@ public class Utility
         	result="/";
         return result;
     }	
-	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException
+/*  protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException
 	{
 		int resultCode=-1,i;
 		Logger logger=fs.getConfig().getLogger();
@@ -216,6 +217,71 @@ public class Utility
 		
 		logger.debug("result="+result+",restPath="+restPath);
 		return result;
+	}*/
+	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException
+	{
+		int resultCode=-1,i;
+		Logger logger=fs.getConfig().getLogger();
+		User user=fs.getUser();
+		String result=null,pathPerm=new String();
+		String clientPath=inPath,restPath=new String();
+		String currentPath=fs.getCurrentPath(),tempResult;
+		String temp[]=clientPath.split("/");
+				
+		Hashtable<String, String> clientPathACL=user.getClientPathACL();
+		if (clientPath.indexOf("/")==-1)
+		{
+			clientPath=currentPath+clientPath;
+		}
+		else	
+		{
+			if (clientPath.endsWith("/") && (!clientPath.equals("/")))
+			{
+				clientPath=clientPath.substring(0,clientPath.length()-1);
+			}
+		}
+		logger.debug("0 clientPath="+clientPath);
+		switch (permission)
+		{
+			case FileManager.WRITE_PERMISSION: result=clientPathACL.get(clientPath);
+											   if (result==null)	
+												   resultCode=FileManager.ACCESS_DENIED;	
+											   break;	
+			case FileManager.READ_PERMISSION: 
+											  restPath="/";
+											  tempResult=clientPathACL.get(restPath);
+											  if (tempResult==null)
+											  {
+												  resultCode=FileManager.HOME_DIR_NOT_FOUND;
+											  }
+											  else
+											  {
+												  pathPerm=tempResult.split("\t")[0];
+												  result=tempResult.split("\t")[1];
+												  restPath="";
+												  for (i=1;i<temp.length;i++)
+												  {
+													  restPath+="/"+temp[i];
+													  tempResult=clientPathACL.get(restPath);
+													  logger.debug("restPath="+restPath+",temp["+i+"]="+temp[i]+",tempResult="+tempResult);
+													  if (tempResult!=null)
+													  {
+														  if (tempResult.endsWith("\t")||tempResult.endsWith("\tnull"))
+														  {
+															  pathPerm=tempResult.substring(0,tempResult.indexOf("\t")).trim();
+															  result+=File.separator+temp[i]; 
+														  }
+														  else
+														  {  
+															pathPerm=tempResult.split("\t")[0].trim();
+														  	result=tempResult.split("\t")[1].trim();
+														  }
+													  }
+												  }
+												  logger.debug("clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
+											  }
+		}
+		return "";
 	}
 	protected static void addVirtualDirectoryName(Logger logger,String currentPath,Hashtable<String, String> clientPathACL, ArrayList<String> nameList) 
 	{
