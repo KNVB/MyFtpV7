@@ -2,6 +2,7 @@ package com.myftpserver.impl;
 
 import java.sql.ResultSet;
 import java.io.File;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -53,8 +54,14 @@ public class MyFileManager extends FileManager
 		// TODO Auto-generated method stub
 		long pathSize=0;
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		pathSize=new File(serverPath).length();
-		return pathSize;
+		if (Utility.isReadableServerPath(fs.getUser().getServerPathACL(),Paths.get(serverPath)))
+		{	
+			pathSize=new File(serverPath).length();
+			return pathSize;
+		}
+		else
+			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+		
 	}
 
 	@Override
@@ -64,12 +71,16 @@ public class MyFileManager extends FileManager
 		String clientPath=null,serverPath;
 		User user=fs.getUser();
 		clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(),inPath);
-		
 		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		if (Utility.isReadableServerPath(user.getServerPathACL(),Paths.get(serverPath)))
-			fs.setCurrentPath(clientPath);
+		if (Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+		{
+			if (Utility.isReadableServerPath(user.getServerPathACL(),Paths.get(serverPath)))
+				fs.setCurrentPath(clientPath);
+			else
+				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+		}
 		else
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
 	}
 
 	@Override

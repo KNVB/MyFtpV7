@@ -59,12 +59,14 @@ public class Utility
     {        
 		Stack<String> pathStack=new Stack<String>();
         String result=new String();
-        logger.debug("currentPath="+currentPath+",inPath="+inPath);
+        
         if (!inPath.startsWith("/"))
         	inPath=currentPath+"/"+inPath;
-        for (String temp:inPath.split("/"))
+        logger.debug("currentPath="+currentPath+",inPath="+inPath);
+        String temp[]=inPath.split("/");
+        for (int i=1;i<temp.length;i++)
         {
-                switch (temp)
+                switch (temp[i])
                 {
                         case "..":if (pathStack.size()>0)
                                                 {
@@ -73,9 +75,9 @@ public class Utility
                                           break;
                         case "":                  
                         case ".":break;
-                        default:if (temp.indexOf("...")==-1)
+                        default:if (temp[i].indexOf("...")==-1)
                                         {
-                                                pathStack.push(temp);
+                                                pathStack.push(temp[i]);
                                         }
                 }
                 logger.debug("currentPath="+currentPath+",inPath="+inPath);
@@ -264,7 +266,11 @@ public class Utility
 													  restPath+="/"+temp[i];
 													  tempResult=clientPathACL.get(restPath);
 													  logger.debug("restPath="+restPath+",temp["+i+"]="+temp[i]+",tempResult="+tempResult);
-													  if (tempResult!=null)
+													  if (tempResult==null)
+													  {
+														  result+=File.separator+temp[i];
+													  }
+													  else
 													  {
 														  if (tempResult.endsWith("\t")||tempResult.endsWith("\tnull"))
 														  {
@@ -278,10 +284,19 @@ public class Utility
 														  }
 													  }
 												  }
+												  if (tempResult==null)
+												  {
+													  resultCode=FileManager.PATH_NOT_FOUND;
+												  }
+												  else
+												  {
+													  if ((pathPerm.indexOf(FileManager.NO_ACCESS)>-1)||(pathPerm.indexOf(FileManager.READ_PERMISSION)==-1))
+														  resultCode=FileManager.ACCESS_DENIED;  
+												  }
 												  logger.debug("clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
 											  }
 		}
-		return "";
+		return result;
 	}
 	protected static void addVirtualDirectoryName(Logger logger,String currentPath,Hashtable<String, String> clientPathACL, ArrayList<String> nameList) 
 	{
