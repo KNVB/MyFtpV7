@@ -54,7 +54,7 @@ public class MyFileManager extends FileManager
 		// TODO Auto-generated method stub
 		long pathSize=0;
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		if (Utility.isReadableServerPath(fs.getUser().getServerPathACL(),Paths.get(serverPath)))
+		if (Utility.isReadableServerPath(fs.getConfig().getLogger(),fs.getUser().getServerPathACL(),Paths.get(serverPath)))
 		{	
 			pathSize=new File(serverPath).length();
 			return pathSize;
@@ -74,7 +74,7 @@ public class MyFileManager extends FileManager
 		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		if (Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
 		{
-			if (Utility.isReadableServerPath(user.getServerPathACL(),Paths.get(serverPath)))
+			if (Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
 				fs.setCurrentPath(clientPath);
 			else
 				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
@@ -111,7 +111,7 @@ public class MyFileManager extends FileManager
 					if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
 						isVirDirOk=false;
 				}
-				if (isVirDirOk && Utility.isReadableServerPath(user.getServerPathACL(),path))
+				if (isVirDirOk && Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),path))
 	            	result.put((path.getFileName().toString()),Utility.formatPathName(path));
             }
 			logger.debug("Client Path ACL size="+user.getClientPathACL().size());
@@ -166,7 +166,7 @@ public class MyFileManager extends FileManager
 					if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
 						isVirDirOk=false;
 				}
-				if (isVirDirOk && Utility.isReadableServerPath(user.getServerPathACL(),path))
+				if (isVirDirOk && Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),path))
 					result.add(path.getFileName().toString());
             }
 			logger.debug("Client Path ACL size="+user.getClientPathACL().size());
@@ -204,7 +204,7 @@ public class MyFileManager extends FileManager
 		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		logger.debug("serverPath="+serverPath);
-		if (Utility.isReadableServerPath(user.getServerPathACL(),Paths.get(serverPath)))
+		if (Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
 		{	
 			return serverPath;
 		}

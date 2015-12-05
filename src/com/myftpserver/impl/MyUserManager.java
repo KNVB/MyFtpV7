@@ -4,17 +4,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import com.myftpserver.Configuration;
 import com.myftpserver.User;
-import com.myftpserver.UserGroup;
-import com.myftpserver.exception.AccessDeniedException;
-import com.myftpserver.exception.InvalidHomeDirectoryException;
-import com.myftpserver.exception.LoginFailureException;
-import com.myftpserver.exception.PathNotFoundException;
-import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.impl.DbOp;
-import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.UserGroup;
+import com.myftpserver.exception.*;
+import com.myftpserver.Configuration;
 import com.myftpserver.interfaces.UserManager;
+import com.myftpserver.handler.FtpSessionHandler;
 
 public class MyUserManager extends UserManager  
 {

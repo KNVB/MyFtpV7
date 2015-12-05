@@ -17,6 +17,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import com.myftpserver.Configuration;
 import com.myftpserver.User;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -25,7 +26,7 @@ import com.myftpserver.exception.PathNotFoundException;
 
 public class Utility 
 {
-	protected static final boolean isReadableServerPath(Hashtable<Path, String> serverPathACL,Path p)
+	protected static final boolean isReadableServerPath(Logger logger,Hashtable<Path, String> serverPathACL,Path p)
 	{
 		Path aclPath;
 		boolean result=true;
@@ -39,6 +40,7 @@ public class Utility
 				if (p.startsWith(aclPath))
 				{
 					permission=serverPathACL.get(aclPath);
+					logger.debug("aclPath="+aclPath+",server path permission="+permission);
 					if (permission.indexOf(FileManager.NO_ACCESS)>-1)
 						result=false;
 				}
@@ -220,15 +222,18 @@ public class Utility
 		logger.debug("result="+result+",restPath="+restPath);
 		return result;
 	}*/
-	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException
+	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException, PathNotFoundException
 	{
 		int resultCode=-1,i;
-		Logger logger=fs.getConfig().getLogger();
+		
 		User user=fs.getUser();
-		String result=null,pathPerm=new String();
-		String clientPath=inPath,restPath=new String();
-		String currentPath=fs.getCurrentPath(),tempResult;
+		Configuration config=fs.getConfig();		
+		String clientPath=inPath;
 		String temp[]=clientPath.split("/");
+		String currentPath=fs.getCurrentPath(),tempResult;
+		String result=null,pathPerm=new String(),restPath=new String();
+		Logger logger=config.getLogger();
+		
 				
 		Hashtable<String, String> clientPathACL=user.getClientPathACL();
 		if (clientPath.indexOf("/")==-1)
@@ -291,10 +296,17 @@ public class Utility
 												  else
 												  {
 													  if ((pathPerm.indexOf(FileManager.NO_ACCESS)>-1)||(pathPerm.indexOf(FileManager.READ_PERMISSION)==-1))
-														  resultCode=FileManager.ACCESS_DENIED;  
+														  resultCode=FileManager.ACCESS_DENIED; 
+													  else
+														  resultCode=FileManager.ACCESS_OK;
 												  }
 												  logger.debug("clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
 											  }
+		}
+		switch (resultCode)
+		{
+			case  FileManager.ACCESS_DENIED:throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			case  FileManager.PATH_NOT_FOUND:throw new PathNotFoundException(config.getFtpMessage("450_Directory_Not_Found"));
 		}
 		return result;
 	}
