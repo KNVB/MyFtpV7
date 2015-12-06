@@ -289,14 +289,14 @@ public class Utility
 														  }
 													  }
 												  }
-												  if (tempResult==null)
-												  {
-													  resultCode=FileManager.PATH_NOT_FOUND;
-												  }
+												  if ((pathPerm.indexOf(FileManager.NO_ACCESS)>-1)||(pathPerm.indexOf(FileManager.READ_PERMISSION)==-1))
+													  resultCode=FileManager.ACCESS_DENIED; 
 												  else
 												  {
-													  if ((pathPerm.indexOf(FileManager.NO_ACCESS)>-1)||(pathPerm.indexOf(FileManager.READ_PERMISSION)==-1))
-														  resultCode=FileManager.ACCESS_DENIED; 
+													  if (tempResult==null)
+													  {
+														  resultCode=FileManager.PATH_NOT_FOUND;
+													  }
 													  else
 														  resultCode=FileManager.ACCESS_OK;
 												  }
