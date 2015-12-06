@@ -28,6 +28,27 @@ public class Utility
 {
 	protected static final boolean isReadableServerPath(Logger logger,Hashtable<Path, String> serverPathACL,Path p)
 	{
+		String root;
+		boolean result=true;
+		String permission=null;
+		if (Files.isDirectory(p))
+		{
+			root=p.getRoot().toString();
+			logger.debug("root="+root);
+		}
+		else
+		{
+			if (serverPathACL.containsKey(p))
+			{
+				permission=serverPathACL.get(p);
+				if (permission.indexOf(FileManager.NO_ACCESS)>-1)
+					result=false;
+			}
+		}
+		return result;
+	}
+	/*protected static final boolean isReadableServerPath(Logger logger,Hashtable<Path, String> serverPathACL,Path p)
+	{
 		Path aclPath;
 		boolean result=true;
 		String permission=null;
@@ -56,7 +77,7 @@ public class Utility
 			}
 		}
 		return result;
-	}
+	}*/
 	protected static final String resolveClientPath(Logger logger,String currentPath,String inPath)
     {        
 		Stack<String> pathStack=new Stack<String>();
@@ -92,136 +113,6 @@ public class Utility
         	result="/";
         return result;
     }	
-/*  protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException
-	{
-		int resultCode=-1,i;
-		Logger logger=fs.getConfig().getLogger();
-		User user=fs.getUser();
-		String result=null,pathPerm=new String();
-		String clientPath=inPath,restPath=new String();
-		String currentPath=fs.getCurrentPath();
-		
-				
-		Hashtable<String, String> clientPathACL=user.getClientPathACL();
-		if (clientPath.indexOf("/")==-1)
-		{
-			clientPath=currentPath+clientPath;
-		}
-		else	
-		{
-			if (clientPath.endsWith("/") && (!clientPath.equals("/")))
-			{
-				clientPath=clientPath.substring(0,clientPath.length()-1);
-			}
-		}
-		logger.debug("0 clientPath="+clientPath);
-		switch (permission)
-		{
-			case FileManager.WRITE_PERMISSION: result=clientPathACL.get(clientPath);
-											   if (result==null)	
-												   resultCode=FileManager.ACCESS_DENIED;	
-											   break;
-			case FileManager.READ_PERMISSION: boolean finished=false;
-											  while (!finished)
-											  {
-												  result=clientPathACL.get(clientPath);
-												  logger.debug("0.5 result="+result+",clientPath="+clientPath);
-												  if (result==null)
-												  {
-													  logger.debug("1 clientPath="+clientPath);
-													  if (clientPath.equals("/"))
-														{
-															resultCode=FileManager.ACCESS_DENIED;
-															finished=true; 
-														}
-														else
-														{
-															i=clientPath.lastIndexOf("/");
-															if (i==-1)
-															{	
-																clientPath=currentPath;
-																logger.debug("2 clientPath="+clientPath);
-															}
-															else	
-															{
-																restPath=clientPath.substring(i)+restPath;
-																if (i==0)
-																	i=1;
-																clientPath=clientPath.substring(0,i);
-																logger.debug("3 clientPath="+clientPath+",restPath="+restPath);
-															}
-														}													  
-											  	  }
-												  else	  
-												  {
-													  if (result.endsWith("\t"))
-													  {
-														  pathPerm=result;
-														  result="null";
-													  }
-													  else
-													  {
-														  pathPerm=result.split("\t")[0];
-														  result=result.split("\t")[1];
-													  }
-													  if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-													  {
-														  resultCode=FileManager.ACCESS_DENIED;
-														  finished=true;
-													  }
-													  else
-													  {
-														  if (result.equals("null"))
-														  {
-															  logger.debug("4 clientPath="+clientPath);
-															  if (clientPath.equals("/"))
-																{
-																	resultCode=FileManager.ACCESS_DENIED;
-																	finished=true; 
-																}
-																else
-																{
-																	i=clientPath.lastIndexOf("/");
-																	if (i==-1)
-																	{	
-																		clientPath=currentPath;
-																		logger.debug("5 clientPath="+clientPath);
-																	}
-																	else	
-																	{
-																		restPath=clientPath.substring(i)+restPath;
-																		if (i==0)
-																			i=1;
-																		clientPath=clientPath.substring(0,i);
-																		logger.debug("6 clientPath="+clientPath+",restPath="+restPath);
-																	}
-																}
-														  }
-														  else  
-															  finished=true; 
-													  }
-												  }
-											  }
-			   								  break;
-								   	
-		}
-		switch (resultCode)
-		{
-			case FileManager.ACCESS_DENIED:throw new AccessDeniedException(fs.getConfig().getFtpMessage("550_Permission_Denied"));
-			default:
-					logger.debug("result="+result+",pathPerm="+pathPerm+",restPath="+restPath);
-					if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-						throw new AccessDeniedException(fs.getConfig().getFtpMessage("550_Permission_Denied"));
-					else
-					{
-						if (!restPath.equals(""))
-							result+=restPath;
-					}
-		}
-		
-		logger.debug("result="+result+",restPath="+restPath);
-		return result;
-	}*/
 	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException, PathNotFoundException
 	{
 		int resultCode=-1,i;
