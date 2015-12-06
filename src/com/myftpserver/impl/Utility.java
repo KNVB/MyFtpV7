@@ -293,7 +293,7 @@ public class Utility
 													  resultCode=FileManager.ACCESS_DENIED; 
 												  else
 												  {
-													  if (tempResult==null)
+													  if (result==null)
 													  {
 														  resultCode=FileManager.PATH_NOT_FOUND;
 													  }

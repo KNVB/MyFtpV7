@@ -2,6 +2,8 @@ package com.myftpserver;
 
 import java.net.InetSocketAddress;
 
+import org.apache.log4j.Logger;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -20,10 +22,12 @@ import com.myftpserver.channelinitializer.ActiveChannelInitializer;
 public class ActiveClient 
 {
 	FtpSessionHandler fs;
+	Logger logger;
 	ChannelHandlerContext responseCtx;
 	public ActiveClient(FtpSessionHandler fs, ChannelHandlerContext ctx)
 	{
 		this.fs=fs;
+		logger=fs.getConfig().getLogger();
 		this.responseCtx=ctx;
 	}
 	public void sendFileNameList(StringBuilder fileNameList) throws InterruptedException
@@ -39,7 +43,7 @@ public class ActiveClient
         }
         catch (Exception eg)
 		{
-			eg.printStackTrace();
+			logger.debug(eg.getMessage());
 		}
         finally 
         {
