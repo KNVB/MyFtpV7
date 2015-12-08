@@ -23,28 +23,26 @@ public class NLST implements FtpCommandInterface {
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger)	
 	{
+		int index;
 		boolean fullList=false;
-		Configuration config=fs.getConfig();
-		String p[]=param.split(" ");
 		String clientPath=new String();
+		Configuration config=fs.getConfig();
+		
+		
 		StringBuilder resultList=new StringBuilder();
 		FileManager fm=fs.getConfig().getFileManager();
-		logger.debug("p.length="+p.length);
-		switch (p.length)
+		if (param.startsWith("-"))
 		{
-			case 0:clientPath="";
-					break;
-			case 1:	if (param.equals(".") || param.startsWith("-"))
-					{
-						fullList=true;
-						clientPath="";
-					}
-					else
-						clientPath=param;
-					break;
+			index=param.indexOf(" ");
+			clientPath=fs.getCurrentPath();
+			fullList=true;
 		}
-		logger.debug("fullList="+fullList);
-
+		else
+		{	
+			clientPath=param;
+			fullList=false;
+		}
+		logger.debug("fullList="+fullList+",clientPath="+clientPath+",param="+param);
 		try
 		{
 			if (fullList)

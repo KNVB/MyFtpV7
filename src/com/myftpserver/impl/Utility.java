@@ -26,25 +26,43 @@ import com.myftpserver.exception.PathNotFoundException;
 
 public class Utility 
 {
-	protected static final boolean isReadableServerPath(Logger logger,Hashtable<Path, String> serverPathACL,Path p)
+	protected static final boolean isReadableServerPath(Logger logger,Hashtable<String, String> serverPathACL,Path p)
 	{
-		String root;
 		boolean result=true;
-		String permission=null;
-		if (Files.isDirectory(p))
-		{
-			root=p.getRoot().toString();
-			logger.debug("root="+root);
-		}
+		String pathStrings[];
+		String pathString,pathKey=new String(),tempPerm;
+		String separator="/",pathPerm=new String();
+		
+		
+		pathString=p.toString();
+		if (File.separator.equals(separator))
+			pathStrings=pathString.split(separator);
 		else
-		{
-			if (serverPathACL.containsKey(p))
+			pathStrings=pathString.split(File.separator+File.separator);
+		
+		
+		
+		for (int i=0;i<pathStrings.length;i++)
+		{	
+			switch (i) 
 			{
-				permission=serverPathACL.get(p);
-				if (permission.indexOf(FileManager.NO_ACCESS)>-1)
-					result=false;
+				case 0:pathKey+=pathStrings[i]+File.separator;
+						break;
+				case 1:pathKey+=pathStrings[i];
+						break;	
+				default:pathKey+=File.separator+pathStrings[i];
+						break;
+			}
+			tempPerm=serverPathACL.get(pathKey);
+			logger.debug("pathKey="+pathKey+",tempPerm="+tempPerm);
+			if (tempPerm!=null)
+			{
+				pathPerm=tempPerm.split("\t")[0];
 			}
 		}
+		if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
+			result=false;
+		logger.debug("pathKey="+pathKey+",result="+result+",pathPerm="+pathPerm);
 		return result;
 	}
 	/*protected static final boolean isReadableServerPath(Logger logger,Hashtable<Path, String> serverPathACL,Path p)
