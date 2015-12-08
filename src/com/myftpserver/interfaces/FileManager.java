@@ -38,7 +38,7 @@ public abstract class FileManager
 	public abstract StringBuilder getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
 	public abstract StringBuilder getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
 	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
-	public abstract void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException,QuotaExceedException;
+	public abstract String putFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException;
 	public abstract void close();
-
+	
 }

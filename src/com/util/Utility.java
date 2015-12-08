@@ -18,7 +18,6 @@ public class Utility
 	public static void sendMessageToClient(Channel ch, Logger logger,String remoteIp,String ftpMessage) 
 	{
 		// TODO Auto-generated method stub
-		//ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SendResponseToUserListener(logger,remoteIp,ftpMessage));
 		ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new CommandCompleteListener(logger,remoteIp,ftpMessage));
 	}
 	public static void sendFileNameList(Channel ch,ChannelHandlerContext responseCtx,StringBuilder fileNameList,FtpSessionHandler fs,PassiveServer passiveServer)
@@ -46,5 +45,5 @@ public class Utility
 	                + System.getProperty("os.version") + ", " + loc;
 	        logger.debug("System type="+result);
 	        return result;
-	}	
+	}
 }

@@ -35,7 +35,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	{
 		// TODO Auto-generated constructor stub
 		this.fs=fs;
-		this.mode=MyFtpServer.SENDFILE;
+		this.mode=MyFtpServer.SENDDIRLIST;
 		this.responseCtx=responseCtx;
 		this.fileNameList=fileNameList;
 	}

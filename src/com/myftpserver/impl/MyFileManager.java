@@ -223,13 +223,22 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void putFile(FtpSessionHandler fs, ChannelHandlerContext ctx,
-			String inPath) throws AccessDeniedException, PathNotFoundException,
+	public String putFile(FtpSessionHandler fs, String inPath) 
+			throws AccessDeniedException, PathNotFoundException,
 			InterruptedException, QuotaExceedException {
 		// TODO Auto-generated method stub
+		User user=fs.getUser();
 		String serverPath=dbo.getRealPath(fs,inPath,FileManager.WRITE_PERMISSION);
 		logger.debug("serverPath="+serverPath);
-		com.util.Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("502_Command_Not_Implemeneted"));
+		if (Utility.isWritableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
+		{	
+			return serverPath;
+		}
+		else
+		{	
+			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+		}
+
 	}
 
 	@Override

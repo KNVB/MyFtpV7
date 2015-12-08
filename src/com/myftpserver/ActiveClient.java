@@ -70,7 +70,29 @@ public class ActiveClient
         finally 
         {
         	group.shutdownGracefully().sync();
-        	System.out.println("Active Mode client is shutdown gracefully.");
+        //	System.out.println("Active Mode client is shutdown gracefully.");
         }
     }
+	public void receiveFile(String fileName) throws InterruptedException 
+	{
+		// TODO Auto-generated method stub
+		EventLoopGroup group = new NioEventLoopGroup();
+        try {
+            Bootstrap b = new Bootstrap();
+            b.group(group).channel(NioSocketChannel.class);
+            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getClientDataPortNo()));
+            b.handler(new ActiveChannelInitializer(fs,responseCtx,MyFtpServer.RECEIVEFILE,fileName));
+            ChannelFuture f = b.connect().sync();
+            f.channel().closeFuture().sync();
+        }
+        catch (Exception eg)
+		{
+			eg.printStackTrace();
+		}
+        finally 
+        {
+        	group.shutdownGracefully().sync();
+        	System.out.println("Active Mode client is shutdown gracefully.");
+        }		
+	}
 }

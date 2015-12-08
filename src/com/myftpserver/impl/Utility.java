@@ -26,76 +26,85 @@ import com.myftpserver.exception.PathNotFoundException;
 
 public class Utility 
 {
-	protected static final boolean isReadableServerPath(Logger logger,Hashtable<String, String> serverPathACL,Path p)
+	/**
+	 * Determine whether inPath writeadable for user
+	 * @param logger
+	 * @param serverPathACL
+	 * @param inPath
+	 * @return true if the inPath is writeable.
+	 */
+	protected static final boolean isWritableServerPath(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
+	{
+		boolean result=false;
+		String pathPerm=new String();
+		pathPerm=getServerPathPerm(logger,serverPathACL,inPath);
+		if (pathPerm.indexOf(FileManager.WRITE_PERMISSION)>-1)
+			result=true;
+		return result;
+		
+	}
+	/**
+	 * Determine whether inPath readable for user
+	 * @param logger
+	 * @param serverPathACL
+	 * @param inPath
+	 * @return true if the inPath is readable.
+	 */
+	protected static final boolean isReadableServerPath(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
 	{
 		boolean result=true;
-		String pathStrings[];
-		String pathString,pathKey=new String(),tempPerm;
-		String separator="/",pathPerm=new String();
-		
-		
-		pathString=p.toString();
-		if (File.separator.equals(separator))
-			pathStrings=pathString.split(separator);
-		else
-			pathStrings=pathString.split(File.separator+File.separator);
-		
-		
-		
-		for (int i=0;i<pathStrings.length;i++)
-		{	
-			switch (i) 
-			{
-				case 0:pathKey+=pathStrings[i]+File.separator;
-						break;
-				case 1:pathKey+=pathStrings[i];
-						break;	
-				default:pathKey+=File.separator+pathStrings[i];
-						break;
-			}
-			tempPerm=serverPathACL.get(pathKey);
-			logger.debug("pathKey="+pathKey+",tempPerm="+tempPerm);
-			if (tempPerm!=null)
-			{
-				pathPerm=tempPerm.split("\t")[0];
-			}
-		}
+		String pathPerm=new String();
+		pathPerm=getServerPathPerm(logger,serverPathACL,inPath);
 		if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
 			result=false;
-		logger.debug("pathKey="+pathKey+",result="+result+",pathPerm="+pathPerm);
 		return result;
 	}
-	/*protected static final boolean isReadableServerPath(Logger logger,Hashtable<Path, String> serverPathACL,Path p)
+	/**
+	 * Get Server Path permission
+	 * @param logger
+	 * @param serverPathACL The specified server path access control list 
+	 * @param inPath The server path
+	 * @return 
+	 */
+	private static final String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
 	{
-		Path aclPath;
-		boolean result=true;
-		String permission=null;
-		if (Files.isDirectory(p))
-		{
-			Enumeration<Path> serverPaths=serverPathACL.keys();
-			while (serverPaths.hasMoreElements())
-			{
-				aclPath=serverPaths.nextElement();
-				if (p.startsWith(aclPath))
+			String pathStrings[];
+			String separator="/",pathPerm=new String();
+			String pathString,pathKey=new String(),tempPerm;
+			
+			pathString=inPath.toString();
+			if (File.separator.equals(separator))
+				pathStrings=pathString.split(separator);
+			else
+				pathStrings=pathString.split(File.separator+File.separator);
+			
+			for (int i=0;i<pathStrings.length;i++)
+			{	
+				switch (i) 
 				{
-					permission=serverPathACL.get(aclPath);
-					logger.debug("aclPath="+aclPath+",server path permission="+permission);
-					if (permission.indexOf(FileManager.NO_ACCESS)>-1)
-						result=false;
+					case 0:pathKey+=pathStrings[i]+File.separator;
+							break;
+					case 1:pathKey+=pathStrings[i];
+							break;	
+					default:pathKey+=File.separator+pathStrings[i];
+							break;
+				}
+				tempPerm=serverPathACL.get(pathKey);
+				logger.debug("pathKey="+pathKey+",tempPerm="+tempPerm);
+				if (tempPerm!=null)
+				{
+					pathPerm=tempPerm.split("\t")[0];
 				}
 			}
-		}
-		else
-		{
-			if (serverPathACL.containsKey(p))
-			{
-				permission=serverPathACL.get(p);
-				if (permission.indexOf(FileManager.NO_ACCESS)>-1)
-					result=false;
-			}
-		}
-		return result;
-	}*/
+			return pathPerm;
+	}
+	/**
+	 * Remove duplicate and normalize the inPath 
+	 * @param logger
+	 * @param currentPath
+	 * @param inPath
+	 * @return the normalized path
+	 */
 	protected static final String resolveClientPath(Logger logger,String currentPath,String inPath)
     {        
 		Stack<String> pathStack=new Stack<String>();
@@ -131,6 +140,15 @@ public class Utility
         	result="/";
         return result;
     }	
+	/**
+	 * Get the server path that corresponding to virtual path (i.e. inPath)
+	 * @param fs
+	 * @param inPath
+	 * @param permission
+	 * @return the server path that corresponding to virtual path (i.e. inPath)
+	 * @throws AccessDeniedException
+	 * @throws PathNotFoundException
+	 */
 	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException, PathNotFoundException
 	{
 		int resultCode=-1,i;
@@ -214,7 +232,8 @@ public class Utility
 		}
 		switch (resultCode)
 		{
-			case  FileManager.ACCESS_DENIED:throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			case  FileManager.ACCESS_DENIED:logger.debug("1 clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
+											throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
 			case  FileManager.PATH_NOT_FOUND:throw new PathNotFoundException(config.getFtpMessage("450_Directory_Not_Found"));
 		}
 		return result;

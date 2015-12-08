@@ -21,6 +21,7 @@ public class MyFtpServer
 {
 	public static final int SENDFILE=0;
 	public static final int RECEIVEFILE=1;
+	public static final int SENDDIRLIST=2;
 	private static int maxConnection=1,connectionCount=0;
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
     private EventLoopGroup workerGroup = new NioEventLoopGroup();

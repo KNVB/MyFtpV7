@@ -1,20 +1,28 @@
 package com.myftpserver;
  
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.Hashtable;
+import java.util.TreeMap;
 public class User 
 {
 	int quota=0; //Quota in Kilo byte
 	boolean active=false;
+	TreeMap<String, String> serverPathACL = null;
 	String name=new String(),password=new String(),homeDir=new String();
-	Hashtable<String, String> serverPathACL=new Hashtable<String, String>();
 	Hashtable<String, String> clientPathACL=new Hashtable<String, String>();
+	
+	public User()
+	{
+		if (File.separator.equals("\\"))
+			serverPathACL=new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+		else
+			serverPathACL=new TreeMap<String, String>();		
+	}
 	public Hashtable<String, String> getClientPathACL()
 	{
 		return clientPathACL;
 	}
-	public Hashtable<String, String> getServerPathACL()
+	public TreeMap<String, String> getServerPathACL()
 	{
 		return serverPathACL;
 	}
