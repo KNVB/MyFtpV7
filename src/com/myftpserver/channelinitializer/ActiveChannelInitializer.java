@@ -18,14 +18,11 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private int mode;
 	private String fileName;
 	private FtpSessionHandler fs;
-	private boolean isSendFile=false;
-	private StringBuilder fileNameList;
+		private StringBuilder fileNameList;
 	private PassiveServer txServer=null;
 	private ChannelHandlerContext responseCtx;
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
 	{
-		if (mode==MyFtpServer.SENDFILE)
-			isSendFile=true;
 		// TODO Auto-generated constructor stub
 		this.fs=fs;
 		this.mode=mode;
@@ -44,19 +41,15 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		// TODO Auto-generated method stub
-		if (this.mode==MyFtpServer.RECEIVEFILE)
+		switch (mode)
 		{
-			 ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));
-		}
-		else
-		{
-			if (isSendFile)
-			{
-				ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-				ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs,responseCtx, txServer));
-			}
-			else
-				ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,txServer));
+			case MyFtpServer.SENDFILE:ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
+									  ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs,responseCtx, txServer));
+									  break;
+			case MyFtpServer.RECEIVEFILE:ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));
+											break;
+			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,txServer));
+											break;
 		}
 	}
 }

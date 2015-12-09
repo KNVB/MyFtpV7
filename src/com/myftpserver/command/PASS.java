@@ -7,10 +7,9 @@ import io.netty.channel.ChannelHandlerContext;
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
+import com.myftpserver.exception.*;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.interfaces.UserManager;
-import com.myftpserver.exception.*;
-
 
 public class PASS implements FtpCommandInterface 
 {
@@ -52,5 +51,4 @@ public class PASS implements FtpCommandInterface
 		}
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
-
 }

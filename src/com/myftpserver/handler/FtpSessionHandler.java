@@ -21,11 +21,11 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private Logger logger;
 	
 	private int clientDataPortNo=-1;
+	private boolean isLogined=false;
 	private PassiveServer passiveServer=null;
+	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String clientIp=new String(),commandString=new String();
-	private boolean isLogined=false;
-	public boolean isPassiveModeTransfer=false;
 	private String userName=new String(),txMode="I",currentPath=new String();
 	
 	public FtpSessionHandler(Channel ch,MyFtpServer s, String remoteIp)
@@ -152,5 +152,9 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public int getClientDataPortNo()
 	{
 		return clientDataPortNo;
+	}
+	public MyFtpServer getServer() 
+	{
+		return s;
 	}
 }
