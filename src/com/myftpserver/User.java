@@ -1,8 +1,8 @@
 package com.myftpserver;
  
 import java.io.File;
-import java.util.Hashtable;
 import java.util.TreeMap;
+import java.util.Hashtable;
 public class User 
 {
 	int quota=0; //Quota in Kilo byte

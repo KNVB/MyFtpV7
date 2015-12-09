@@ -1,8 +1,8 @@
 package com.myftpserver.listener;
 
-import org.apache.log4j.Logger;
-
 import com.myftpserver.MyFtpServer;
+
+import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -21,5 +21,4 @@ public class CommandChannelClosureListener implements ChannelFutureListener
 		// TODO Auto-generated method stub
 		s.sessionClose();
 	}
-
 }

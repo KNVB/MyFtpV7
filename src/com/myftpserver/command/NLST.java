@@ -2,8 +2,8 @@ package com.myftpserver.command;
 
 import com.util.Utility;
 import com.myftpserver.*;
-import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -23,17 +23,14 @@ public class NLST implements FtpCommandInterface {
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger)	
 	{
-		int index;
 		boolean fullList=false;
 		String clientPath=new String();
 		Configuration config=fs.getConfig();
-		
-		
 		StringBuilder resultList=new StringBuilder();
 		FileManager fm=fs.getConfig().getFileManager();
+
 		if (param.startsWith("-"))
 		{
-			index=param.indexOf(" ");
 			clientPath=fs.getCurrentPath();
 			fullList=true;
 		}

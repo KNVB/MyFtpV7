@@ -1,8 +1,8 @@
 package com.myftpserver.impl;
 
+import java.util.Vector;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import com.myftpserver.User;
 import com.myftpserver.impl.DbOp;

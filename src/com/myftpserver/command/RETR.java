@@ -1,8 +1,5 @@
 package com.myftpserver.command;
 
-import io.netty.channel.ChannelHandlerContext;
-
-import org.apache.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.ActiveClient;
@@ -13,6 +10,9 @@ import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
 
+import io.netty.channel.ChannelHandlerContext;
+
+import org.apache.log4j.Logger;
 public class RETR implements FtpCommandInterface {
 
 	@Override

@@ -3,8 +3,10 @@ import java.io.*;
 
 import org.apache.log4j.Logger;
 
+import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.listener.FileTransferCompleteListener;
+import com.util.Utility;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,12 +19,14 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	private Logger logger;
 	private String fileName;
 	private FtpSessionHandler fs;
+	private Configuration config;
 	private ChannelHandlerContext responseCtx;
 	private BufferedOutputStream bos=null;
 	private PassiveServer passiveServer=null;
 	public ReceiveFileHandler(FtpSessionHandler fs,String fileName, ChannelHandlerContext responseCtx, PassiveServer passiveServer)
 	{
 		this.fs=fs;
+		this.config=fs.getConfig();
 		this.fileName=fileName;
 		this.responseCtx=responseCtx;
 		this.passiveServer=passiveServer;
@@ -32,7 +36,15 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	public void channelActive(ChannelHandlerContext ctx) throws Exception 
 	{ 
 		logger.info("ReceiveFileHandler channel active");
-		bos=new BufferedOutputStream(new FileOutputStream(new File(fileName)));
+		try
+		{
+			bos=new BufferedOutputStream(new FileOutputStream(new File(fileName)));
+		}
+		catch (FileNotFoundException err)
+		{
+			ctx.channel().close();
+			Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),config.getFtpMessage("553_Cannot_Create_File").replace("%1", err.getMessage()));
+		}
     }
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
@@ -55,11 +67,20 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception 
 	{ 
-		bos.flush();
-		bos.close();
-		bos=null;
-		logger.info("ReceiveFileHandler channel inactive");
-		ctx.channel().close().addListener(new FileTransferCompleteListener(fs,passiveServer,responseCtx));
+		try
+		{
+			bos.flush();
+			bos.close();
+			bos=null;
+			logger.info("ReceiveFileHandler channel inactive");
+			ctx.channel().close().addListener(new FileTransferCompleteListener(fs,passiveServer,responseCtx));
+		}
+		catch (Exception err)
+		{
+			//Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),"553 "+err.getMessage());
+			logger.debug(err.getMessage());
+			ctx.channel().close();
+		}		
     }
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 	{

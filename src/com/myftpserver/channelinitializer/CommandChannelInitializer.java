@@ -8,10 +8,11 @@ import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandChannelClosureListener;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
+import io.netty.channel.ChannelInitializer;
+import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.codec.string.StringDecoder;
+
 
 public class CommandChannelInitializer extends ChannelInitializer<Channel>
 {

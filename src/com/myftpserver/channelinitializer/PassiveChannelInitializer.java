@@ -7,7 +7,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
-
 public class PassiveChannelInitializer extends ChannelInitializer<Channel>
 {
 	private int mode;

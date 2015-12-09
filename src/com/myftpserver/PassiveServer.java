@@ -1,17 +1,18 @@
 package com.myftpserver;
 
+import org.apache.log4j.Logger;
+
+import java.net.InetSocketAddress;
+
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-import java.net.InetSocketAddress;
-
-import org.apache.log4j.Logger;
-
-import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.channelinitializer.PassiveChannelInitializer;
+
 /**
  * 
  * @author SITO3

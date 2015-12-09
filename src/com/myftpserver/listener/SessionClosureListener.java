@@ -1,14 +1,12 @@
 package com.myftpserver.listener;
 
+import com.myftpserver.handler.FtpSessionHandler;
+
 import org.apache.log4j.Logger;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-
-import com.myftpserver.handler.FtpSessionHandler;
-
-
 
 public class SessionClosureListener implements ChannelFutureListener  
 {

@@ -1,11 +1,13 @@
 package com.myftpserver.command;
+
+import com.util.Utility;
+import com.myftpserver.*;
+import com.myftpserver.handler.FtpSessionHandler;
+
 import io.netty.channel.ChannelHandlerContext;
 
 import org.apache.log4j.Logger;
 
-import com.myftpserver.*;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.util.Utility;
 public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 {
 	@Override
@@ -32,5 +34,4 @@ public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

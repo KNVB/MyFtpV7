@@ -43,6 +43,5 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 	protected void channelRead0(ChannelHandlerContext arg0, ByteBuf arg1)
 			throws Exception {
 		// TODO Auto-generated method stub
-		//fs.getConfig().getLogger().debug("channelRead0 is called.");
 	}
 }

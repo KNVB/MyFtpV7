@@ -1,10 +1,10 @@
 package com.myftpserver.listener;
 
-import org.apache.log4j.Logger;
-
+import com.util.Utility;
 import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.util.Utility;
+
+import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -34,5 +34,4 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 		logger.debug("Active Mode Transfer channel is closed");
 		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok"));
 	}
-
 }

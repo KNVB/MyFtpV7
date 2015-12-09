@@ -1,10 +1,10 @@
 package com.myftpserver.interfaces;
 
 
-import com.myftpserver.Configuration;
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
+import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import java.util.Vector;

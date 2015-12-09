@@ -35,6 +35,4 @@ public class TYPE implements FtpCommandInterface
 			}
 		}
 	}
-
 }
-

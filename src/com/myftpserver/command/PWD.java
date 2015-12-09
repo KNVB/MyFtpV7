@@ -1,11 +1,9 @@
 package com.myftpserver.command;
 
-import io.netty.channel.ChannelHandlerContext;
-
-import org.apache.log4j.Logger;
-
-import com.myftpserver.handler.FtpSessionHandler;
 import com.util.Utility;
+import com.myftpserver.handler.FtpSessionHandler;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.log4j.Logger;
 
 public class PWD implements com.myftpserver.interfaces.FtpCommandInterface {
 

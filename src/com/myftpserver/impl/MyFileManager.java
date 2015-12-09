@@ -1,32 +1,28 @@
 package com.myftpserver.impl;
 
-import java.sql.ResultSet;
+import com.myftpserver.User;
+import com.myftpserver.exception.*;
+import com.myftpserver.Configuration;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.handler.FtpSessionHandler;
+
 import java.io.File;
-import java.nio.file.LinkOption;
+import java.sql.ResultSet;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.nio.file.LinkOption;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Iterator;
+import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
 
 import org.apache.log4j.Logger;
-
-import io.netty.channel.ChannelHandlerContext;
-
-import com.myftpserver.Configuration;
-import com.myftpserver.User;
-import com.myftpserver.exception.AccessDeniedException;
-import com.myftpserver.exception.PathNotFoundException;
-import com.myftpserver.exception.QuotaExceedException;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
 
 public class MyFileManager extends FileManager 
 {
@@ -228,11 +224,15 @@ public class MyFileManager extends FileManager
 			InterruptedException, QuotaExceedException {
 		// TODO Auto-generated method stub
 		User user=fs.getUser();
-		String pathPerm=new String();
+		String pathPerm=new String(),dirName;
 		String serverPath=dbo.getRealPath(fs,inPath,FileManager.WRITE_PERMISSION);
 		Logger logger=fs.getConfig().getLogger();
-		logger.debug("serverPath="+serverPath);
-		/*if (Files.exists(Paths.get(inPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+		if (serverPath.indexOf(File.separator)>-1)
+			dirName=serverPath.substring(0,serverPath.lastIndexOf(File.separator));
+		else
+			dirName=fs.getCurrentPath();
+		logger.debug("serverPath="+serverPath+",dirName="+dirName);
+		if (Files.exists(Paths.get(dirName),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
 		{	
 			pathPerm=Utility.getServerPathPerm(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath));
 			if (pathPerm.indexOf(FileManager.NO_ACCESS)==-1)
@@ -243,9 +243,8 @@ public class MyFileManager extends FileManager
 				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
 		}
 		else
-			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));*/
-		return serverPath;
-		
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		//return serverPath;
 	}
 
 	@Override

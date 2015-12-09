@@ -2,14 +2,14 @@ package com.myftpserver.channelinitializer;
 
 import com.myftpserver.MyFtpServer;
 import com.myftpserver.PassiveServer;
+import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
-import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class ActiveChannelInitializer extends ChannelInitializer<Channel>

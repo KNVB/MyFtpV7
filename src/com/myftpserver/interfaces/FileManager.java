@@ -2,12 +2,9 @@ package com.myftpserver.interfaces;
 
 import org.apache.log4j.Logger;
 
-import com.myftpserver.Configuration;
 import com.myftpserver.exception.*;
+import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
-
-import io.netty.channel.ChannelHandlerContext;
-
 
 public abstract class FileManager 
 {

@@ -3,11 +3,11 @@ package com.myftpserver;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import java.io.FileNotFoundException;
+import java.util.Stack;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Stack;
+import java.io.FileNotFoundException;
 
 import com.myftpserver.Configuration;
 import com.myftpserver.channelinitializer.CommandChannelInitializer;

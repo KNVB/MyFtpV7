@@ -3,16 +3,15 @@ package com.myftpserver.command;
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
-
+import com.util.Utility;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
 import com.myftpserver.exception.QuotaExceedException;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.FtpCommandInterface;
-import com.util.Utility;
 
 public class STOR implements FtpCommandInterface
 {
@@ -28,7 +27,6 @@ public class STOR implements FtpCommandInterface
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
 	{
 		// TODO Auto-generated method stub
-		int index;
 		String serverPath=new String(),fileName;
 		Configuration config=fs.getConfig();
 		FileManager fm=fs.getConfig().getFileManager();
