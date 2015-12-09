@@ -9,8 +9,6 @@ import io.netty.channel.ChannelHandlerContext;
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
-import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.UserManager;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
 
@@ -47,6 +45,7 @@ public class PASV implements FtpCommandInterface
 		}
 		else*/
 		{
+			fs.isPassiveModeTransfer=false;
 			message=fs.getConfig().getFtpMessage("502_Command_Not_Implemeneted");
 		}
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
