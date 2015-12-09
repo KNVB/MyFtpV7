@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -21,11 +22,20 @@ import com.myftpserver.channelinitializer.PassiveChannelInitializer;
  */
 public class PassiveServer 
 {
+	int port;
 	private Logger logger;
+	private FtpSessionHandler fs;
+	private String host=new String();
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
 	
-	public PassiveServer(FtpSessionHandler fs,String host, int port,int txMode,String fileName)
+	public PassiveServer(FtpSessionHandler fs,String host, int port)
+	{
+		this.fs=fs;
+		this.host=host;
+		this.port=port;
+	}
+	public void sendFileNameList(StringBuffer fileName,ChannelHandlerContext responseCtx)
 	{
 		Channel ch=null;
 		this.logger=fs.getConfig().getLogger();
@@ -35,7 +45,7 @@ public class PassiveServer
 	            ServerBootstrap bootStrap = new ServerBootstrap();
 	            bootStrap.group(bossGroup, workerGroup);
 	            bootStrap.channel(NioServerSocketChannel.class);
-	            bootStrap.childHandler(new PassiveChannelInitializer(fs,this,txMode,fileName));
+	            bootStrap.childHandler(new PassiveChannelInitializer(fs,this,responseCtx, MyFtpServer.SENDDIRLIST,fileName));
 	                     
 	            ch=bootStrap.bind(inSocketAddress).sync().channel();
 	            logger.info("Server listening " +host+":" + port);

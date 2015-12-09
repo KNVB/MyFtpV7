@@ -80,14 +80,14 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public StringBuilder getFullDirList(FtpSessionHandler fs, String inPath)
+	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)
 			throws AccessDeniedException, PathNotFoundException,
 			InterruptedException {
 		// TODO Auto-generated method stub
 		Boolean isVirDirOk;
 		User user=fs.getUser();
 		String serverPath=new String(),currentPath,pathPerm;
-		StringBuilder fileNameList=new StringBuilder();
+		StringBuffer fileNameList=new StringBuffer();
 		Hashtable<String, String> clientPathACL=user.getClientPathACL();
 		TreeMap<String,String> result=new TreeMap<String,String>();
 		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
@@ -138,7 +138,7 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public StringBuilder getFileNameList(FtpSessionHandler fs, String inPath)
+	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)
 			throws AccessDeniedException, PathNotFoundException,
 			InterruptedException {
 		// TODO Auto-generated method stub
@@ -147,7 +147,7 @@ public class MyFileManager extends FileManager
 		String serverPath=new String(),currentPath,pathPerm;
 		Logger logger=fs.getConfig().getLogger();
 		ArrayList<String> result=new ArrayList<String>();
-		StringBuilder fileNameList=new StringBuilder();
+		StringBuffer fileNameList=new StringBuffer();
 		Hashtable<String, String> clientPathACL=user.getClientPathACL();
 		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
 		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);

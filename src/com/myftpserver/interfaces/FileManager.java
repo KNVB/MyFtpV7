@@ -32,8 +32,8 @@ public abstract class FileManager
 	}
 	public abstract long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException;
 	public abstract void changeDirectory(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException;
-	public abstract StringBuilder getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
-	public abstract StringBuilder getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract StringBuffer getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
 	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
 	public abstract String putFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException;
 	public abstract void close();

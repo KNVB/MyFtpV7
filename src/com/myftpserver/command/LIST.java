@@ -30,7 +30,7 @@ public class LIST implements FtpCommandInterface
 		String p[]=param.split(" ");
 		String clientPath=new String();
 		Configuration config=fs.getConfig();
-		StringBuilder resultList=new StringBuilder();
+		StringBuffer resultList=new StringBuffer();
 		FileManager fm=fs.getConfig().getFileManager();
 		switch (p.length)
 		{

@@ -67,20 +67,26 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception 
 	{ 
-		try
+		if (bos!=null)
 		{
-			bos.flush();
-			bos.close();
-			bos=null;
-			logger.info("ReceiveFileHandler channel inactive");
-			ctx.channel().close().addListener(new FileTransferCompleteListener(fs,passiveServer,responseCtx));
+			try
+			{
+				bos.flush();
+				bos.close();
+				bos=null;
+				logger.info("ReceiveFileHandler channel inactive");
+				ctx.channel().close().addListener(new FileTransferCompleteListener(fs,passiveServer,responseCtx));
+			}
+			catch (Exception err)
+			{
+				logger.debug(err.getMessage());
+				ctx.channel().close();
+			}
 		}
-		catch (Exception err)
+		else
 		{
-			//Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),"553 "+err.getMessage());
-			logger.debug(err.getMessage());
 			ctx.channel().close();
-		}		
+		}
     }
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 	{

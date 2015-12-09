@@ -18,7 +18,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private int mode;
 	private String fileName;
 	private FtpSessionHandler fs;
-		private StringBuilder fileNameList;
+	private StringBuffer fileNameList;
 	private PassiveServer txServer=null;
 	private ChannelHandlerContext responseCtx;
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
@@ -29,7 +29,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 		this.fileName=fileName;
 		this.responseCtx=responseCtx;
 	}
-	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, StringBuilder fileNameList) 
+	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, StringBuffer fileNameList) 
 	{
 		// TODO Auto-generated constructor stub
 		this.fs=fs;

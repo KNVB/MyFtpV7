@@ -30,7 +30,7 @@ public class ActiveClient
 		logger=fs.getConfig().getLogger();
 		this.responseCtx=ctx;
 	}
-	public void sendFileNameList(StringBuilder fileNameList) throws InterruptedException
+	public void sendFileNameList(StringBuffer fileNameList) throws InterruptedException
 	{
         EventLoopGroup group = new NioEventLoopGroup();
         try {

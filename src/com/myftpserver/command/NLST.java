@@ -26,7 +26,7 @@ public class NLST implements FtpCommandInterface {
 		boolean fullList=false;
 		String clientPath=new String();
 		Configuration config=fs.getConfig();
-		StringBuilder resultList=new StringBuilder();
+		StringBuffer resultList=new StringBuffer();
 		FileManager fm=fs.getConfig().getFileManager();
 
 		if (param.startsWith("-"))
@@ -50,6 +50,8 @@ public class NLST implements FtpCommandInterface {
 			if (fs.isPassiveModeTransfer)
 			{
 				logger.debug("Passive mode");
+				PassiveServer ps=fs.getPassiveServer();
+				ps.sendFileNameList(resultList,ctx);
 			}
 			else
 			{
