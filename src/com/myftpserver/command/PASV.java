@@ -26,9 +26,10 @@ public class PASV implements FtpCommandInterface
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,	Logger logger) 
 	{
 		int port;
+		Configuration config=fs.getConfig();
 		MyFtpServer server=fs.getServer();
 		String message=new String(),localIP=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
-		/*if (server.isSupportPassiveMode())
+		if (config.isSupportPassiveMode())
 		{
 			port=server.getNextPassivePort();
 			if (port==-1)
@@ -41,9 +42,9 @@ public class PASV implements FtpCommandInterface
 				message=message.replaceAll("%1", localIP.replaceAll("\\.", ","));
 				message=message.replaceAll("%2", String.valueOf(port/256));
 				message=message.replaceAll("%3", String.valueOf(port % 256));
-			}
+			}				
 		}
-		else*/
+		else
 		{
 			fs.isPassiveModeTransfer=false;
 			message=fs.getConfig().getFtpMessage("502_Command_Not_Implemeneted");

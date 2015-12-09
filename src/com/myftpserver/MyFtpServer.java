@@ -82,11 +82,6 @@ public class MyFtpServer
 		return config;
 	}
 //-------------------------------------------------------------------------------------------
-	public boolean isSupportPassiveMode()
-	{
-		return config.supportPassiveMode;
-	}
-//-------------------------------------------------------------------------------------------
 	public synchronized boolean isOverConnectionLimit()
 	{
 		if (connectionCount<maxConnection)

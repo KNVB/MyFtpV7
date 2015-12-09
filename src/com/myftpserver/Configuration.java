@@ -111,7 +111,7 @@ public class Configuration
 		}
 		return result;
 	}
-	protected boolean isSupportPassiveMode() 
+	public boolean isSupportPassiveMode() 
 	{
 		return supportPassiveMode;
 	}
