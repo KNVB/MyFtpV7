@@ -13,13 +13,12 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class SendFileNameListCompleteListener implements ChannelFutureListener  
 {
-	String clientIp;
-	FtpSessionHandler fs;
-	ChannelHandlerContext responseCtx;
 	Logger logger;
 	String remoteIp;
+	FtpSessionHandler fs;
 	Configuration config;
 	PassiveServer passiveServer=null;
+	ChannelHandlerContext responseCtx;
 	public SendFileNameListCompleteListener(FtpSessionHandler fs,ChannelHandlerContext rCtx,PassiveServer txServer) 
 	{
 		// TODO Auto-generated constructor stub

@@ -35,16 +35,10 @@ public class STOR implements FtpCommandInterface
 		logger.debug("param="+param+"|");
 		try 
 		{
-			if (param.indexOf("/")>-1)
-			{
-				index=param.lastIndexOf("/");
-				fileName=param.substring(index);
-			}
-			else	
-			{	
-				fileName=param;
-				serverPath=fm.putFile(fs,fs.getCurrentPath());
-			}
+			fileName=param;
+			if (fileName.indexOf("/")==-1)
+				fileName=fs.getCurrentPath()+"/"+fileName;
+			serverPath=fm.putFile(fs,fileName);
 			logger.debug("serverPath="+serverPath+",fileName="+fileName);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 			if (fs.isPassiveModeTransfer)

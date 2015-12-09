@@ -54,7 +54,7 @@ public class MyFileManager extends FileManager
 		// TODO Auto-generated method stub
 		long pathSize=0;
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		if (Utility.isReadableServerPath(fs.getConfig().getLogger(),fs.getUser().getServerPathACL(),Paths.get(serverPath)))
+		if (Utility.isReadableServerPath(fs,fs.getUser().getServerPathACL(),Paths.get(serverPath)))
 		{	
 			pathSize=new File(serverPath).length();
 			return pathSize;
@@ -74,7 +74,7 @@ public class MyFileManager extends FileManager
 		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		if (Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
 		{
-			if (Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
+			if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
 				fs.setCurrentPath(clientPath);
 			else
 				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
@@ -97,7 +97,7 @@ public class MyFileManager extends FileManager
 		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
 		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);
 		logger.debug("serverPath="+serverPath);
-		if (Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
+		if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
 		{	try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
 			{
 				for (Path path : directoryStream) 
@@ -112,7 +112,7 @@ public class MyFileManager extends FileManager
 						if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
 							isVirDirOk=false;
 					}
-					if (isVirDirOk && Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),path))
+					if (isVirDirOk && Utility.isReadableServerPath(fs,user.getServerPathACL(),path))
 		            	result.put((path.getFileName().toString()),Utility.formatPathName(path));
 	            }
 				logger.debug("Client Path ACL size="+user.getClientPathACL().size());
@@ -155,8 +155,8 @@ public class MyFileManager extends FileManager
 		Hashtable<String, String> clientPathACL=user.getClientPathACL();
 		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
 		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);
-		logger.debug("inPath="+inPath+",serverPath="+serverPath+",per="+Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)));
-		if (Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
+		logger.debug("inPath="+inPath+",serverPath="+serverPath+",per="+Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)));
+		if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
 		{	try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
 			{
 				for (Path path : directoryStream) 
@@ -172,7 +172,7 @@ public class MyFileManager extends FileManager
 						if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
 							isVirDirOk=false;
 					}
-					if (isVirDirOk && Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),path))
+					if (isVirDirOk && Utility.isReadableServerPath(fs,user.getServerPathACL(),path))
 						result.add(path.getFileName().toString());
 	            }
 				logger.debug("Client Path ACL size="+user.getClientPathACL().size());
@@ -212,7 +212,7 @@ public class MyFileManager extends FileManager
 		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		logger.debug("serverPath="+serverPath);
-		if (Utility.isReadableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
+		if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
 		{	
 			return serverPath;
 		}
@@ -228,17 +228,24 @@ public class MyFileManager extends FileManager
 			InterruptedException, QuotaExceedException {
 		// TODO Auto-generated method stub
 		User user=fs.getUser();
+		String pathPerm=new String();
 		String serverPath=dbo.getRealPath(fs,inPath,FileManager.WRITE_PERMISSION);
+		Logger logger=fs.getConfig().getLogger();
 		logger.debug("serverPath="+serverPath);
-		if (Utility.isWritableServerPath(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath)))
+		/*if (Files.exists(Paths.get(inPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
 		{	
-			return serverPath;
+			pathPerm=Utility.getServerPathPerm(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath));
+			if (pathPerm.indexOf(FileManager.NO_ACCESS)==-1)
+			{	
+				return serverPath;
+			}
+			else
+				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
 		}
 		else
-		{	
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-		}
-
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));*/
+		return serverPath;
+		
 	}
 
 	@Override

@@ -98,12 +98,12 @@ public class Configuration
 		catch (FileNotFoundException e) 
 		{
 			// TODO Auto-generated catch block
-			System.out.println("Config. file not found.");
+			logger.info("Config. file not found.");
 		} 
 		catch (IOException e) 
 		{
 			// TODO Auto-generated catch block
-			System.out.println("An exception occur when loading config. file.");
+			logger.info("An exception occur when loading config. file.");
 		}
 		finally
 		{

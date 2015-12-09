@@ -3,6 +3,7 @@ package com.myftpserver.impl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -32,32 +33,45 @@ public class Utility
 	 * @param serverPathACL
 	 * @param inPath
 	 * @return true if the inPath is writeable.
+	 * @throws PathNotFoundException 
 	 */
-	protected static final boolean isWritableServerPath(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
+	/*protected static final boolean isWritableServerPath(FtpSessionHandler fs,TreeMap<String, String> serverPathACL,Path inPath) throws PathNotFoundException
 	{
 		boolean result=false;
 		String pathPerm=new String();
-		pathPerm=getServerPathPerm(logger,serverPathACL,inPath);
-		if (pathPerm.indexOf(FileManager.WRITE_PERMISSION)>-1)
-			result=true;
-		return result;
-		
-	}
+		Logger logger=fs.getConfig().getLogger();
+		if (Files.exists(inPath,new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+		{
+			pathPerm=getServerPathPerm(logger,serverPathACL,inPath);
+			if (pathPerm.indexOf(FileManager.WRITE_PERMISSION)>-1)
+				result=true;
+			return result;
+		}
+		else
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+	}*/
 	/**
 	 * Determine whether inPath readable for user
 	 * @param logger
 	 * @param serverPathACL
 	 * @param inPath
 	 * @return true if the inPath is readable.
+	 * @throws PathNotFoundException 
 	 */
-	protected static final boolean isReadableServerPath(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
+	protected static final boolean isReadableServerPath(FtpSessionHandler fs,TreeMap<String, String> serverPathACL,Path inPath) throws PathNotFoundException
 	{
 		boolean result=true;
 		String pathPerm=new String();
+		Logger logger=fs.getConfig().getLogger();
 		pathPerm=getServerPathPerm(logger,serverPathACL,inPath);
-		if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-			result=false;
-		return result;
+		if (Files.exists(inPath,new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+		{
+			if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
+				result=false;
+			return result;
+		}
+		else
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
 	}
 	/**
 	 * Get Server Path permission
@@ -66,7 +80,7 @@ public class Utility
 	 * @param inPath The server path
 	 * @return 
 	 */
-	private static final String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
+	protected static final String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
 	{
 			String pathStrings[];
 			String separator="/",pathPerm=new String();
@@ -96,6 +110,7 @@ public class Utility
 					pathPerm=tempPerm.split("\t")[0];
 				}
 			}
+			logger.debug("pathKey="+pathKey+",pathPerm="+pathPerm);
 			return pathPerm;
 	}
 	/**
@@ -151,18 +166,15 @@ public class Utility
 	 */
 	protected static final String getRealPath(FtpSessionHandler fs,String inPath,String permission) throws AccessDeniedException, PathNotFoundException
 	{
-		int resultCode=-1,i;
-		
+		int i,resultCode=-1;
 		User user=fs.getUser();
-		Configuration config=fs.getConfig();		
+		Configuration config=fs.getConfig();
+		Logger logger=fs.getConfig().getLogger();
 		String clientPath=inPath;
-		String temp[]=clientPath.split("/");
-		String currentPath=fs.getCurrentPath(),tempResult;
-		String result=null,pathPerm=new String(),restPath=new String();
-		Logger logger=config.getLogger();
-		
-				
+		String result=null,restPath,paths[];
+		String currentPath=fs.getCurrentPath(),tempResult,pathPerm;
 		Hashtable<String, String> clientPathACL=user.getClientPathACL();
+		
 		if (clientPath.indexOf("/")==-1)
 		{
 			clientPath=currentPath+clientPath;
@@ -175,68 +187,55 @@ public class Utility
 			}
 		}
 		logger.debug("0 clientPath="+clientPath);
-		switch (permission)
+		restPath="/";
+		paths=clientPath.split("/");
+		tempResult=clientPathACL.get(restPath);
+		if (tempResult==null)
 		{
-			case FileManager.WRITE_PERMISSION: result=clientPathACL.get(clientPath);
-											   if (result==null)	
-												   resultCode=FileManager.ACCESS_DENIED;	
-											   break;	
-			case FileManager.READ_PERMISSION: 
-											  restPath="/";
-											  tempResult=clientPathACL.get(restPath);
-											  if (tempResult==null)
-											  {
-												  resultCode=FileManager.HOME_DIR_NOT_FOUND;
-											  }
-											  else
-											  {
-												  pathPerm=tempResult.split("\t")[0];
-												  result=tempResult.split("\t")[1];
-												  restPath="";
-												  for (i=1;i<temp.length;i++)
-												  {
-													  restPath+="/"+temp[i];
-													  tempResult=clientPathACL.get(restPath);
-													  logger.debug("restPath="+restPath+",temp["+i+"]="+temp[i]+",tempResult="+tempResult);
-													  if (tempResult==null)
-													  {
-														  result+=File.separator+temp[i];
-													  }
-													  else
-													  {
-														  if (tempResult.endsWith("\t")||tempResult.endsWith("\tnull"))
-														  {
-															  pathPerm=tempResult.substring(0,tempResult.indexOf("\t")).trim();
-															  result+=File.separator+temp[i]; 
-														  }
-														  else
-														  {  
-															pathPerm=tempResult.split("\t")[0].trim();
-														  	result=tempResult.split("\t")[1].trim();
-														  }
-													  }
-												  }
-												  if ((pathPerm.indexOf(FileManager.NO_ACCESS)>-1)||(pathPerm.indexOf(FileManager.READ_PERMISSION)==-1))
-													  resultCode=FileManager.ACCESS_DENIED; 
-												  else
-												  {
-													  if (result==null)
-													  {
-														  resultCode=FileManager.PATH_NOT_FOUND;
-													  }
-													  else
-														  resultCode=FileManager.ACCESS_OK;
-												  }
-												  logger.debug("clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
-											  }
+			resultCode=FileManager.HOME_DIR_NOT_FOUND;
 		}
-		switch (resultCode)
+		else
 		{
-			case  FileManager.ACCESS_DENIED:logger.debug("1 clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
-											throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-			case  FileManager.PATH_NOT_FOUND:throw new PathNotFoundException(config.getFtpMessage("450_Directory_Not_Found"));
+			restPath="";
+			pathPerm=tempResult.split("\t")[0].trim();
+			result=tempResult.split("\t")[1].trim();
+			for (i=1;i<paths.length;i++)
+			{
+				restPath+="/"+paths[i];
+				tempResult=clientPathACL.get(restPath);
+				logger.debug("restPath="+restPath+",temp["+i+"]="+paths[i]+",tempResult="+tempResult);
+				if (tempResult==null)
+				{
+					result+=File.separator+paths[i];
+				}
+				else
+				{
+					if (tempResult.endsWith("\t")||tempResult.endsWith("\tnull"))
+					{
+						pathPerm=tempResult.substring(0,tempResult.indexOf("\t")).trim();
+						result+=File.separator+paths[i];
+					}
+					else
+					{
+						pathPerm=tempResult.split("\t")[0].trim();
+						result=tempResult.split("\t")[1].trim();
+					}
+				}
+			}
+			if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
+				resultCode=FileManager.ACCESS_DENIED; 
+			else
+			{
+				if (permission.equals(FileManager.WRITE_PERMISSION) && (pathPerm.indexOf(FileManager.WRITE_PERMISSION)==-1))
+					resultCode=FileManager.ACCESS_DENIED; 
+				else
+					resultCode=FileManager.ACCESS_OK;
+			}
+			logger.debug("clientPath="+clientPath+",pathPerm="+pathPerm+",result="+result);
 		}
-		return result;
+	if (resultCode==FileManager.ACCESS_DENIED)
+		throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+	return result;
 	}
 	protected static void addVirtualDirectoryName(Logger logger,String currentPath,Hashtable<String, String> clientPathACL, ArrayList<String> nameList) 
 	{

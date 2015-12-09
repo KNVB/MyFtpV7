@@ -14,12 +14,13 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 {
-	private PassiveServer txServer=null;
+	
 	private int mode;
-	private StringBuilder fileNameList;
+	private String fileName;
 	private FtpSessionHandler fs;
 	private boolean isSendFile=false;
-	private String fileName;
+	private StringBuilder fileNameList;
+	private PassiveServer txServer=null;
 	private ChannelHandlerContext responseCtx;
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
 	{
@@ -45,7 +46,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 		// TODO Auto-generated method stub
 		if (this.mode==MyFtpServer.RECEIVEFILE)
 		{
-			 ch.pipeline().addLast(new ReceiveFileHandler(this.fileName,null));
+			 ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));
 		}
 		else
 		{

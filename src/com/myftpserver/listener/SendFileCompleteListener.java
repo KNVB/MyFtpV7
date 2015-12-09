@@ -34,11 +34,12 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		
 		// TODO Auto-generated method stub
 		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok")); 
 		if (txServer==null)
-			cf.channel().close().addListener(new ActiveChannelCloseListener(logger));
+			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
+		else
+			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, txServer));
 	}
 
 }

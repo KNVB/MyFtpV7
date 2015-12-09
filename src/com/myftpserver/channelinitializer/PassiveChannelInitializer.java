@@ -12,13 +12,14 @@ public class PassiveChannelInitializer extends ChannelInitializer<Channel>
 {
 	private int mode;
 	private String fileName;
+	private FtpSessionHandler fs;
 	private PassiveServer passiveServer;
-	public PassiveChannelInitializer(PassiveServer passiveServer, int txMode,String fileName)
+	public PassiveChannelInitializer(FtpSessionHandler fs,PassiveServer passiveServer, int txMode,String fileName)
 	{
+		this.fs=fs;
 		this.mode=txMode;
 		this.fileName=fileName;
 		this.passiveServer=passiveServer;
-		
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class PassiveChannelInitializer extends ChannelInitializer<Channel>
 	{
 		if (this.mode==MyFtpServer.RECEIVEFILE)
 		{
-			 ch.pipeline().addLast(new ReceiveFileHandler(this.fileName,passiveServer));
+			 ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,null, passiveServer));
 		}
 		else
 		{

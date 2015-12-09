@@ -21,8 +21,8 @@ import com.myftpserver.channelinitializer.ActiveChannelInitializer;
  */
 public class ActiveClient 
 {
-	FtpSessionHandler fs;
 	Logger logger;
+	FtpSessionHandler fs;
 	ChannelHandlerContext responseCtx;
 	public ActiveClient(FtpSessionHandler fs, ChannelHandlerContext ctx)
 	{
@@ -70,7 +70,7 @@ public class ActiveClient
         finally 
         {
         	group.shutdownGracefully().sync();
-        //	System.out.println("Active Mode client is shutdown gracefully.");
+        	logger.info("Active Mode client is shutdown gracefully.");
         }
     }
 	public void receiveFile(String fileName) throws InterruptedException 
@@ -92,7 +92,7 @@ public class ActiveClient
         finally 
         {
         	group.shutdownGracefully().sync();
-        	System.out.println("Active Mode client is shutdown gracefully.");
+        	logger.debug("Active Mode client is shutdown gracefully.");
         }		
 	}
 }
