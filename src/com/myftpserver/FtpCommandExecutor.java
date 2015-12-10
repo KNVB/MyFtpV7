@@ -25,7 +25,6 @@ public class FtpCommandExecutor
 	
 	public void doCommand(ChannelHandlerContext ctx, String inString, Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		if (inString==null)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("500_NULL_Command"));
@@ -51,7 +50,6 @@ public class FtpCommandExecutor
 			}
 			else
 			{
-				//logger.debug(command.equals("QUIT"));
 				switch (command)
 				{
 					case "USER":
@@ -59,9 +57,7 @@ public class FtpCommandExecutor
 					case "QUIT":
 					case "PASS":executeCommand(ctx,command,parameters);
 								break;
-					default:
-							//Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("530_Not_Login"));
-							Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("530_Not_Login"));
+					default:Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("530_Not_Login"));
 							break;	
 				}
 			}
@@ -77,7 +73,6 @@ public class FtpCommandExecutor
 		}
 		catch (InstantiationException | IllegalAccessException| ClassNotFoundException e) 
 		{
-			// TODO Auto-generated catch block
 			logger.info(cmdString.toUpperCase()+" command not implemented");
 			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("502_Command_Not_Implemeneted"));
 		}

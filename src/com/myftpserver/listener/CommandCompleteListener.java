@@ -11,7 +11,6 @@ public class CommandCompleteListener implements ChannelFutureListener
 	String remoteIp,ftpMessage;
 	public CommandCompleteListener(Logger logger, String remoteIp,String ftpMessage) 
 	{
-		// TODO Auto-generated constructor stub
 		this.logger=logger;
 		this.remoteIp=remoteIp;
 		this.ftpMessage=ftpMessage;
@@ -20,9 +19,6 @@ public class CommandCompleteListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		// TODO Auto-generated method stub
-		//cf.channel().close();
 		logger.info("Message:"+ftpMessage+" sent to:"+remoteIp);
 	}
-
 }

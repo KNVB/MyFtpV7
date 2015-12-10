@@ -75,7 +75,6 @@ public class ActiveClient
     }
 	public void receiveFile(String fileName) throws InterruptedException 
 	{
-		// TODO Auto-generated method stub
 		EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();

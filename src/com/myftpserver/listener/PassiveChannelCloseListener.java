@@ -21,7 +21,6 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	private PassiveServer passiveServer;
 	public PassiveChannelCloseListener(FtpSessionHandler fs, ChannelHandlerContext responseCtx, PassiveServer passiveServer) 
 	{
-		// TODO Auto-generated constructor stub
 		this.fs=fs;
 		this.config=fs.getConfig();
 		this.responseCtx=responseCtx;
@@ -33,9 +32,7 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
-		// TODO Auto-generated method stub
 		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok"));
 		this.passiveServer.stop();
 	}
-
 }

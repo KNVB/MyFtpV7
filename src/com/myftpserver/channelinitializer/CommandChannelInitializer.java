@@ -25,7 +25,6 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
-		// TODO Auto-generated method stub
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
 		if (s.isOverConnectionLimit())
 		{
@@ -42,7 +41,6 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
 			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));
 		}
-		
 	}
 
 }

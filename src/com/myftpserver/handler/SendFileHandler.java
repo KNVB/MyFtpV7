@@ -35,8 +35,6 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf>
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t)
 			throws Exception {
-		// TODO Auto-generated method stub
-		//ctx.channel().close();
 		t.printStackTrace();
 	}
 	@Override

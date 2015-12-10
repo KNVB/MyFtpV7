@@ -17,7 +17,6 @@ public class SessionClosureListener implements ChannelFutureListener
 	
 	public SessionClosureListener(FtpSessionHandler fs,Channel ch, Logger logger, String remoteIp,String goodByeMsg) 
 	{
-		// TODO Auto-generated constructor stub
 		this.logger=logger;
 		this.remoteIp=remoteIp;
 		this.ftpMessage=goodByeMsg;
@@ -28,7 +27,6 @@ public class SessionClosureListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
-		// TODO Auto-generated method stub
 		logger.info("Message:"+ftpMessage+" sent to:"+remoteIp);
 		if (fs!=null)
 		{
