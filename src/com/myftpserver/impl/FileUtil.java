@@ -1,9 +1,12 @@
 package com.myftpserver.impl;
 
+import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Locale;
 import java.util.Calendar;
+import java.util.TreeMap;
 import java.nio.file.Path;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Enumeration;
@@ -14,7 +17,11 @@ import org.apache.log4j.Logger;
 
 import com.myftpserver.Configuration;
 import com.myftpserver.User;
+import com.myftpserver.exception.AccessDeniedException;
+import com.myftpserver.exception.InvalidHomeDirectoryException;
+import com.myftpserver.exception.PathNotFoundException;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
 
 public class FileUtil 
 {
@@ -66,7 +73,7 @@ public class FileUtil
 	 * @return directory list
 	 * @throws IOException
 	 */
-	public static final String formatPathName(Path path) throws IOException
+	protected static final String formatPathName(Path path) throws IOException
 	{
 		int thisYear,node=1;
 		Locale fileLocale=new Locale("en");
@@ -85,13 +92,16 @@ public class FileUtil
         	dateString=(new SimpleDateFormat("MMM dd yyyy",fileLocale).format(fileDate.getTime()));
         return String.format("%s%5d %-9s%-9s%10d %-12s ",permission,node,user,group,Files.size(path),dateString);
 	}
-	public static String getVirtualDirectoryPermission(FtpSessionHandler fs, String inPath) 
+	protected static final String getServerPathAndPermFromVirDir(FtpSessionHandler fs, String inPath) 
 	{
-		// TODO Auto-generated method stub
 		User user=fs.getUser();
 		Configuration config=fs.getConfig();
-		Logger logger=fs.getConfig().getLogger();
-		String clientPath=inPath,currentPath=fs.getCurrentPath();
+		Logger logger=config.getLogger();
+		String clientPath=inPath;
+		String restPath,paths[],serverPath,result=null;
+		String currentPath=fs.getCurrentPath(),tempResult,pathPerm;
+		TreeMap<String, String> clientPathACL=user.getClientPathACL();
+		
 		if (clientPath.indexOf("/")==-1)
 		{
 			clientPath=currentPath+clientPath;
@@ -104,7 +114,80 @@ public class FileUtil
 			}
 		}
 		logger.debug("0 clientPath="+clientPath);
-		
-		return null;
+		restPath="/";
+		paths=clientPath.split("/");
+		tempResult=clientPathACL.get(restPath);
+		if (tempResult!=null)
+		{
+			restPath="";
+			pathPerm=tempResult.split("\t")[0].trim();
+			serverPath=tempResult.split("\t")[1].trim();
+			for (int i=1;i<paths.length;i++)
+			{
+				restPath+="/"+paths[i];
+				tempResult=clientPathACL.get(restPath);
+				logger.debug("restPath="+restPath+",temp["+i+"]="+paths[i]+",tempResult="+tempResult);
+				if (tempResult==null)
+				{
+					serverPath+=File.separator+paths[i];
+				}
+				else
+				{
+					if (tempResult.endsWith("\t")||tempResult.endsWith("\tnull"))
+					{
+						pathPerm=tempResult.substring(0,tempResult.indexOf("\t")).trim();
+						serverPath+=File.separator+paths[i];
+					}
+					else
+					{
+						pathPerm=tempResult.split("\t")[0].trim();
+						serverPath=tempResult.split("\t")[1].trim();
+					}
+				}
+			}
+			result=serverPath+"\t"+pathPerm;
+		}
+		return result;
 	}
+
+	/**
+	 * Get Server Path permission
+	 * @param logger
+	 * @param serverPathACL The specified server path access control list 
+	 * @param inPath The server path
+	 * @return 
+	 */
+	protected static final String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
+	{
+			String pathStrings[];
+			String separator="/",pathPerm=null;
+			String pathString,pathKey=new String(),tempPerm;
+			
+			pathString=inPath.toString();
+			if (File.separator.equals(separator))
+				pathStrings=pathString.split(separator);
+			else
+				pathStrings=pathString.split(File.separator+File.separator);
+			
+			for (int i=0;i<pathStrings.length;i++)
+			{	
+				switch (i) 
+				{
+					case 0:pathKey+=pathStrings[i]+File.separator;
+							break;
+					case 1:pathKey+=pathStrings[i];
+							break;	
+					default:pathKey+=File.separator+pathStrings[i];
+							break;
+				}
+				tempPerm=serverPathACL.get(pathKey);
+				logger.debug("pathKey="+pathKey+",tempPerm="+tempPerm);
+				if (tempPerm!=null)
+				{
+					pathPerm=tempPerm.split("\t")[0];
+				}
+			}
+			logger.debug("pathKey="+pathKey+",pathPerm="+pathPerm);
+			return pathPerm;
+	}	
 }

@@ -43,15 +43,14 @@ public class PASS implements FtpCommandInterface
 				fs.setUser(user);
 				fs.setIsLogined(true);
 				fs.setCurrentPath("/");
-				fm.isAuthorized(fs,"/",FileManager.READ_PERMISSION);
+				fm.getRealHomePath(fs);
 				message=config.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 			} 
-			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException |PathNotFoundException e) 
+			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
 			{
-				// TODO Auto-generated catch block
-				message=e.getMessage();
+				Utility.disconnectFromClient(fs, logger,fs.getClientIp(),e.getMessage());
 			} 
 		}
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 }

@@ -31,17 +31,51 @@ import org.apache.log4j.Logger;
 
 public class MyFileManager extends FileManager 
 {
+	
 	public MyFileManager(Configuration c) 
 	{
 		super(c);
 	}
-	public boolean isAuthorized(FtpSessionHandler fs,String inPath, String readPermission)throws AccessDeniedException, PathNotFoundException,InvalidHomeDirectoryException
+	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
 	{
-		boolean result=false;
+		try
+		{
+			getServerPath(fs,"/",FileManager.READ_PERMISSION);
+		}
+		catch (AccessDeniedException err)
+		{
+			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+		}
+		catch (PathNotFoundException err)
+		{
+			throw new InvalidHomeDirectoryException(config.getFtpMessage("530_Home_Dir_Not_Found"));
+		}
+	}
+	public String getServerPath(FtpSessionHandler fs,String inPath, String requiredPermission)throws AccessDeniedException,PathNotFoundException
+	{
+		String serverPath=new String(),serverPathPerm=null,virtualPathPerm=null,finalPerm=null;
 		String clientPath=FileUtil.normalizeClientPath(fs.getConfig().getLogger(), fs.getCurrentPath(), inPath);
-		String permission=FileUtil.getVirtualDirectoryPermission(fs,clientPath);
-		
-		return result;
+		String serverPathAndPerm=FileUtil.getServerPathAndPermFromVirDir(fs,clientPath);
+		if (serverPathAndPerm.isEmpty())
+		{
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		}
+		else
+		{
+			serverPath=serverPathAndPerm.split("\t")[0];
+			virtualPathPerm=serverPathAndPerm.split("\t")[1];
+			serverPathPerm=FileUtil.getServerPathPerm(logger,fs.getUser().getServerPathACL(),Paths.get(serverPath));
+			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm);
+			if (virtualPathPerm!=null)
+				finalPerm=virtualPathPerm;
+			if (serverPathPerm!=null)
+				finalPerm+=serverPathPerm;
+			if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
+			{
+				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			}
+		}
+		return serverPath;
 	}
 	@Override
 	public long getPathSize(FtpSessionHandler fs, String clientPath)
@@ -50,10 +84,10 @@ public class MyFileManager extends FileManager
 		return 0;
 	}
 	@Override
-	public void changeDirectory(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException {
-		// TODO Auto-generated method stub
-		
+	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
+	{
+		getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		fs.setCurrentPath(FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath));
 	}
 	@Override
 	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)
@@ -66,7 +100,6 @@ public class MyFileManager extends FileManager
 	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)
 			throws AccessDeniedException, PathNotFoundException,
 			InterruptedException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
@@ -105,5 +138,5 @@ public class MyFileManager extends FileManager
 	public void close() 
 	{
 		
-	}
+	}		
 }
