@@ -1,27 +1,22 @@
 package com.myftpserver.impl;
 
-import java.util.Hashtable;
+import com.myftpserver.User;
+import com.myftpserver.Configuration;
+import com.myftpserver.handler.FtpSessionHandler;
+
+import java.io.File;
 import java.util.Stack;
 import java.util.Locale;
-import java.util.Calendar;
 import java.util.TreeMap;
+import java.util.Calendar;
 import java.nio.file.Path;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
-
-import com.myftpserver.Configuration;
-import com.myftpserver.User;
-import com.myftpserver.exception.AccessDeniedException;
-import com.myftpserver.exception.InvalidHomeDirectoryException;
-import com.myftpserver.exception.PathNotFoundException;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
 
 public class FileUtil 
 {

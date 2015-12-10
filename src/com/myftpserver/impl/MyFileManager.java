@@ -8,26 +8,25 @@ import com.myftpserver.handler.FtpSessionHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.Map;
+
 import java.util.Set;
+import java.util.Locale;
 import java.util.TreeMap;
-import java.util.Iterator;
-import java.util.Hashtable;
+import java.util.TreeSet;
+import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Collections;
+
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
-
-import org.apache.log4j.Logger;
 
 public class MyFileManager extends FileManager 
 {
@@ -106,8 +105,87 @@ public class MyFileManager extends FileManager
 	@Override
 	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
 	{
+		int index;
+		User user=fs.getUser();
+		Set <String> result=null;
+		ArrayList <String>resultList=null;
+		String virPath=new String(),parentDir;
+		StringBuffer fileNameList=new StringBuffer();
+		TreeMap<String, String> clientPathACL=user.getClientPathACL();
 		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
-		return null;
+		String currentPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
+		if (File.separator.equals("\\"))
+			result=new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+		else
+			result=new TreeSet<String>();
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
+		{
+			for (Path path : directoryStream) //Loop all server path
+            {
+				try
+				{
+					if (currentPath.endsWith("/"))
+						getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
+					else
+						getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
+					result.add(path.getFileName().toString());
+				}
+				catch (AccessDeniedException | PathNotFoundException err)
+				{
+					
+				}
+            }
+			for(Entry<String, String> entry : clientPathACL.entrySet())  //Loop all virtual path
+			{
+				virPath=entry.getKey();
+				if (!result.contains(virPath))
+				{
+					index=virPath.lastIndexOf("/");
+					parentDir=virPath.substring(0,index+1);
+					logger.debug("currentPath="+currentPath+",parentDir="+parentDir);
+					if (parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
+					{
+						try
+						{
+							getServerPath(fs,virPath,FileManager.READ_PERMISSION);
+							logger.debug("0 virPath="+virPath);
+							virPath=virPath.replaceAll(currentPath, "");
+							logger.debug("1 virPath="+virPath);
+							index=virPath.indexOf("/");
+							if (index==0)
+								virPath=virPath.substring(index+1);
+							virPath=virPath.trim();
+							if (!virPath.equals(""))							
+							{
+								result.add(virPath);
+								logger.debug("virPath="+virPath+" added to result");
+							}
+						}
+						catch(AccessDeniedException | PathNotFoundException err)
+						{
+						}
+					}
+					
+				}
+			}
+			resultList=new ArrayList<String>(result);
+			Collections.sort(resultList);
+			//logger.debug("result="+result.size());
+			for (String temp :result)
+			{
+				fileNameList.append(temp+"\r\n");
+			}
+			//logger.debug("fileNameList="+fileNameList);
+		}
+		catch (NoSuchFileException ex)
+		{
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		}
+        catch (Exception ex) 
+    	{
+        	ex.printStackTrace();
+    	}
+		return fileNameList;
 	}
 	@Override
 	public String getFile(FtpSessionHandler fs, String inPath)
