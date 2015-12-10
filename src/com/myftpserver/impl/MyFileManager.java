@@ -74,6 +74,13 @@ public class MyFileManager extends FileManager
 			{
 				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
 			}
+			else
+			{
+				if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+				{
+					throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+				}
+			}
 		}
 		return serverPath;
 	}
@@ -97,9 +104,9 @@ public class MyFileManager extends FileManager
 		return null;
 	}
 	@Override
-	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException {
+	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	{
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		return null;
 	}
 	@Override
