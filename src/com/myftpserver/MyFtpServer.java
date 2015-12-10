@@ -16,13 +16,19 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-
+/**
+ * 
+ * @author SITO3
+ * Ftp Server Object
+ */
 public class MyFtpServer 
 {
+	
 	public static final int SENDFILE=0;
 	public static final int RECEIVEFILE=1;
 	public static final int SENDDIRLIST=2;
-	private static int maxConnection=1,connectionCount=0;
+	
+	private static int connectionCount=0;
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
     private Logger logger=null;
@@ -84,7 +90,7 @@ public class MyFtpServer
 //-------------------------------------------------------------------------------------------
 	public synchronized boolean isOverConnectionLimit()
 	{
-		if (connectionCount<maxConnection)
+		if (connectionCount<config.getMaxConnection())
 		{	
 			connectionCount++;
 			return false;
