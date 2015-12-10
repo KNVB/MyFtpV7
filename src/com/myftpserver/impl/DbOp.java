@@ -10,7 +10,6 @@ import com.myftpserver.interfaces.UserManager;
 
 import org.apache.log4j.Logger;
 
-
 public class DbOp 
 {
 	private String jdbcDriver = new String();
