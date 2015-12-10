@@ -26,7 +26,6 @@ import java.nio.file.NoSuchFileException;
 
 public class MyFileManager extends FileManager 
 {
-	
 	public MyFileManager(Configuration c) 
 	{
 		super(c);
@@ -80,10 +79,12 @@ public class MyFileManager extends FileManager
 		return serverPath;
 	}
 	@Override
-	public long getPathSize(FtpSessionHandler fs, String clientPath)
-			throws AccessDeniedException, PathNotFoundException {
+	public long getPathSize(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
+	{
 		// TODO Auto-generated method stub
-		return 0;
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		long pathSize=new File(serverPath).length();
+		return pathSize;
 	}
 	@Override
 	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
@@ -253,18 +254,23 @@ public class MyFileManager extends FileManager
 		return fileNameList;
 	}
 	@Override
-	public String getFile(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	{
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		return serverPath;
 	}
 	@Override
-	public String putFile(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException, QuotaExceedException {
-		// TODO Auto-generated method stub
-		return null;
+	public String putFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException 
+	{
+		int index;
+		String fileName;
+		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(fs.getConfig().getLogger(), fs.getCurrentPath(), inPath);
+		index=clientPath.lastIndexOf("/");
+		fileName=clientPath.substring(index+1);
+		clientPath=clientPath.substring(0,index);
+		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
+		serverPath+=File.separator+fileName;
+		return serverPath;
 	}
 	public void close() 
 	{

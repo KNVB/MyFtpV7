@@ -87,6 +87,12 @@ public class FileUtil
         	dateString=(new SimpleDateFormat("MMM dd yyyy",fileLocale).format(fileDate.getTime()));
         return String.format("%s%5d %-9s%-9s%10d %-12s ",permission,node,user,group,Files.size(path),dateString);
 	}
+	/**
+	 * Get server path that map to virtual path and the virtual path permission
+	 * @param fs
+	 * @param inPath
+	 * @return A string contain server path and the virtual path permission that is delimited by a tab i.e. "\t"
+	 */
 	protected static final String getServerPathAndPermFromVirDir(FtpSessionHandler fs, String inPath) 
 	{
 		User user=fs.getUser();
@@ -150,7 +156,7 @@ public class FileUtil
 	 * @param logger
 	 * @param serverPathACL The specified server path access control list 
 	 * @param inPath The server path
-	 * @return 
+	 * @return Get the permission for given server path
 	 */
 	protected static final String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL,Path inPath)
 	{
