@@ -30,6 +30,7 @@ public abstract class FileManager
 		this.config=c;
 		this.logger=config.getLogger();
 	}
+	public abstract boolean isAuthorized(FtpSessionHandler fs,String path, String readPermission)throws AccessDeniedException, PathNotFoundException,InvalidHomeDirectoryException;
 	public abstract long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException;
 	public abstract void changeDirectory(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException;
 	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
@@ -37,5 +38,6 @@ public abstract class FileManager
 	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
 	public abstract String putFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException;
 	public abstract void close();
+	
 	
 }

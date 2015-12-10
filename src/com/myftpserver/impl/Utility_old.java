@@ -26,7 +26,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
 
-public class Utility 
+public class Utility_old 
 {
 	/**
 	 * Determine whether inPath writeadable for user
@@ -300,7 +300,7 @@ public class Utility
 						if (index==0)
 							virDir=virDir.substring(index+1);
 						fs.getConfig().getLogger().debug("Current Path="+currentPath+",Virtual Client Path="+virDir+",Parent folder="+parentDir+",serverPath="+serverPath+",index="+index);
-						nameList.put(virDir,Utility.formatPathName(Paths.get(serverPath)));
+						nameList.put(virDir,Utility_old.formatPathName(Paths.get(serverPath)));
 					}
 					catch (AccessDeniedException |PathNotFoundException| IOException ex)
 					{
