@@ -1,11 +1,10 @@
 package com.myftpserver.impl;
 
-import java.util.Vector;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import com.myftpserver.User;
-import com.myftpserver.impl.DbOp;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
 import com.myftpserver.Configuration;
@@ -31,69 +30,73 @@ public class MyUserManager extends UserManager
 			dbo=null;
 		}
 	}
+
 	@Override
-	public Vector<User> listAllUser() 
-	{
+	public Vector<User> listAllUser() {
+		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
-	public Vector<UserGroup> listAllUserGroup() 
-	{
+	public Vector<UserGroup> listAllUserGroup() {
+		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public int addUser(User u) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int deleteUser(String uN) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int setPassword(User u) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int addUserGroup(UserGroup userGroup) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int deleteUserGroup(UserGroup userGroup) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int addUserToUserGroup(User user, UserGroup userGroup) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int removeUserFromUserGroup(User user, UserGroup userGroup) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public User login(FtpSessionHandler fs, String password)throws LoginFailureException, AccessDeniedException,InvalidHomeDirectoryException 
 	{
+		// TODO Auto-generated method stub
 		User u=dbo.login(fs, password);
-		try
-		{
-			dbo.loadACL(u);
-			fs.setUser(u);
-			dbo.getRealHomePath(fs);
-			logger.debug("Client path ACL size="+u.getClientPathACL().size());
-			logger.debug("Server path ACL size="+u.getServerPathACL().size());
-		}
-		catch (PathNotFoundException er)
-		{
-			throw new InvalidHomeDirectoryException(config.getFtpMessage("530_Home_Dir_Not_Found"));
-		}
-		return u;		
+		dbo.loadACL(u);
+		fs.setUser(u);
+		logger.debug("Client path ACL size="+u.getClientPathACL().size());
+		logger.debug("Server path ACL size="+u.getServerPathACL().size());
+		return u;	
 	}
+
 	@Override
 	public void close() 
 	{
@@ -110,5 +113,4 @@ public class MyUserManager extends UserManager
 		}
 		dbo=null;		
 	}
-
 }

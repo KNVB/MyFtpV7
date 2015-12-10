@@ -7,247 +7,273 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import java.io.File;
-import java.sql.ResultSet;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.util.Map;
+
 import java.util.Set;
+
 import java.util.TreeMap;
-import java.util.Iterator;
-import java.util.Hashtable;
+import java.util.TreeSet;
+
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Collections;
+
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
 
-import org.apache.log4j.Logger;
-
 public class MyFileManager extends FileManager 
 {
-	DbOp dbo=null;
-	ResultSet rs=null;
-	String strSql=new String();
 	public MyFileManager(Configuration c) 
 	{
 		super(c);
-		try 
+	}
+	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
+	{
+		try
 		{
-			dbo=new DbOp(c);
-		} 
-		catch (Exception e) 
+			getServerPath(fs,"/",FileManager.READ_PERMISSION);
+		}
+		catch (AccessDeniedException err)
 		{
-			e.printStackTrace();
-			dbo=null;
+			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+		}
+		catch (PathNotFoundException err)
+		{
+			throw new InvalidHomeDirectoryException(config.getFtpMessage("530_Home_Dir_Not_Found"));
 		}
 	}
-
-	@Override
-	public long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException 
+	public String getServerPath(FtpSessionHandler fs,String inPath, String requiredPermission)throws AccessDeniedException,PathNotFoundException
 	{
-		long pathSize=0;
-		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		if (Utility.isReadableServerPath(fs,fs.getUser().getServerPathACL(),Paths.get(serverPath)))
-		{	
-			pathSize=new File(serverPath).length();
-			return pathSize;
+		String serverPath=new String(),serverPathPerm=null,virtualPathPerm=null,finalPerm=null;
+		String clientPath=FileUtil.normalizeClientPath(fs.getConfig().getLogger(), fs.getCurrentPath(), inPath);
+		String serverPathAndPerm=FileUtil.getServerPathAndPermFromVirDir(fs,clientPath);
+		if (serverPathAndPerm.isEmpty())
+		{
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
 		}
 		else
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-		
+		{
+			serverPath=serverPathAndPerm.split("\t")[0];
+			virtualPathPerm=serverPathAndPerm.split("\t")[1];
+			serverPathPerm=FileUtil.getServerPathPerm(logger,fs.getUser().getServerPathACL(),Paths.get(serverPath));
+			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm);
+			if (virtualPathPerm!=null)
+				finalPerm=virtualPathPerm;
+			if (serverPathPerm!=null)
+				finalPerm+=serverPathPerm;
+			if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
+			{
+				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			}
+			else
+			{
+				if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+				{
+					throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+				}
+			}
+		}
+		return serverPath;
 	}
-
+	@Override
+	public long getPathSize(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
+	{
+		// TODO Auto-generated method stub
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		long pathSize=new File(serverPath).length();
+		return pathSize;
+	}
 	@Override
 	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
 	{
-		String clientPath=null,serverPath;
-		User user=fs.getUser();
-		clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(),inPath);
-		serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		if (Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
-		{
-			if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
-				fs.setCurrentPath(clientPath);
-			else
-				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-		}
-		else
-			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		fs.setCurrentPath(FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath));
 	}
-
 	@Override
 	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException 
 	{
-		Boolean isVirDirOk;
+		int index;
 		User user=fs.getUser();
-		String serverPath=new String(),currentPath,pathPerm;
+		TreeMap<String,String> result=null;
+		ArrayList <String>resultList=null;
+		String virPath=new String(),parentDir;
 		StringBuffer fileNameList=new StringBuffer();
-		Hashtable<String, String> clientPathACL=user.getClientPathACL();
-		TreeMap<String,String> result=new TreeMap<String,String>();
-		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
-		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);
-		logger.debug("serverPath="+serverPath);
-		if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
-		{	try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
-			{
-				for (Path path : directoryStream) 
-	            {
-					pathPerm=clientPathACL.get(currentPath+path.getFileName());
-					isVirDirOk=true;
-					if (pathPerm!=null)
-					{
-						int i=pathPerm.indexOf("\t");
-						pathPerm=pathPerm.substring(0,i).trim();
-						logger.debug(currentPath+","+path.getFileName()+","+pathPerm);
-						if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-							isVirDirOk=false;
-					}
-					if (isVirDirOk && Utility.isReadableServerPath(fs,user.getServerPathACL(),path))
-		            	result.put((path.getFileName().toString()),Utility.formatPathName(path));
-	            }
-				logger.debug("Client Path ACL size="+user.getClientPathACL().size());
-				Utility.addVirtualDirectoryList(fs,user.getClientPathACL(),dbo,result);
-				Set<?> set = result.entrySet();
-				Iterator<?> i = set.iterator();
-				while(i.hasNext()) 
-			    {
-			        @SuppressWarnings("unchecked")
-					Map.Entry<String,String> me = (Map.Entry<String, String>)i.next();
-			        fileNameList.append(me.getValue()+me.getKey()+"\r\n");
-			    }
-				return fileNameList;
-			}
-			catch (NoSuchFileException ex)
-			{
-				throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
-			}
-	        catch (Exception ex) 
-	    	{
-	        	ex.printStackTrace();
-	        	return null;
-	    	}
-		}
+		TreeMap<String, String> clientPathACL=user.getClientPathACL();
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		String currentPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
+		if (File.separator.equals("\\"))
+			result=new TreeMap<String,String>(String.CASE_INSENSITIVE_ORDER);
 		else
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			result=new TreeMap<String,String>();
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
+		{
+			for (Path path : directoryStream) //Loop all server path
+            {
+				try
+				{
+					if (currentPath.endsWith("/"))
+						getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
+					else
+						getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
+					result.put(path.getFileName().toString(),FileUtil.formatPathName(path));
+				}
+				catch (AccessDeniedException | PathNotFoundException err)
+				{
+					
+				}
+            }
+			for(Entry<String, String> entry : clientPathACL.entrySet())  //Loop all virtual path
+			{
+				virPath=entry.getKey();
+				index=virPath.lastIndexOf("/");
+				parentDir=virPath.substring(0,index+1);
+				if (parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
+				{
+					try
+					{
+						serverPath=getServerPath(fs,virPath,FileManager.READ_PERMISSION);
+						logger.debug("0 virPath="+virPath);
+						virPath=virPath.replaceAll(currentPath, "");
+						logger.debug("1 virPath="+virPath);
+						index=virPath.indexOf("/");
+						if (index==0)
+							virPath=virPath.substring(index+1);
+						virPath=virPath.trim();
+						if (!virPath.equals("") && (!result.containsKey(virPath)))							
+						{
+							result.put(virPath,FileUtil.formatPathName(Paths.get(serverPath)));
+							logger.debug("virPath="+virPath+" added to result");
+						}
+					}
+					catch(AccessDeniedException | PathNotFoundException err)
+					{
+					}
+				}
+			}
+			resultList=new ArrayList<String>(result.keySet());
+			Collections.sort(resultList);
+			//logger.debug("result="+result.size());
+			for (String temp :resultList)
+			{
+				fileNameList.append(result.get(temp)+temp+"\r\n");
+			}
+			//logger.debug("fileNameList="+fileNameList);
+		}
+		catch (NoSuchFileException ex)
+		{
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		}
+        catch (Exception ex) 
+    	{
+        	ex.printStackTrace();
+    	}
+		return fileNameList;
 	}
-
 	@Override
 	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
 	{
+		int index;
 		User user=fs.getUser();
-		Boolean isVirDirOk;
-		String serverPath=new String(),currentPath,pathPerm;
-		Logger logger=fs.getConfig().getLogger();
-		ArrayList<String> result=new ArrayList<String>();
+		Set <String> result=null;
+		ArrayList <String>resultList=null;
+		String virPath=new String(),parentDir;
 		StringBuffer fileNameList=new StringBuffer();
-		Hashtable<String, String> clientPathACL=user.getClientPathACL();
-		currentPath=Utility.resolveClientPath(logger, fs.getCurrentPath(), inPath);
-		serverPath=dbo.getRealPath(fs, inPath, FileManager.READ_PERMISSION);
-		logger.debug("inPath="+inPath+",serverPath="+serverPath+",per="+Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)));
-		if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
-		{	try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
-			{
-				for (Path path : directoryStream) 
-	            {
-					pathPerm=clientPathACL.get(currentPath+path.getFileName());
-					isVirDirOk=true;
-					if (pathPerm!=null)
-					{
-						int i=pathPerm.indexOf("\t");
-						pathPerm=pathPerm.substring(0,i).trim();
-						logger.debug(currentPath+","+path.getFileName()+","+pathPerm);
-						if (pathPerm.indexOf(FileManager.NO_ACCESS)>-1)
-							isVirDirOk=false;
-					}
-					if (isVirDirOk && Utility.isReadableServerPath(fs,user.getServerPathACL(),path))
-						result.add(path.getFileName().toString());
-	            }
-				logger.debug("Client Path ACL size="+user.getClientPathACL().size());
-				if (inPath.equals(""))
-					Utility.addVirtualDirectoryName(fs.getConfig().getLogger(),fs.getCurrentPath(),user.getClientPathACL(),result);
-				else
-					Utility.addVirtualDirectoryName(fs.getConfig().getLogger(),inPath,user.getClientPathACL(),result);
-				logger.debug("result1="+result.toString());
-				Collections.sort(result);
-				logger.debug("result2="+result.toString());
-				for (String temp :result)
-				{
-					fileNameList.append(temp+"\r\n");
-				}
-				return fileNameList;
-			}
-			catch (NoSuchFileException ex)
-			{
-				throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
-			}
-	        catch (Exception ex) 
-	    	{
-	        	ex.printStackTrace();
-	        	return null;
-	    	}
-		}
+		TreeMap<String, String> clientPathACL=user.getClientPathACL();
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		String currentPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
+		if (File.separator.equals("\\"))
+			result=new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 		else
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			result=new TreeSet<String>();
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(serverPath))) 
+		{
+			for (Path path : directoryStream) //Loop all server path
+            {
+				try
+				{
+					if (currentPath.endsWith("/"))
+						getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
+					else
+						getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
+					result.add(path.getFileName().toString());
+				}
+				catch (AccessDeniedException | PathNotFoundException err)
+				{
+					
+				}
+            }
+			for(Entry<String, String> entry : clientPathACL.entrySet())  //Loop all virtual path
+			{
+				virPath=entry.getKey();
+				index=virPath.lastIndexOf("/");
+				parentDir=virPath.substring(0,index+1);
+				logger.debug("currentPath="+currentPath+",parentDir="+parentDir);
+				if (parentDir.equals(currentPath)||parentDir.equals(currentPath+"/"))
+				{
+					try
+					{
+						getServerPath(fs,virPath,FileManager.READ_PERMISSION);
+						logger.debug("0 virPath="+virPath);
+						virPath=virPath.replaceAll(currentPath, "");
+						logger.debug("1 virPath="+virPath);
+						index=virPath.indexOf("/");
+						if (index==0)
+							virPath=virPath.substring(index+1);
+						virPath=virPath.trim();
+						if (!virPath.equals("") && (!result.contains(virPath)))							
+						{
+							result.add(virPath);
+							logger.debug("virPath="+virPath+" added to result");
+						}
+					}
+					catch(AccessDeniedException | PathNotFoundException err)
+					{
+					}
+				}
+			}
+			resultList=new ArrayList<String>(result);
+			Collections.sort(resultList);
+			//logger.debug("result="+result.size());
+			for (String temp :result)
+			{
+				fileNameList.append(temp+"\r\n");
+			}
+			//logger.debug("fileNameList="+fileNameList);
+		}
+		catch (NoSuchFileException ex)
+		{
+			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		}
+        catch (Exception ex) 
+    	{
+        	ex.printStackTrace();
+    	}
+		return fileNameList;
 	}
-
 	@Override
 	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
 	{
-		User user=fs.getUser();
-		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
-		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
-		logger.debug("serverPath="+serverPath);
-		if (Utility.isReadableServerPath(fs,user.getServerPathACL(),Paths.get(serverPath)))
-		{	
-			return serverPath;
-		}
-		else
-		{	
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-		}
+		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		return serverPath;
 	}
-
 	@Override
 	public String putFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException 
 	{
-		User user=fs.getUser();
-		String pathPerm=new String(),dirName;
-		String serverPath=dbo.getRealPath(fs,inPath,FileManager.WRITE_PERMISSION);
-		Logger logger=fs.getConfig().getLogger();
-		if (serverPath.indexOf(File.separator)>-1)
-			dirName=serverPath.substring(0,serverPath.lastIndexOf(File.separator));
-		else
-			dirName=fs.getCurrentPath();
-		logger.debug("serverPath="+serverPath+",dirName="+dirName);
-		if (Files.exists(Paths.get(dirName),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
-		{	
-			pathPerm=Utility.getServerPathPerm(fs.getConfig().getLogger(),user.getServerPathACL(),Paths.get(serverPath));
-			if (pathPerm.indexOf(FileManager.NO_ACCESS)==-1)
-			{	
-				return serverPath;
-			}
-			else
-				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
-		}
-		else
-			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+		int index;
+		String fileName;
+		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(fs.getConfig().getLogger(), fs.getCurrentPath(), inPath);
+		index=clientPath.lastIndexOf("/");
+		fileName=clientPath.substring(index+1);
+		clientPath=clientPath.substring(0,index);
+		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
+		serverPath+=File.separator+fileName;
+		return serverPath;
 	}
-
-	@Override
 	public void close() 
 	{
-		if (dbo!=null)
-		{
-			try 
-			{
-				dbo.close();
-			} 
-			catch (Exception e) 
-			{
-				e.printStackTrace();
-			}
-		}
-		dbo=null;
-	}
+		
+	}		
 }

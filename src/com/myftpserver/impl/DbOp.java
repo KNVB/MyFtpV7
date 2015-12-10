@@ -1,12 +1,16 @@
 package com.myftpserver.impl;
 
-import java.sql.*;
-
 import com.myftpserver.*;
 import com.myftpserver.exception.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
@@ -110,29 +114,12 @@ public class DbOp
 		{
 			releaseResource(rs, stmt);
 		}
-	}
-	public String getRealPath(FtpSessionHandler fs,String virPath,String permission)throws AccessDeniedException,PathNotFoundException 
-	{
-		User user=fs.getUser();
-		String realPath=null,pathPerm=null;
-		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), virPath);
-
-		logger.debug("user ="+user.getName()+",currentPath="+fs.getCurrentPath()+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath);
-		realPath=Utility.getRealPath(fs,clientPath, permission);
-		logger.debug("user ="+user.getName()+",currentPath="+fs.getCurrentPath()+",virPath="+virPath+",permission="+permission+",clientPath="+clientPath+",realPath="+realPath+",pathPerm="+pathPerm);
-		return realPath;
-	}
-	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,PathNotFoundException 
-	{
-		fs.setCurrentPath("/");
-		getRealPath(fs,"/",FileManager.READ_PERMISSION);
-	}
+	}	
 	public void close() throws Exception 
 	{
 		dbConn.close();
 		dbConn = null;
 	}
-	
 	private void releaseResource(ResultSet r, PreparedStatement s) 
 	{
 		if (r != null) 
@@ -159,5 +146,5 @@ public class DbOp
 		}
 		r = null;
 		s = null;
-	}
+	}	
 }
