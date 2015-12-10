@@ -23,7 +23,6 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private ChannelHandlerContext responseCtx;
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
 	{
-		// TODO Auto-generated constructor stub
 		this.fs=fs;
 		this.mode=mode;
 		this.fileName=fileName;
@@ -31,7 +30,6 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	}
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, StringBuffer fileNameList) 
 	{
-		// TODO Auto-generated constructor stub
 		this.fs=fs;
 		this.mode=MyFtpServer.SENDDIRLIST;
 		this.responseCtx=responseCtx;
@@ -40,7 +38,6 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
-		// TODO Auto-generated method stub
 		switch (mode)
 		{
 			case MyFtpServer.SENDFILE:ch.pipeline().addLast("streamer", new ChunkedWriteHandler());

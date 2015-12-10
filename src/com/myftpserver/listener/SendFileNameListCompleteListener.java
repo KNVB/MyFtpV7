@@ -21,7 +21,6 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	ChannelHandlerContext responseCtx;
 	public SendFileNameListCompleteListener(FtpSessionHandler fs,ChannelHandlerContext rCtx,PassiveServer txServer) 
 	{
-		// TODO Auto-generated constructor stub
 		this.fs=fs;
 		this.remoteIp=fs.getClientIp();
 		this.logger=fs.getConfig().getLogger();
@@ -33,12 +32,8 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture ch) throws Exception 
 	{
-		// TODO Auto-generated method stub
 		fs.getConfig().getLogger().debug("File name list transfered to "+remoteIp+" Completed.");
 		ch.channel().close();
 		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok")); 
-		//fs.getConfig().getLogger().debug("File name list transfered to "+clientIp+" Completed.");
-		
 	}
-
 }

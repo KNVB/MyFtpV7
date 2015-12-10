@@ -67,7 +67,6 @@ public class NLST implements FtpCommandInterface {
 		} 
 		catch (InterruptedException err) 
 		{
-			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 			err.printStackTrace();
 		}

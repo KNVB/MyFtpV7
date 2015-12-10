@@ -27,19 +27,18 @@ public class MyUserManager extends UserManager
 		} 
 		catch (Exception e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			dbo=null;
 		}
 	}
 	@Override
-	public Vector<User> listAllUser() {
-		// TODO Auto-generated method stub
+	public Vector<User> listAllUser() 
+	{
 		return null;
 	}
 	@Override
-	public Vector<UserGroup> listAllUserGroup() {
-		// TODO Auto-generated method stub
+	public Vector<UserGroup> listAllUserGroup() 
+	{
 		return null;
 	}
 	@Override
@@ -78,10 +77,8 @@ public class MyUserManager extends UserManager
 		return 0;
 	}
 	@Override
-	public User login(FtpSessionHandler fs, String password)
-			throws LoginFailureException, AccessDeniedException,
-			InvalidHomeDirectoryException {
-		// TODO Auto-generated method stub
+	public User login(FtpSessionHandler fs, String password)throws LoginFailureException, AccessDeniedException,InvalidHomeDirectoryException 
+	{
 		User u=dbo.login(fs, password);
 		try
 		{
@@ -100,7 +97,6 @@ public class MyUserManager extends UserManager
 	@Override
 	public void close() 
 	{
-		// TODO Auto-generated method stub
 		if (dbo!=null)
 		{
 			try 
@@ -109,7 +105,6 @@ public class MyUserManager extends UserManager
 			} 
 			catch (Exception e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

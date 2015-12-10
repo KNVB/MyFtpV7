@@ -18,7 +18,6 @@ public class CommandChannelClosureListener implements ChannelFutureListener
 	}
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		// TODO Auto-generated method stub
 		s.sessionClose();
 	}
 }

@@ -23,7 +23,6 @@ public class CWD implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger)
 	{
-		// TODO Auto-generated method stub
 		FileManager fm=fs.getConfig().getFileManager();
 		logger.debug("param="+param+"|");
 		
@@ -34,7 +33,6 @@ public class CWD implements FtpCommandInterface
 		} 
 		catch (AccessDeniedException | PathNotFoundException err) 
 		{
-			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 	}

@@ -20,7 +20,6 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 
 	public SendFileNameListHandler(StringBuffer fileNameList2,ChannelHandlerContext ctx, FtpSessionHandler fs,PassiveServer txServer) 
 	{
-		// TODO Auto-generated constructor stub
 		this.fs=fs;
 		this.fileNameList=fileNameList2;
 		this.responseCtx=ctx;

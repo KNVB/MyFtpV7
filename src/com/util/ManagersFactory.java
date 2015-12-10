@@ -15,7 +15,6 @@ public class ManagersFactory
 	Logger logger;
 	PropertyResourceBundle bundle;
 	Configuration config;
-	//Class<UserManager> userManager=null;
 	public ManagersFactory(PropertyResourceBundle b,Configuration c)
 	{
 		bundle=b;
@@ -29,12 +28,11 @@ public class ManagersFactory
 		{
 			fm = (FileManager) getManager("fileManager.classname").newInstance(this.config);
 		}
-		catch (IllegalArgumentException | InvocationTargetException |InstantiationException e) {
-			// TODO Auto-generated catch block
+		catch (IllegalArgumentException | InvocationTargetException |InstantiationException e) 
+		{
 			e.printStackTrace();
 		} 
 		catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return fm;
@@ -49,11 +47,10 @@ public class ManagersFactory
 		}
 		catch (InstantiationException |IllegalArgumentException | InvocationTargetException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+		catch (IllegalAccessException e) 
+		{
 			e.printStackTrace();
 		}
 		return um;
@@ -69,7 +66,6 @@ public class ManagersFactory
 		}
 		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 
 		{
-			// TODO Auto-generated catch block
 			System.out.println(e.getMessage()+" not found.");
 		}
 		return null;				

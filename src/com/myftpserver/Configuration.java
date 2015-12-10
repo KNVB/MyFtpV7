@@ -97,12 +97,10 @@ public class Configuration
 		} 
 		catch (FileNotFoundException e) 
 		{
-			// TODO Auto-generated catch block
 			logger.info("Config. file not found.");
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
 			logger.info("An exception occur when loading config. file.");
 		}
 		finally
@@ -141,7 +139,6 @@ public class Configuration
 	}
 	public UserManager getUserManager() 
 	{
-		// TODO Auto-generated method stub
 		return userManager;
 	}	
 	public FileManager getFileManager()

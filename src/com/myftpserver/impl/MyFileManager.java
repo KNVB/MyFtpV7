@@ -38,16 +38,14 @@ public class MyFileManager extends FileManager
 		} 
 		catch (Exception e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			dbo=null;
 		}
 	}
 
 	@Override
-	public long getPathSize(FtpSessionHandler fs, String clientPath)
-			throws AccessDeniedException, PathNotFoundException {
-		// TODO Auto-generated method stub
+	public long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException 
+	{
 		long pathSize=0;
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
 		if (Utility.isReadableServerPath(fs,fs.getUser().getServerPathACL(),Paths.get(serverPath)))
@@ -61,9 +59,8 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void changeDirectory(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException {
-		// TODO Auto-generated method stub
+	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
+	{
 		String clientPath=null,serverPath;
 		User user=fs.getUser();
 		clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(),inPath);
@@ -80,10 +77,8 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException {
-		// TODO Auto-generated method stub
+	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	{
 		Boolean isVirDirOk;
 		User user=fs.getUser();
 		String serverPath=new String(),currentPath,pathPerm;
@@ -138,10 +133,8 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException {
-		// TODO Auto-generated method stub
+	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	{
 		User user=fs.getUser();
 		Boolean isVirDirOk;
 		String serverPath=new String(),currentPath,pathPerm;
@@ -157,7 +150,6 @@ public class MyFileManager extends FileManager
 			{
 				for (Path path : directoryStream) 
 	            {
-					//logger.debug(currentPath+","+path.getFileName());
 					pathPerm=clientPathACL.get(currentPath+path.getFileName());
 					isVirDirOk=true;
 					if (pathPerm!=null)
@@ -200,10 +192,8 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public String getFile(FtpSessionHandler fs, String inPath)
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException {
-		// TODO Auto-generated method stub
+	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	{
 		User user=fs.getUser();
 		String clientPath=Utility.resolveClientPath(logger,fs.getCurrentPath(), inPath);
 		String serverPath=dbo.getRealPath(fs,clientPath,FileManager.READ_PERMISSION);
@@ -219,10 +209,8 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public String putFile(FtpSessionHandler fs, String inPath) 
-			throws AccessDeniedException, PathNotFoundException,
-			InterruptedException, QuotaExceedException {
-		// TODO Auto-generated method stub
+	public String putFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException 
+	{
 		User user=fs.getUser();
 		String pathPerm=new String(),dirName;
 		String serverPath=dbo.getRealPath(fs,inPath,FileManager.WRITE_PERMISSION);
@@ -244,7 +232,6 @@ public class MyFileManager extends FileManager
 		}
 		else
 			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
-		//return serverPath;
 	}
 
 	@Override
@@ -258,11 +245,9 @@ public class MyFileManager extends FileManager
 			} 
 			catch (Exception e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		dbo=null;
 	}
-
 }

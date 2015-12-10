@@ -24,8 +24,8 @@ public class FileTransferCompleteListener implements ChannelFutureListener
 		this.logger=fs.getConfig().getLogger();
 	}
 	@Override
-	public void operationComplete(ChannelFuture cf) throws Exception {
-		// TODO Auto-generated method stub
+	public void operationComplete(ChannelFuture cf) throws Exception 
+	{
 		if (txServer==null)
 			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,responseCtx));
 		else

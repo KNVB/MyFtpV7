@@ -124,7 +124,6 @@ public class DbOp
 	}
 	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,PathNotFoundException 
 	{
-		// TODO Auto-generated method stub
 		fs.setCurrentPath("/");
 		getRealPath(fs,"/",FileManager.READ_PERMISSION);
 	}
@@ -144,7 +143,6 @@ public class DbOp
 			} 
 			catch (SQLException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -156,7 +154,6 @@ public class DbOp
 			} 
 			catch (SQLException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

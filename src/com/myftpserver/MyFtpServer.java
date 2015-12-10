@@ -67,12 +67,10 @@ public class MyFtpServer
 		}
 		catch (FileNotFoundException e) 
 		{
-			// TODO Auto-generated catch block
 			System.out.println("file log4j.properties not found:"+e.getMessage());
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
 			System.out.println("An exception occur when loading file log4j.properties.");
 		}
 		return result;
@@ -122,7 +120,6 @@ public class MyFtpServer
 	//-------------------------------------------------------------------------------------------	
 	public void returnPassivePort(int port) 
 	{
-		// TODO Auto-generated method stub
 		if (!passivePorts.contains(port))
 		{	
 			passivePorts.push(port);
@@ -130,6 +127,9 @@ public class MyFtpServer
 		}
 	}		
 //-------------------------------------------------------------------------------------------
+/**
+ *  start FTP server
+ */
 	public void start()
 	{
 		try 
@@ -146,12 +146,14 @@ public class MyFtpServer
         } 
         catch (Exception e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			this.stop();
 		}	        
 	}
 //-------------------------------------------------------------------------------------------	
+/**
+*  stop FTP server
+*/
 	public void stop()
 	{
     	bossGroup.shutdownGracefully();

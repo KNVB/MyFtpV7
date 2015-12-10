@@ -49,8 +49,6 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	}
 	public void channelRead0(ChannelHandlerContext ctx, String msg) 
 	{
-		// TODO Auto-generated method stub
-		//ctx.writeAndFlush(Unpooled.copiedBuffer(msg,CharsetUtil.UTF_8)).addListener(new CommandCompleteListener());
 		commandString=msg.trim();
 		logger.info("commandString="+commandString);
 		String commands[]=commandString.split("\n");
@@ -92,12 +90,10 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
     }
 	public boolean isLogined() 
 	{
-		// TODO Auto-generated method stub
 		return isLogined;
 	}
 	public void setUserName(String param) 
 	{
-		// TODO Auto-generated method stub
 		this.userName=param;
 	}
 	public void setIsLogined(boolean l)
@@ -122,31 +118,26 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	}
 	public void setTransferMode(String mode) 
 	{
-		// TODO Auto-generated method stub
 		txMode=mode;
 	}
 	public PassiveServer getPassiveServer() 
 	{
-		// TODO Auto-generated method stub
 		return this.passiveServer;
 	}
 	public void setPassiveServer(PassiveServer passiveServer) 
 	{
-		// TODO Auto-generated method stub
 		this.passiveServer=passiveServer;
 	}
 	public void setUser(User user) 
 	{
-		// TODO Auto-generated method stub
 		this.user=user;
 	}
-	public User getUser() {
-		// TODO Auto-generated method stub
+	public User getUser() 
+	{
 		return this.user;
 	}
 	public void setClientDataPortNo(int portNo) 
 	{
-		// TODO Auto-generated method stub
 		clientDataPortNo=portNo;
 	}
 	public int getClientDataPortNo()
