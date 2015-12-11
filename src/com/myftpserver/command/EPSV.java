@@ -40,7 +40,7 @@ public class EPSV implements FtpCommandInterface
 				message=message.replaceAll("%1", String.valueOf(port));
 				localIp=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
 				fs.isPassiveModeTransfer=true;						
-				PassiveServer passiveServer=new PassiveServer(fs,ctx,logger,localIp,port);
+				PassiveServer passiveServer=new PassiveServer(fs,localIp,port);
 				fs.setPassiveServer(passiveServer);
 			}
 		}
