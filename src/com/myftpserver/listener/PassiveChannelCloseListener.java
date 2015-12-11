@@ -1,6 +1,5 @@
 package com.myftpserver.listener;
 
-import com.util.Utility;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -32,7 +31,6 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
-		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok"));
 		this.passiveServer.stop();
 	}
 }

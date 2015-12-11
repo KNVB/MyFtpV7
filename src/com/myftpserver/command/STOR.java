@@ -3,9 +3,11 @@ package com.myftpserver.command;
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.AccessDeniedException;
@@ -42,6 +44,8 @@ public class STOR implements FtpCommandInterface
 			if (fs.isPassiveModeTransfer)
 			{
 				logger.debug("Passive mode");
+				PassiveServer ps=fs.getPassiveServer();
+				ps.receiveFile(serverPath,ctx);
 			}
 			else
 			{

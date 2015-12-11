@@ -61,6 +61,8 @@ public class LIST implements FtpCommandInterface
 			if (fs.isPassiveModeTransfer)
 			{
 				logger.debug("Passive mode");
+				PassiveServer ps=fs.getPassiveServer();
+				ps.sendFileNameList(resultList,ctx);
 			}
 			else
 			{

@@ -9,12 +9,13 @@ import com.myftpserver.listener.FileTransferCompleteListener;
 import com.util.Utility;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 @Sharable
-public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
+public class ReceiveFileHandler extends ChannelInboundHandlerAdapter 
 {
 	private Logger logger;
 	private String fileName;
@@ -64,6 +65,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	        in.release();
 	    }
     }
+	
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception 
 	{ 

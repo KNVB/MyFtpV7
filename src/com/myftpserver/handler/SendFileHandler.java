@@ -8,12 +8,13 @@ import com.myftpserver.listener.SendFileCompleteListener;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.stream.ChunkedFile;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 @Sharable
-public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> 
+public class SendFileHandler extends SimpleChannelInboundHandler <ByteBuf> implements ChannelHandler 
 {
 	String fileName;
 	ChannelHandlerContext responseCtx;
@@ -31,7 +32,10 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf>
 	{
 		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.txServer));
     }
-	
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
+	{
+		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.txServer));
+	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t)
 			throws Exception {

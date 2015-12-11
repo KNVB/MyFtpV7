@@ -1,9 +1,12 @@
 package com.myftpserver.command;
 
 
+import java.io.IOException;
+
 import com.util.Utility;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -35,6 +38,8 @@ public class RETR implements FtpCommandInterface {
 			if (fs.isPassiveModeTransfer)
 			{
 				logger.debug("Passive mode");
+				PassiveServer ps=fs.getPassiveServer();
+				ps.sendFile(serverPath,ctx);
 			}
 			else
 			{
@@ -43,9 +48,8 @@ public class RETR implements FtpCommandInterface {
 				activeClient.sendFile(serverPath);
 			}
 		} 
-		catch (InterruptedException|AccessDeniedException | PathNotFoundException err) 
+		catch (InterruptedException|AccessDeniedException | PathNotFoundException |IOException err) 
 		{
-			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 	}	
