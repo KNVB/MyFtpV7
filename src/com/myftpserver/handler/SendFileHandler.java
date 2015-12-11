@@ -8,35 +8,30 @@ import com.myftpserver.listener.SendFileCompleteListener;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.stream.ChunkedFile;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 @Sharable
-public class SendFileHandler extends SimpleChannelInboundHandler <ByteBuf> implements ChannelHandler 
+public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> 
 {
 	String fileName;
 	ChannelHandlerContext responseCtx;
-	PassiveServer passiveServer=null;
+	PassiveServer txServer=null;
 	FtpSessionHandler fs;
 	public SendFileHandler(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer txServer)
 	{
 		this.fs=fs;
 		this.fileName=fileName;
-		this.passiveServer=txServer;
+		this.txServer=txServer;
 		this.responseCtx=responseCtx;
 	}
 	@Override
     public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
-		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));
+		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.txServer));
     }
-	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
-	{
-		if (passiveServer!=null)
-			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));
-	}
+	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t)
 			throws Exception {

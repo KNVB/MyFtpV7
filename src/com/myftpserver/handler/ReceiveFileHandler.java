@@ -9,13 +9,12 @@ import com.myftpserver.listener.FileTransferCompleteListener;
 import com.util.Utility;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 @Sharable
-public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements ChannelHandler 
+public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 {
 	private Logger logger;
 	private String fileName;
@@ -47,14 +46,10 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 			Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),config.getFtpMessage("553_Cannot_Create_File").replace("%1", err.getMessage()));
 		}
     }
-	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
-	{
-		if (passiveServer!=null)
-			channelActive(ctx); 
-	}
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
 	{ 
+		
 		ByteBuf in = (ByteBuf) msg;
 		logger.debug("ReceiveFileHandler channelRead buffer capacity="+in.capacity()+",readable byte count="+in.readableBytes());
 	    try 
@@ -65,13 +60,10 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 	        	in.readBytes(bos,in.readableBytes());
 	        }
 	        bos.flush();
-	    } 
-	    finally 
-	    {
+	    } finally {
 	        in.release();
 	    }
     }
-	
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception 
 	{ 
