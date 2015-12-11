@@ -16,7 +16,7 @@ public class PassiveChannelInitializer extends ChannelInitializer<Channel>
 	{
 		this.fs=fs;
 		this.passiveServer=passiveServer;
-		this.logger=fs.getConfig().getLogger();
+		this.logger=this.fs.getConfig().getLogger();
 	}
 
 	@Override

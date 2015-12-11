@@ -18,23 +18,24 @@ public class SendFileHandler extends SimpleChannelInboundHandler <ByteBuf> imple
 {
 	String fileName;
 	ChannelHandlerContext responseCtx;
-	PassiveServer txServer=null;
+	PassiveServer passiveServer=null;
 	FtpSessionHandler fs;
 	public SendFileHandler(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer txServer)
 	{
 		this.fs=fs;
 		this.fileName=fileName;
-		this.txServer=txServer;
+		this.passiveServer=txServer;
 		this.responseCtx=responseCtx;
 	}
 	@Override
     public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
-		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.txServer));
+		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));
     }
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{
-		ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.txServer));
+		if (passiveServer!=null)
+			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));
 	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable t)

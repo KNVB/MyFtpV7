@@ -15,7 +15,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 @Sharable
-public class ReceiveFileHandler extends ChannelInboundHandlerAdapter 
+public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements ChannelHandler 
 {
 	private Logger logger;
 	private String fileName;
@@ -47,10 +47,13 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 			Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),config.getFtpMessage("553_Cannot_Create_File").replace("%1", err.getMessage()));
 		}
     }
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
+	{
+		channelActive(ctx); 
+	}
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
 	{ 
-		
 		ByteBuf in = (ByteBuf) msg;
 		logger.debug("ReceiveFileHandler channelRead buffer capacity="+in.capacity()+",readable byte count="+in.readableBytes());
 	    try 
@@ -61,7 +64,9 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	        	in.readBytes(bos,in.readableBytes());
 	        }
 	        bos.flush();
-	    } finally {
+	    } 
+	    finally 
+	    {
 	        in.release();
 	    }
     }
