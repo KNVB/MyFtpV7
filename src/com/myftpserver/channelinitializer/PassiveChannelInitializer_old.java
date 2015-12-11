@@ -25,6 +25,16 @@ public class PassiveChannelInitializer_old extends ChannelInitializer<Channel>
 		this.responseCtx=responseCtx;
 	}
 
+	public PassiveChannelInitializer_old(FtpSessionHandler fs,	PassiveServer passiveServer, ChannelHandlerContext responseCtx,int txMode, String fileName) 
+	{
+		// TODO Auto-generated constructor stub
+		this.fs=fs;
+		this.mode=txMode;
+		this.fileName=fileName;
+		this.passiveServer=passiveServer;
+		this.responseCtx=responseCtx;
+	}
+
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{

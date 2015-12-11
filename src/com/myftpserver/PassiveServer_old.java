@@ -5,9 +5,9 @@ import org.apache.log4j.Logger;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
@@ -59,6 +59,57 @@ public class PassiveServer_old
 			stop();
 		}
 	}
+	public void sendFile(String serverPath,ChannelHandlerContext responseCtx)
+	{
+		Channel ch=null;
+		this.logger=fs.getConfig().getLogger();
+		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
+		try 
+	        {
+	            ServerBootstrap bootStrap = new ServerBootstrap();
+	            bootStrap.group(bossGroup, workerGroup);
+	            bootStrap.channel(NioServerSocketChannel.class);
+	            bootStrap.childHandler(new PassiveChannelInitializer(fs,this,responseCtx, MyFtpServer.SENDFILE,serverPath));
+	                     
+	            ch=bootStrap.bind(inSocketAddress).sync().channel();
+	            logger.info("Server listening " +host+":" + port);
+	            
+	            // Wait until the server socket is closed.
+	            ch.closeFuture().sync();
+	        }
+		catch (Exception eg)
+		{
+			eg.printStackTrace();
+			stop();
+		}
+	}
+
+	public void receiveFile(String fileName,ChannelHandlerContext responseCtx) throws InterruptedException 
+	{
+		Channel ch=null;
+		this.logger=fs.getConfig().getLogger();
+		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
+		try 
+	        {
+	            ServerBootstrap bootStrap = new ServerBootstrap();
+	            bootStrap.group(bossGroup, workerGroup);
+	            bootStrap.channel(NioServerSocketChannel.class);
+	            bootStrap.childHandler(new PassiveChannelInitializer(fs,this,responseCtx,MyFtpServer.RECEIVEFILE,fileName));
+	                     
+	            ch=bootStrap.bind(inSocketAddress).sync().channel();
+	            logger.info("Server listening " +host+":" + port);
+	            
+	            // Wait until the server socket is closed.
+	            ch.closeFuture().sync();
+	        }
+		catch (Exception eg)
+		{
+			eg.printStackTrace();
+			stop();
+		}
+	}
+	
+	
 	public void stop()
 	{
     	bossGroup.shutdownGracefully();

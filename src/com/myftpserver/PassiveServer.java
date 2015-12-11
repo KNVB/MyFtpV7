@@ -83,7 +83,7 @@ public class PassiveServer
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
 		// TODO Auto-generated method stub
-		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));	
+		//ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));	
 	}
 	public void setChannel(Channel ch) 
 	{

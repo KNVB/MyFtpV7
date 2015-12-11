@@ -49,7 +49,8 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
     }
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{
-		channelActive(ctx); 
+		if (passiveServer!=null)
+			channelActive(ctx); 
 	}
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
