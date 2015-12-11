@@ -24,6 +24,16 @@ public class PassiveChannelInitializer extends ChannelInitializer<Channel>
 		this.passiveServer=passiveServer;
 	}
 
+	public PassiveChannelInitializer(FtpSessionHandler fs,PassiveServer passiveServer, ChannelHandlerContext responseCtx,StringBuffer fileNameList)
+	{
+		this.fs=fs;
+		this.mode=MyFtpServer.SENDDIRLIST;
+		this.fileNameList=fileNameList;
+		this.passiveServer=passiveServer;
+	}
+
+	
+	
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{

@@ -21,6 +21,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 
 
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
@@ -38,6 +39,7 @@ import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 public class PassiveServer 
 {
 	private int port;
+	private String host; 
 	private Logger logger;
 	private Channel ch=null;
 	private FtpSessionHandler fs;
@@ -51,45 +53,42 @@ public class PassiveServer
 		this.port=port;
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getConfig().getLogger();
-		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
-		try 
-	        {
-	            ServerBootstrap bootStrap = new ServerBootstrap();
-	            bootStrap.group(bossGroup, workerGroup);
-	            bootStrap.channel(NioServerSocketChannel.class);
-	            bootStrap.childHandler(new PassiveChannelInitializer(fs,this));
-	                     
-	            bootStrap.bind(inSocketAddress);
-	            logger.info("Passive Server listening " +host+":" + port);
-	            
-	            // Wait until the server socket is closed.
-	            //ch.closeFuture().sync();
-	        }
-		catch (Exception eg)
-		{
-			eg.printStackTrace();
-			stop();
-		}
+		this.host=host;
 	}
 	public void sendFileNameList(StringBuffer fileNameList,ChannelHandlerContext responseCtx) 
 	{
-		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,this));
+		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
+		try 
+        {
+            ServerBootstrap bootStrap = new ServerBootstrap();
+            bootStrap.group(bossGroup, workerGroup);
+            bootStrap.channel(NioServerSocketChannel.class);
+            bootStrap.childHandler(new PassiveChannelInitializer(fs,this,responseCtx,fileNameList));
+            bootStrap.bind(inSocketAddress);
+            logger.info("Passive Server listening " +host+":" + port);
+            
+            // Wait until the server socket is closed.
+            //ch.closeFuture().sync();
+        }
+	catch (Exception eg)
+	{
+		eg.printStackTrace();
+		stop();
+	}
+		
 	}
 	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
-		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
 	}
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
-		// TODO Auto-generated method stub
-		//ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));	
 	}
+	/*
 	public void setChannel(Channel ch) 
 	{
 		logger.debug("Set Channel is triggered");
 		this.ch=ch;
-	}	
+	}*/	
 
 	public void stop()
 	{
