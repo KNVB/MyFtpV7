@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import com.util.Utility;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
+
+
 import com.myftpserver.listener.ReceiveFilerCompleteListener;
 
 import io.netty.buffer.ByteBuf;
@@ -48,6 +50,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 		}
 		catch (FileNotFoundException err)
 		{
+			logger.debug(err.getMessage());
 			ctx.channel().close();
 			Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),config.getFtpMessage("553_Cannot_Create_File").replace("%1", err.getMessage()));
 		}

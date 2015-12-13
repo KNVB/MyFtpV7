@@ -46,14 +46,15 @@ public class STOR implements FtpCommandInterface
 				logger.debug("Passive mode");
 				PassiveServer ps=fs.getPassiveServer();
 				ps.receiveFile(serverPath,ctx);
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 			}
 			else
 			{
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 				logger.debug("Active mode");
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.receiveFile(serverPath);
 			}
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 		} 
 		catch (InterruptedException|AccessDeniedException |PathNotFoundException |QuotaExceedException err) 
 		{
