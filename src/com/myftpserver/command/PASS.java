@@ -8,6 +8,7 @@ import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
 import com.myftpserver.exception.*;
+import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.interfaces.UserManager;
 
@@ -34,21 +35,22 @@ public class PASS implements FtpCommandInterface
 		else
 		{
 			UserManager um=config.getUserManager();
+			FileManager fm=config.getFileManager();
 			try 
 			{
 				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)"+(um==null));
 				User user=um.login(fs, param);
-				message=config.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
 				fs.setUser(user);
 				fs.setIsLogined(true);
 				fs.setCurrentPath("/");
+				fm.getRealHomePath(fs);
+				message=config.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 			} 
 			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
 			{
-				// TODO Auto-generated catch block
-				message=e.getMessage();
-			}
+				Utility.disconnectFromClient(fs, logger,fs.getClientIp(),e.getMessage());
+			} 
 		}
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 }
