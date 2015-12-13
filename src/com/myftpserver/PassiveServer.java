@@ -34,7 +34,6 @@ public class PassiveServer
 	private int port;
 	private String host; 
 	private Logger logger;
-	private Channel ch=null;
 	private FtpSessionHandler fs;
 	private MyFtpServer myFtpServer;  
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
