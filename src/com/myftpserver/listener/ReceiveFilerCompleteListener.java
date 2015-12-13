@@ -11,7 +11,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 
-public class FileTransferCompleteListener implements ChannelFutureListener 
+public class ReceiveFilerCompleteListener implements ChannelFutureListener 
 {
 	Logger logger;
 	Configuration config;
@@ -19,7 +19,7 @@ public class FileTransferCompleteListener implements ChannelFutureListener
 	PassiveServer txServer=null;
 	ChannelHandlerContext responseCtx;
 	
-	public FileTransferCompleteListener(FtpSessionHandler fs,PassiveServer txServer, ChannelHandlerContext responseCtx)
+	public ReceiveFilerCompleteListener(FtpSessionHandler fs,PassiveServer txServer, ChannelHandlerContext responseCtx)
 	{
 		this.fs=fs;
 		this.config=fs.getConfig();
@@ -30,11 +30,11 @@ public class FileTransferCompleteListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
+		Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), config.getFtpMessage("226_Transfer_Ok"));
 		if (txServer==null)
 			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,responseCtx));
 		else
 			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,responseCtx,txServer));
-		logger.debug("File Transfer completed.");
-		Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), config.getFtpMessage("226_Transfer_Ok"));
+		logger.debug("File Transfer completed.");		
 	}
 }

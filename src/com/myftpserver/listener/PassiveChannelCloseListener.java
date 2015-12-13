@@ -3,6 +3,7 @@ package com.myftpserver.listener;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.util.Utility;
 
 import org.apache.log4j.Logger;
 
@@ -32,5 +33,6 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
 		this.passiveServer.stop();
+		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), config.getFtpMessage("226_Transfer_Ok"));
 	}
 }

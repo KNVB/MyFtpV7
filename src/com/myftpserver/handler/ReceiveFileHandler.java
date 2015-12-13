@@ -3,17 +3,15 @@ import java.io.*;
 
 import org.apache.log4j.Logger;
 
+import com.util.Utility;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
-import com.myftpserver.listener.FileTransferCompleteListener;
-import com.myftpserver.listener.SendFileCompleteListener;
-import com.util.Utility;
+import com.myftpserver.listener.ReceiveFilerCompleteListener;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.stream.ChunkedFile;
 
 @Sharable
 public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
@@ -83,7 +81,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 				bos.close();
 				bos=null;
 				logger.info("ReceiveFileHandler channel inactive");
-				ctx.channel().close().addListener(new FileTransferCompleteListener(fs,passiveServer,responseCtx));
+				ctx.channel().close().addListener(new ReceiveFilerCompleteListener(fs,passiveServer,responseCtx));
 			}
 			catch (Exception err)
 			{

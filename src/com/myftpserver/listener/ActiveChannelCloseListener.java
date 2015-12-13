@@ -30,6 +30,6 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		logger.debug("Active Mode Transfer channel is closed");
-		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok"));
+		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok"));
 	}
 }
