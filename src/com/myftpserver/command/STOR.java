@@ -3,15 +3,17 @@ package com.myftpserver.command;
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.Configuration;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FtpCommandInterface;
+import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
-import com.myftpserver.exception.QuotaExceedException;
-import com.myftpserver.interfaces.FtpCommandInterface;
 
 public class STOR implements FtpCommandInterface
 {
@@ -38,10 +40,12 @@ public class STOR implements FtpCommandInterface
 				fileName=fs.getCurrentPath()+"/"+fileName;
 			serverPath=fm.putFile(fs,fileName);
 			logger.debug("serverPath="+serverPath+",fileName="+fileName);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
+
 			if (fs.isPassiveModeTransfer)
 			{
 				logger.debug("Passive mode");
+				PassiveServer ps=fs.getPassiveServer();
+				ps.receiveFile(serverPath,ctx);
 			}
 			else
 			{
@@ -49,8 +53,9 @@ public class STOR implements FtpCommandInterface
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.receiveFile(serverPath);
 			}
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 		} 
-		catch (InterruptedException|AccessDeniedException | PathNotFoundException |QuotaExceedException err) 
+		catch (InterruptedException|AccessDeniedException |PathNotFoundException |QuotaExceedException err) 
 		{
 			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());

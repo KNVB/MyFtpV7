@@ -6,12 +6,14 @@ import org.apache.log4j.Logger;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.listener.FileTransferCompleteListener;
+import com.myftpserver.listener.SendFileCompleteListener;
 import com.util.Utility;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.stream.ChunkedFile;
 
 @Sharable
 public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
@@ -31,6 +33,12 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 		this.responseCtx=responseCtx;
 		this.passiveServer=passiveServer;
 		this.logger=fs.getConfig().getLogger();
+	}
+	@Override
+	public void handlerAdded(ChannelHandlerContext ctx)throws IOException,Exception
+	{
+		if (passiveServer!=null)
+			channelActive(ctx);
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception 

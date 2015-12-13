@@ -2,25 +2,21 @@ package com.myftpserver;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.handler.stream.ChunkedFile;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-import com.util.Utility;
+import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
-import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
-import com.myftpserver.listener.SendFileCompleteListener;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 
 /**
@@ -32,7 +28,7 @@ import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 public class PassiveServer 
 {
 	private int port;
-	private String host; 
+	private Channel ch;
 	private Logger logger;
 	private FtpSessionHandler fs;
 	private MyFtpServer myFtpServer;  
@@ -45,43 +41,45 @@ public class PassiveServer
 		this.port=port;
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getConfig().getLogger();
-		this.host=host;
-	}
-	public void sendFileNameList(StringBuffer fileNameList,ChannelHandlerContext responseCtx) 
-	{
 		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
 		try 
         {
             ServerBootstrap bootStrap = new ServerBootstrap();
             bootStrap.group(bossGroup, workerGroup);
             bootStrap.channel(NioServerSocketChannel.class);
-            bootStrap.childHandler(new PassiveChannelInitializer(fs,this,responseCtx,fileNameList));
+            bootStrap.childHandler(new PassiveChannelInitializer(fs,this));
             bootStrap.bind(inSocketAddress);
             logger.info("Passive Server listening " +host+":" + port);
             
             // Wait until the server socket is closed.
             //ch.closeFuture().sync();
         }
-	catch (Exception eg)
+		catch (Exception eg)
+		{
+			eg.printStackTrace();
+			stop();
+		}
+	}
+	public void sendFileNameList(StringBuffer fileNameList,ChannelHandlerContext responseCtx) 
 	{
-		eg.printStackTrace();
-		stop();
+		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,this));
 	}
-		
-	}
+
 	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
+		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
+		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
 	}
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
+		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
 	}
-	/*
+	
 	public void setChannel(Channel ch) 
 	{
 		logger.debug("Set Channel is triggered");
 		this.ch=ch;
-	}*/	
-
+	}
 	public void stop()
 	{
     	bossGroup.shutdownGracefully();
@@ -93,6 +91,5 @@ public class PassiveServer
 	{
 		//PassiveServer m=new PassiveServer("localhost",1234,MyFtpServer.SENDFILE,"D:\\SITO3\\Documents\\Xmas-20141224-310.jpg");
 		//PassiveServer m=new PassiveServer("localhost",1234,MyFtpServer.RECEIVEFILE,"D:\\SITO3\\Desktop\\Xmas-20141224-310.jpg");
-	}*/
-	
+	}*/	
 }

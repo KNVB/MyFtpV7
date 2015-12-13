@@ -1,7 +1,9 @@
 package com.myftpserver.listener;
 
+import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.util.Utility;
 
 import org.apache.log4j.Logger;
 
@@ -12,6 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class FileTransferCompleteListener implements ChannelFutureListener 
 {
 	Logger logger;
+	Configuration config;
 	FtpSessionHandler fs;
 	PassiveServer txServer=null;
 	ChannelHandlerContext responseCtx;
@@ -19,6 +22,7 @@ public class FileTransferCompleteListener implements ChannelFutureListener
 	public FileTransferCompleteListener(FtpSessionHandler fs,PassiveServer txServer, ChannelHandlerContext responseCtx)
 	{
 		this.fs=fs;
+		this.config=fs.getConfig();
 		this.txServer=txServer;
 		this.responseCtx=responseCtx;
 		this.logger=fs.getConfig().getLogger();
@@ -31,5 +35,6 @@ public class FileTransferCompleteListener implements ChannelFutureListener
 		else
 			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,responseCtx,txServer));
 		logger.debug("File Transfer completed.");
+		Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), config.getFtpMessage("226_Transfer_Ok"));
 	}
 }
