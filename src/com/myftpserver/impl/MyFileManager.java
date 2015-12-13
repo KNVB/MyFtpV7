@@ -81,7 +81,6 @@ public class MyFileManager extends FileManager
 	@Override
 	public long getPathSize(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
 	{
-		// TODO Auto-generated method stub
 		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		long pathSize=new File(serverPath).length();
 		return pathSize;

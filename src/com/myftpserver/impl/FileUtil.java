@@ -23,7 +23,6 @@ public class FileUtil
 {
 	public static String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL, Path inPath) 
 	{
-		// TODO Auto-generated method stub
 		String tempResult=null,rootPath,restPath,pathPerm=new String(),path,paths[];
 		rootPath=inPath.getRoot().toString();
 		tempResult=serverPathACL.get(rootPath);
