@@ -2,9 +2,8 @@ package com.myftpserver.impl;
 
 import com.myftpserver.*;
 import com.myftpserver.exception.*;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
+import com.myftpserver.handler.FtpSessionHandler;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-
 
 public class DbOp 
 {
