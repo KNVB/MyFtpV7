@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import java.nio.file.InvalidPathException;
+
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.interfaces.FileManager;
@@ -61,10 +63,13 @@ public class NLST implements FtpCommandInterface {
 				activeClient.sendFileNameList(resultList);
 			}
 		}
-		catch (AccessDeniedException|PathNotFoundException err)
+		catch (PathNotFoundException |InvalidPathException err)
 		{
-			logger.debug(err.getMessage());
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		}
+		catch (AccessDeniedException e)
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		} 
 		catch (InterruptedException err) 
 		{

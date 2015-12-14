@@ -2,6 +2,7 @@ package com.myftpserver.command;
 
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 
 import com.util.Utility;
 import com.myftpserver.ActiveClient;
@@ -49,10 +50,18 @@ public class RETR implements FtpCommandInterface {
 			}
 			
 		} 
-		catch (InterruptedException|AccessDeniedException |PathNotFoundException |IOException err) 
+		catch (InterruptedException|IOException err) 
 		{
-			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
+		catch (PathNotFoundException|InvalidPathException err) 
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		}
+		catch (AccessDeniedException e) 
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+		}
+		
 	}	
 }

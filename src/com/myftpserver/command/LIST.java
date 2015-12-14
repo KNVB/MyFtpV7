@@ -1,4 +1,6 @@
 package com.myftpserver.command;
+import java.nio.file.InvalidPathException;
+
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -72,7 +74,15 @@ public class LIST implements FtpCommandInterface
 				activeClient.sendFileNameList(resultList);
 			}
 		}
-		catch (InterruptedException|AccessDeniedException|PathNotFoundException err)
+		catch (PathNotFoundException |InvalidPathException err)
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		}
+		catch (AccessDeniedException e)
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+		} 
+		catch (InterruptedException err)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		} 

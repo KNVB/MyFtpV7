@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import java.nio.file.InvalidPathException;
+
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -56,11 +58,18 @@ public class STOR implements FtpCommandInterface
 				activeClient.receiveFile(serverPath);
 			}
 		} 
-		catch (InterruptedException|AccessDeniedException |PathNotFoundException |QuotaExceedException err) 
+		catch (InterruptedException|QuotaExceedException err) 
 		{
-			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
-
+		
+		catch (PathNotFoundException|InvalidPathException err) 
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		}
+		catch (AccessDeniedException e) 
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+		}
 	}
 }
