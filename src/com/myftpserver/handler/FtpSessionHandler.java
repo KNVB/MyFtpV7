@@ -10,7 +10,26 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 
+ * @author SITO3
+ *
+ */
 @Sharable
 public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 {
@@ -26,8 +45,13 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String clientIp=new String(),commandString=new String();
-	private String userName=new String(),txMode="I",currentPath=new String();
-	
+	private String userName=new String(),txType="I",currentPath=new String();
+	/**
+	 * FTP Session Handler
+	 * @param ch a channel for user interaction
+	 * @param s MyFtpServer object
+	 * @param remoteIp remote IP address
+	 */
 	public FtpSessionHandler(Channel ch,MyFtpServer s, String remoteIp)
 	{
 		super();
@@ -39,14 +63,26 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.ftpCommandHandler=new FtpCommandExecutor(this);
 		this.ch=ch;
 	}
+	/**
+	 * Get user interaction channel
+	 * @return io.netty.channel.Channel object
+	 */
 	public Channel getChannel() 
 	{
 		return ch;
 	}
+	/**
+	 * Close the FTP session
+	 */
 	public void close()
 	{
 		ch.close();
 	}
+	/**
+	 * User input command event handler
+	 * @param ctx the channel that user input command
+	 * @param msg the command that user inputted
+	 */
 	public void channelRead0(ChannelHandlerContext ctx, String msg) 
 	{
 		commandString=msg.trim();
@@ -58,6 +94,11 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 			ftpCommandHandler.doCommand(ctx,command.trim(), logger);
 		}
 	}
+	/**
+	 * It is used to handle time out issue
+	 * @param ctx the channel that user input command
+	 * @param evt the event object
+	 */
 	@Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception 
 	{
@@ -74,76 +115,149 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
             }
         }
     }
+	/**
+	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
+	 * @param ctx the channel that user input command
+	 * @param cause the exception cause  
+	 */
 	public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) 
     {
         s.getLogger().debug(FtpSessionHandler.class.getName()+" exception occur:");
         s.getLogger().debug(cause.getMessage());
         //cause.printStackTrace();
     }
+	/**
+	 * Get client IP address
+	 * @return client IP address
+	 */
     public String getClientIp()
     {
     	return clientIp;
     }
+    /**
+     * Get Configuration object
+     * @return Configuration object
+     */
     public Configuration getConfig()
     {
     	return s.getConfig();
     }
+    /**
+     * Check login status
+     * @return true if a user already login.
+     */
 	public boolean isLogined() 
 	{
 		return isLogined;
 	}
-	public void setUserName(String param) 
+	/**
+	 * Set User login name
+	 * @param userName User login name
+	 */
+	public void setUserName(String userName) 
 	{
-		this.userName=param;
+		this.userName=userName;
 	}
+	/**
+	 * Set Login status
+	 * @param l Login status
+	 */
 	public void setIsLogined(boolean l)
 	{
 		isLogined=l;
 	}
+	/**
+	 * Get User login name
+	 * @return User login name
+	 */
 	public String getUserName()
 	{
 		return this.userName;
 	}
-	public void setCurrentPath(String p)
+	/**
+	 * Set user current path
+	 * @param cp current path
+	 */
+	public void setCurrentPath(String cp)
 	{
-		currentPath=p;
+		currentPath=cp;
 	}
+	/**
+	 * Get user current path
+	 * @return the user current path
+	 */
 	public String getCurrentPath()
 	{
 		return currentPath;
 	}
-	public String getTransferMode()
+	/**
+	 * Get Transfer type (e.g ASCII,bin)
+	 * @return transfer type (i.e. A,I) 
+	 */
+	public String getTransferType()
 	{
-		return txMode;
+		return txType;
 	}
-	public void setTransferMode(String mode) 
+	/**
+	 * Set Transfer type (e.g ASCII,bin)
+	 * @param type transfer type (i.e. A,I)
+	 */
+	public void setTransferType(String type) 
 	{
-		txMode=mode;
+		txType=type;
 	}
+	/**
+	 * Get passive server for passive mode operation 
+	 * @return PassiveServer object
+	 */
 	public PassiveServer getPassiveServer() 
 	{
 		return this.passiveServer;
 	}
+	/**
+	 * Set passive server for passive mode operation 
+	 * @param passiveServer PassiveServer object
+	 */
 	public void setPassiveServer(PassiveServer passiveServer) 
 	{
 		this.passiveServer=passiveServer;
 	}
+	/**
+	 * Set User object
+	 * @param user User object
+	 */
 	public void setUser(User user) 
 	{
 		this.user=user;
 	}
+	/**
+	 * Get User object
+	 * @return User object
+	 */
 	public User getUser() 
 	{
 		return this.user;
 	}
+	/**
+	 * Set client data port no. (valid in active mode operation) 
+	 * @param portNo client data port no.
+	 */
 	public void setClientDataPortNo(int portNo) 
 	{
 		clientDataPortNo=portNo;
 	}
+	/**
+	 * Get client data port no. (valid in active mode operation) 
+	 * @return client data port no.
+	 */
 	public int getClientDataPortNo()
 	{
 		return clientDataPortNo;
 	}
+	/**
+	 * Get server object
+	 * @return MyFtpServer object
+	 */
 	public MyFtpServer getServer() 
 	{
 		return s;

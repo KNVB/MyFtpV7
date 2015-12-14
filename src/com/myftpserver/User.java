@@ -103,7 +103,7 @@ public class User
 	}
 	/**
 	 * Set Login password
-	 * @param name login password
+	 * @param password login password
 	 */	
 	public void setPassword(String password) 
 	{

@@ -40,7 +40,7 @@ public class UserGroup
 	}
 	/**
 	 * Set User Group's Quota
-	 * @param quota User Group's Quota
+	 * @param q quota User Group's Quota
 	 */
 	public void setQuota(long q)
 	{
@@ -56,7 +56,7 @@ public class UserGroup
 
 	/**
 	 * Set User Group's home folder
-	 * @param homeDir User's home folder 
+	 * @param path User's home folder 
 	 */
 	public void setHomeDir(String path)
 	{

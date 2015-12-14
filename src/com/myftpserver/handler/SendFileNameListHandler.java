@@ -13,23 +13,46 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
-
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 
+ * @author SITO3
+ *
+ */
 @Sharable
 public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelHandler
 {
-	//private Logger logger;
 	private FtpSessionHandler fs;
 	private StringBuffer fileNameList;
 	private PassiveServer passiveServer=null;
 	private ChannelHandlerContext responseCtx;
-
-	public SendFileNameListHandler(StringBuffer fileNameList2,ChannelHandlerContext ctx, FtpSessionHandler fs,PassiveServer txServer) 
+	/**
+	 * Send file name list handler
+	 * @param fileNameList  A StringBuffer object that contains file listing
+	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client
+	 * @param fs  FtpSessionHandler object
+	 * @param passiveServer PassiveServer object
+	 */
+	public SendFileNameListHandler(StringBuffer fileNameList,ChannelHandlerContext responseCtx, FtpSessionHandler fs,PassiveServer passiveServer) 
 	{
 		this.fs=fs;
-		this.responseCtx=ctx;
-		this.passiveServer=txServer;
-		this.fileNameList=fileNameList2;
-		//this.logger=fs.getConfig().getLogger();
+		this.responseCtx=responseCtx;
+		this.passiveServer=passiveServer;
+		this.fileNameList=fileNameList;
 	}
 
 	@Override
