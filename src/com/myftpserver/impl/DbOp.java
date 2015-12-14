@@ -12,7 +12,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 
+ * @author SITO3
+ *
+ */
 public class DbOp 
 {
 	private String jdbcDriver = new String();
@@ -20,7 +39,11 @@ public class DbOp
 	private Connection dbConn = null;
 	private Logger logger = null;
 	private Configuration config = null;
-
+	/**
+	 * Database object,initialize db connection
+	 * @param c Configuration object
+	 * @throws Exception
+	 */
 	public DbOp(Configuration c) throws Exception 
 	{
 		jdbcDriver = "org.sqlite.JDBC";
@@ -30,6 +53,13 @@ public class DbOp
 		Class.forName(jdbcDriver);
 		dbConn = DriverManager.getConnection(jdbcURL);
 	}
+	/**
+	 * Perform user login
+	 * @param fs FtpSessionHandler
+	 * @param password login password
+	 * @return User object
+	 * @throws LoginFailureException
+	 */
 	public User login(FtpSessionHandler fs, String password) throws LoginFailureException
 	{
 		User u=null;
@@ -72,6 +102,10 @@ public class DbOp
 		}
 		return u;
 	}
+	/**
+	 * Load Access control list to user object
+	 * @param user
+	 */
 	public void loadACL(User user)
 	{
 		String sql;
@@ -112,12 +146,21 @@ public class DbOp
 		{
 			releaseResource(rs, stmt);
 		}
-	}	
+	}
+	/**
+	 * Close db connection
+	 * @throws Exception
+	 */
 	public void close() throws Exception 
 	{
 		dbConn.close();
 		dbConn = null;
 	}
+	/**
+	 * Release resource for 
+	 * @param r ResultSet object
+	 * @param s PreparedStatement object
+	 */
 	private void releaseResource(ResultSet r, PreparedStatement s) 
 	{
 		if (r != null) 

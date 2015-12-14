@@ -18,9 +18,35 @@ import com.myftpserver.User;
 import com.myftpserver.exception.*;
 import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
-
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 
+ * @author SITO3
+ *
+ */
 public class FileUtil 
 {
+	/**
+	 * Get server path and it's permission
+	 * @param logger message logger
+	 * @param serverPathACL server path access control list
+	 * @param inPath virtual path
+	 * @return server path and it's permission
+	 */
 	public static String getServerPathPerm(Logger logger,TreeMap<String, String> serverPathACL, Path inPath) 
 	{
 		String tempResult=null,rootPath,restPath,pathPerm=new String(),path,paths[];
@@ -70,7 +96,13 @@ public class FileUtil
 		logger.debug("inPath="+inPath.toString()+",pathPerm="+pathPerm);
 		return pathPerm;
 	}		
-
+	/**
+	 * Get server path and it's permission from specified virtual path
+	 * @param fs FtpSessionHandler
+	 * @param inPath virtual path
+	 * @return server path and it's permission
+	 * @throws PathNotFoundException
+	 */
 	public static String getServerPathAndPermFromVirDir(FtpSessionHandler fs,String inPath) throws PathNotFoundException 
 	{
 		Logger logger;
@@ -131,6 +163,12 @@ public class FileUtil
 		logger.debug("clientPath="+clientPath+",inPath="+inPath+",serverPath="+serverPath+",pathPerm="+pathPerm);
 		return result;
 	}
+	/**
+	 * Format the file/diretory information as specified in RFC
+	 * @param path server path
+	 * @return formatted output
+	 * @throws IOException
+	 */
 	public static final String formatPathName(Path path) throws IOException
 	{
 		int thisYear,node=1;
@@ -150,6 +188,13 @@ public class FileUtil
         	dateString=(new SimpleDateFormat("MMM dd yyyy",fileLocale).format(fileDate.getTime()));
         return String.format("%s%5d %-9s%-9s%10d %-12s ",permission,node,user,group,Files.size(path),dateString);
 	}
+	/**
+	 * Normalize virtual path
+	 * @param logger message logger
+	 * @param currentPath current virtual path
+	 * @param inPath incoming virtual path
+	 * @return normalized virtual path
+	 */
 	public static final String normalizeClientPath(Logger logger,String currentPath,String inPath)
     {        
 		Stack<String> pathStack=new Stack<String>();
