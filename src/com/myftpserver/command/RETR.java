@@ -30,7 +30,6 @@ public class RETR implements FtpCommandInterface {
 		Configuration config=fs.getConfig();
 		FileManager fm=fs.getConfig().getFileManager();
 		logger.debug("param="+param+"|");
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 		try 
 		{
 			String serverPath=fm.getFile(fs,param);
@@ -39,10 +38,12 @@ public class RETR implements FtpCommandInterface {
 				logger.debug("Passive mode");
 				PassiveServer ps=fs.getPassiveServer();
 				ps.sendFile(serverPath,ctx);
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 			}
 			else
 			{
 				logger.debug("Active mode");
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.sendFile(serverPath);
 			}
