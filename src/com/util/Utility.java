@@ -17,7 +17,6 @@ public class Utility
 {
 	public static void sendMessageToClient(Channel ch, Logger logger,String remoteIp,String ftpMessage) 
 	{
-		// TODO Auto-generated method stub
 		ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new CommandCompleteListener(logger,remoteIp,ftpMessage));
 	}
 	public static void sendFileNameList(Channel ch,ChannelHandlerContext responseCtx,StringBuffer fileNameList,FtpSessionHandler fs,PassiveServer passiveServer)

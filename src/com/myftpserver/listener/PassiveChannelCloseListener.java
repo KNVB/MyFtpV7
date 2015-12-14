@@ -3,7 +3,6 @@ package com.myftpserver.listener;
 import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.util.Utility;
 
 import org.apache.log4j.Logger;
 
