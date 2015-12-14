@@ -19,13 +19,21 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 /**
  * 
  * @author SITO3
- * Ftp Server Object
+ * 
  */
 public class MyFtpServer 
 {
-	
+	/**
+	 * Specify the transfer is send a file to client
+	 */
 	public static final int SENDFILE=0;
+	/**
+	 * Specify the transfer is receive a file to client
+	 */	
 	public static final int RECEIVEFILE=1;
+	/**
+	 * Specify the transfer is send a file listing to client
+	 */
 	public static final int SENDDIRLIST=2;
 	
 	private static int connectionCount=0;
@@ -35,7 +43,10 @@ public class MyFtpServer
 	private Configuration config=null;
 	private Stack<Integer> passivePorts;
 //-------------------------------------------------------------------------------------------
-    public MyFtpServer()
+    /**
+     * FTP Server object
+     */
+	public MyFtpServer()
 	{
     	if (initLogger())
 		{
@@ -43,7 +54,7 @@ public class MyFtpServer
 			if (config.load(this))
 			{
 				logger.info("Server Initialization completed.");
-				if ((config.supportPassiveMode) && (config.havePassivePortSpecified))
+				if ((config.isSupportPassiveMode()) && (config.isPassivePortSpecified()))
 				{
 					passivePorts=config.passivePorts;
 					//logger.debug(passivePorts==null);
@@ -76,16 +87,28 @@ public class MyFtpServer
 		return result;
 	}
 //-------------------------------------------------------------------------------------------	
-	public Logger getLogger() 
+    /**
+	 * Get message logger
+	 * @return message logger 
+	 */
+    public Logger getLogger() 
 	{
 		return logger;
 	}
 //-------------------------------------------------------------------------------------------
+	/**
+	 * Get Configuration object
+	 * @return Configuration object
+	 */
 	public Configuration getConfig()
 	{
 		return config;
 	}
 //-------------------------------------------------------------------------------------------
+	/**
+	 * Check whether the concurrent connection is over the limit
+	 * @return true when the concurrent connection is over the limit
+	 */
 	public synchronized boolean isOverConnectionLimit()
 	{
 		if (connectionCount<config.getMaxConnection())
@@ -97,6 +120,9 @@ public class MyFtpServer
 			return true;
 	}
 //-------------------------------------------------------------------------------------------	
+	/**
+	 * Called by FtpSessionHandler object when a FTP session is ended.
+	 */
 	public synchronized void sessionClose()
 	{
 		logger.debug("Before:"+connectionCount);
@@ -104,12 +130,17 @@ public class MyFtpServer
 		logger.debug("After:"+connectionCount);
 	}
 //-------------------------------------------------------------------------------------------	
+	/**
+	 * Get next available passive port for data transfer
+	 * @return port no.<br>
+	 *         -1 when no. passive port is available.
+	 */
 	public synchronized int getNextPassivePort()
 	{
 		int nextPassivePort=-1;
-		if (config.supportPassiveMode)
+		if (config.isSupportPassiveMode())
 		{
-			if (config.havePassivePortSpecified)
+			if (config.isPassivePortSpecified())
 			{
 				if (passivePorts.size()>0)
 					nextPassivePort=passivePorts.pop();
@@ -117,7 +148,11 @@ public class MyFtpServer
 		}
 		return nextPassivePort;
 	}
-	//-------------------------------------------------------------------------------------------	
+//-------------------------------------------------------------------------------------------	
+	/**
+	 * Return port no. to passive port pool
+	 * @param port the return passive port 
+	 */
 	public void returnPassivePort(int port) 
 	{
 		if (!passivePorts.contains(port))

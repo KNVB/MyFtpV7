@@ -18,7 +18,6 @@ import java.util.*;
 
 import net.sf.j18n.J18n;
 /**
- * @author Roy Tsang
  * origin from http://www.coderanch.com/t/525337/java/java/read-Franch-ResourceBundle
  */
 public class FtpMessage 
@@ -39,33 +38,32 @@ public class FtpMessage
 		}
 	}
 	/**
-	 * Get message text
-	 * @param key
-	 * @param value the corresponding message text
-	 * @return
+	 * Get message text from a key
+	 * @param key the message key
+	 * @return value the corresponding message text
 	 */
 	public String getMessage(String key)
 	{
 		return ftpMessage.getString(key);
 	}	
 	/**
-	 * Get message text
-	 * @param key
-	 * @param value the corresponding message text
-	 * @param array of keyword
-	 * @return
+	 * Get message text from key and replace the nth parameter with replacement
+	 * @param key the message key
+	 * @param n the n parameter will be replaced
+	 * @param keyword the replacement
+	 * @return the final result
 	 */
-	public String getMessage(String key,int count,String keyword)
+	public String getMessage(String key,int n,String keyword)
 	{
 		String result=ftpMessage.getString(key);
 		
 		try
 		{
-			result=result.replace("%"+count, keyword);
+			result=result.replace("%"+n, keyword);
 		}
 		catch (Exception err)
 		{
-			System.out.println("getMessage error occur=%"+count+",result="+result+",keyword="+keyword);
+			System.out.println("getMessage error occur=%"+n+",result="+result+",keyword="+keyword);
 		}
 		return result;
 	}	

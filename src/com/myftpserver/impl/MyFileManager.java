@@ -64,6 +64,7 @@ public class MyFileManager extends FileManager
 				finalPerm=virtualPathPerm;
 			if (serverPathPerm!=null)
 				finalPerm+=serverPathPerm;
+			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm+",finalPerm="+finalPerm);
 			if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
 			{
 				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
@@ -154,12 +155,10 @@ public class MyFileManager extends FileManager
 			}
 			resultList=new ArrayList<String>(result.keySet());
 			Collections.sort(resultList);
-			//logger.debug("result="+result.size());
 			for (String temp :resultList)
 			{
 				fileNameList.append(result.get(temp)+temp+"\r\n");
 			}
-			//logger.debug("fileNameList="+fileNameList);
 		}
 		catch (NoSuchFileException ex)
 		{
@@ -235,12 +234,10 @@ public class MyFileManager extends FileManager
 			}
 			resultList=new ArrayList<String>(result);
 			Collections.sort(resultList);
-			//logger.debug("result="+result.size());
 			for (String temp :result)
 			{
 				fileNameList.append(temp+"\r\n");
 			}
-			//logger.debug("fileNameList="+fileNameList);
 		}
 		catch (NoSuchFileException ex)
 		{

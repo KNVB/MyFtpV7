@@ -10,7 +10,27 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.PropertyResourceBundle;
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+/**
+ * 
+ * @author SITO3
+ *
+ */
 public class Configuration 
 {
 	
@@ -27,20 +47,28 @@ public class Configuration
 	private String configFile = "conf/server-config";
 	Stack<Integer> passivePorts=new Stack<Integer>();
 	private int serverPort,maxConnection=0,commandChannelConnectionTimeOut=30000;
-	public boolean supportPassiveMode=false,havePassivePortSpecified=false;
-		
-	public Configuration(org.apache.log4j.Logger l)
+	private boolean supportPassiveMode=false,havePassivePortSpecified=false;
+	/**
+	 * This object contains all server configuration setting  
+	 * @param logger Logger for message logging
+	 */
+	public Configuration(org.apache.log4j.Logger logger)
 	{
-		logger=l;
+		this.logger=logger;
 	}
-	public boolean load(MyFtpServer fs)
+	/**
+	 * Load configuration to memory
+	 * @param myFtpServer MyFtpServer object
+	 * @return load configuration success or not
+	 */
+	public boolean load(MyFtpServer myFtpServer)
 	{
 		boolean result=false;
 		int i,startPort,endPort;
 		String start,end;
 		try 
 		{
-			ftpServer=fs;
+			ftpServer=myFtpServer;
 			fis=new FileInputStream(configFile);
 			PropertyResourceBundle bundle = new PropertyResourceBundle(fis);
 			logger.info("Configuration file is loaded");
@@ -109,42 +137,91 @@ public class Configuration
 		}
 		return result;
 	}
+	/**
+	 * Does the server support passive mode transfer or not? 
+	 * @return return true when the server is support passive mode transfer
+	 */
 	public boolean isSupportPassiveMode() 
 	{
 		return supportPassiveMode;
 	}
+	/**
+	 * Is there any passive port specified?
+	 * @return return true when passive port is specified.
+	 */
+	public boolean isPassivePortSpecified()
+	{
+		return havePassivePortSpecified;
+	}
+	/**
+	 * Get message logger
+	 * @return message logger 
+	 */
 	public org.apache.log4j.Logger getLogger()
 	{
 		return logger;
 	}
+	/**
+	 * Get FTP server port 
+	 * @return the port no. that server is listening
+	 */
 	public int getServerPort() 
 	{
 		return serverPort;
 	}
+	/**
+	 * Get FTP server encoding 
+	 * @return FTP server encoding
+	 */	
 	public String getEncoding()
 	{
 		return encoding;
 	}
+	/**
+	 * Get FTP server maximum current connection 
+	 * @return FTP server maximum current connection
+	 */	
 	public int getMaxConnection() 
 	{
 		return maxConnection;
 	}
+	/**
+	 * Get FTP server connection time out
+	 * @return FTP server connection time out
+	 */		
 	public int getCommandChannelConnectionTimeOut() 
 	{
 		return this.commandChannelConnectionTimeOut;
 	}	
+	/**
+	 * Get message text from a key
+	 * @param key the message key
+	 * @return value the corresponding message text
+	 */
 	public String getFtpMessage(String key)
 	{
 		return ftpMessage.getMessage(key);
 	}
+	/**
+	 * Get User Manager object
+	 * @return UserManager object
+	 */
 	public UserManager getUserManager() 
 	{
 		return userManager;
-	}	
+	}
+	/**
+	 * Get File Manager object
+	 * @return FileManager object
+	 */
 	public FileManager getFileManager()
 	{
 		return fileManager;
 	}
+	/**
+	 * Get FTP Server object
+	 * @return MyFtpServer object
+	 */	
 	public MyFtpServer getFtpServer() 
 	{
 		return ftpServer;
