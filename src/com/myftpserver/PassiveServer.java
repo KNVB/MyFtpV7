@@ -18,11 +18,25 @@ import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
-
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /**
  * 
  * @author SITO3
- * This is passive mode server
+ * 
  *
  */
 public class PassiveServer 
@@ -34,7 +48,12 @@ public class PassiveServer
 	private MyFtpServer myFtpServer;  
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
-	
+	/**
+	 * This is passive mode server
+	 * @param fs FTP Session Handler
+	 * @param host Server IP address
+	 * @param port Passive port no.
+	 */
 	public PassiveServer(FtpSessionHandler fs,String host, int port)
 	{
 		this.fs=fs;
@@ -60,26 +79,46 @@ public class PassiveServer
 			stop();
 		}
 	}
+	/**
+	 * Send a file name list to client
+	 * @param fileNameList A StringBuffer object that contains file listing
+	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client 
+	 */
 	public void sendFileNameList(StringBuffer fileNameList,ChannelHandlerContext responseCtx) 
 	{
 		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,this));
 	}
-
+	/**
+	 * Send a file to client
+	 * @param serverPath A file to be sent to client 
+	 * @param responseCtx A ChannelHandlerContext for sending file transfer result to client
+	 */
 	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
 	}
+	/**
+	 * Receive a file from client
+	 * @param serverPath the location of the file to be resided.
+	 * @param responseCtx A ChannelHandlerContext for sending file receive result to client
+	 */
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
 		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
 	}
-	
+	/**
+	 * Set a channel for passive mode
+	 * @param ch a channel for passive mode
+	 */
 	public void setChannel(Channel ch) 
 	{
 		logger.debug("Set Channel is triggered");
 		this.ch=ch;
 	}
+	/**
+	 * Stop the passive server and return passive port to passive port pool 
+	 */
 	public void stop()
 	{
     	bossGroup.shutdownGracefully();
