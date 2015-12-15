@@ -2,8 +2,9 @@ package com.myftpserver.command;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.nio.file.InvalidPathException;
+
 
 import org.apache.log4j.Logger;
 
