@@ -11,6 +11,7 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
+import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.exception.PathNotFoundException;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -68,7 +69,11 @@ public class RETR implements FtpCommandInterface {
 				activeClient.sendFile(serverPath);
 			}
 			
-		} 
+		}
+		catch (NotAFileException err)
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+		}
 		catch (InterruptedException|IOException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());

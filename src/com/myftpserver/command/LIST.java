@@ -7,6 +7,7 @@ import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
+import com.myftpserver.exception.NotADirectoryException;
 import com.myftpserver.exception.PathNotFoundException;
 
 import org.apache.log4j.Logger;
@@ -92,6 +93,10 @@ public class LIST implements FtpCommandInterface
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.sendFileNameList(resultList);
 			}
+		}
+		catch (NotADirectoryException err)
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException |InvalidPathException err)
 		{

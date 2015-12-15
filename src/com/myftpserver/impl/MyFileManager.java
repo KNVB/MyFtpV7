@@ -7,20 +7,17 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import java.io.File;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-
 import java.util.Set;
-
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Collections;
-
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
 /*
@@ -112,7 +109,7 @@ public class MyFileManager extends FileManager
 		fs.setCurrentPath(FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath));
 	}
 	@Override
-	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)	throws AccessDeniedException,NotADirectoryException,PathNotFoundException,InterruptedException 
 	{
 		int index;
 		User user=fs.getUser();
@@ -179,6 +176,12 @@ public class MyFileManager extends FileManager
 				fileNameList.append(result.get(temp)+temp+"\r\n");
 			}
 		}
+		catch (NotDirectoryException err)
+		{
+			String message=config.getFtpMessage("550_Not_A_Directory");
+			message=message.replaceAll("%1", inPath);
+			throw new NotADirectoryException(message);
+		}
 		catch (NoSuchFileException ex)
 		{
 			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
@@ -190,7 +193,7 @@ public class MyFileManager extends FileManager
 		return fileNameList;
 	}
 	@Override
-	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotADirectoryException, PathNotFoundException,InterruptedException 
 	{
 		int index;
 		User user=fs.getUser();
@@ -258,6 +261,12 @@ public class MyFileManager extends FileManager
 				fileNameList.append(temp+"\r\n");
 			}
 		}
+		catch (NotDirectoryException err)
+		{
+			String message=config.getFtpMessage("550_Not_A_Directory");
+			message=message.replaceAll("%1", inPath);
+			throw new NotADirectoryException(message);
+		}
 		catch (NoSuchFileException ex)
 		{
 			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
@@ -269,9 +278,15 @@ public class MyFileManager extends FileManager
 		return fileNameList;
 	}
 	@Override
-	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException 
+	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException 
 	{
+		String message=config.getFtpMessage("550_Not_A_File");
 		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			message=message.replaceAll("%1", inPath);
+			throw new NotAFileException(message);
+		}
 		return serverPath;
 	}
 	@Override

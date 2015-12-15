@@ -136,7 +136,7 @@ public abstract class FileManager
 	 * @throws PathNotFoundException
 	 * @throws InterruptedException
 	 */
-	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotADirectoryException,PathNotFoundException, InterruptedException;
 	/**
 	 * Generate a directory listing for a virtual path (contains file name only)
 	 * @param fs FtpSessionHandler
@@ -146,7 +146,7 @@ public abstract class FileManager
 	 * @throws PathNotFoundException
 	 * @throws InterruptedException
 	 */
-	public abstract StringBuffer getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException, InterruptedException;
+	public abstract StringBuffer getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, NotADirectoryException, PathNotFoundException, InterruptedException;
 	/**
 	 * Get server path for specified virtual path for sending file to client 
 	 * @param fs FtpSessionHandler
@@ -156,7 +156,7 @@ public abstract class FileManager
 	 * @throws PathNotFoundException
 	 * @throws InterruptedException
 	 */
-	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, PathNotFoundException,InterruptedException;
+	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException;
 	/**
 	 * Generate a server path for file upload 
 	 * @param fs FtpSessionHandler
