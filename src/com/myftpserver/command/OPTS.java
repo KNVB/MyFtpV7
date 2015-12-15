@@ -36,7 +36,6 @@ public class OPTS implements FtpCommandInterface
 	}
 	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx,String param,Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("200_Opt_Response"));
  	}
 

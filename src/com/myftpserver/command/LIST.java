@@ -46,7 +46,6 @@ public class LIST implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		logger.debug("param="+param);
 		//logger.debug("Server currentPath:"+fs.getServerCurrentPath());
 		String p[]=param.split(" ");

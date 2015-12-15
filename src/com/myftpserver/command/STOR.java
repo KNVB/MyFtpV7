@@ -49,7 +49,6 @@ public class STOR implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		String serverPath=new String(),fileName;
 		Configuration config=fs.getConfig();
 		FileManager fm=fs.getConfig().getFileManager();

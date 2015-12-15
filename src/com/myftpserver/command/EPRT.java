@@ -39,7 +39,6 @@ public class EPRT implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		String temp[]=param.trim().split("\\|");
 		//fs.setClientDataPort(Integer.parseInt(temp[temp.length-1]));
 		if (temp.length!=4)

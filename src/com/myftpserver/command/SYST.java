@@ -17,7 +17,6 @@ public class SYST implements com.myftpserver.interfaces.FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param,Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getConfig().getFtpMessage("215_System_Type")+" "+ Utility.getSystemType(logger));
 	}
 }

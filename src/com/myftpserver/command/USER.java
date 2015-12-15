@@ -32,7 +32,6 @@ public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		Configuration config=fs.getConfig();
 		String message=new String();
 		if (param ==null)

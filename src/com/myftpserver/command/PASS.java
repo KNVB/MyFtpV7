@@ -44,7 +44,6 @@ public class PASS implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,	Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		Configuration config=fs.getConfig();
 		String message=new String();
 		if ((param==null) || (param.isEmpty()))

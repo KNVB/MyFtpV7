@@ -40,12 +40,9 @@ public class QUIT implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
 		String goodByeMsg=fs.getConfig().getFtpMessage("221_Logout_Ok");
 		String remoteIp=fs.getClientIp();
 		Utility.disconnectFromClient(fs, logger, remoteIp, goodByeMsg);
-		//ctx.channel().writeAndFlush(Unpooled.copiedBuffer(goodByeMsg,CharsetUtil.UTF_8)).addListener(new SessionClosureListener(fs,logger,remoteIp,goodByeMsg));
-		
 	}
 }

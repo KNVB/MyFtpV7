@@ -39,7 +39,6 @@ public class PORT implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger) 
 	{
-		// TODO Auto-generated method stub
 		param=param.trim();
 		String[] p=param.split(",");
 		if (p.length!=6)
