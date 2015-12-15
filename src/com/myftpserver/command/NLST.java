@@ -83,9 +83,10 @@ public class NLST implements FtpCommandInterface {
 				activeClient.sendFileNameList(resultList);
 			}
 		}
-		catch (NotADirectoryException err)
+		catch (InterruptedException |NotADirectoryException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+			err.printStackTrace();
 		}
 		catch (PathNotFoundException |InvalidPathException err)
 		{
@@ -95,11 +96,6 @@ public class NLST implements FtpCommandInterface {
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		} 
-		catch (InterruptedException err) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-			err.printStackTrace();
-		}
 		catch (Exception err)
 		{
 			err.printStackTrace();

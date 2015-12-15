@@ -94,10 +94,10 @@ public class LIST implements FtpCommandInterface
 				activeClient.sendFileNameList(resultList);
 			}
 		}
-		catch (NotADirectoryException err)
+		catch (InterruptedException |NotADirectoryException err)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-		}
+		} 
 		catch (PathNotFoundException |InvalidPathException err)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
@@ -105,10 +105,6 @@ public class LIST implements FtpCommandInterface
 		catch (AccessDeniedException e)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
-		} 
-		catch (InterruptedException err)
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		} 
 	}	
 }

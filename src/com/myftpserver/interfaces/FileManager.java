@@ -96,7 +96,7 @@ public abstract class FileManager
 	/**
 	 * Get file/path size
 	 * @param fs FtpSessionHandler
-	 * @param clientPath virutal path
+	 * @param clientPath virtual path
 	 * @return file/path size
 	 * @throws AccessDeniedException
 	 * @throws PathNotFoundException
@@ -121,7 +121,7 @@ public abstract class FileManager
 	 * Get server path for specified virtual root path 
 	 * @param fs FtpSessionHandler
 	 * @param inPath virtual path 
-	 * @param requiredPermission required permission
+	 * @param requiredPermission Permission require for the next operation
 	 * @return Server path
 	 * @throws AccessDeniedException
 	 * @throws PathNotFoundException

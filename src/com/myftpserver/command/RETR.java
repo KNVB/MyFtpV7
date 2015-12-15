@@ -70,11 +70,7 @@ public class RETR implements FtpCommandInterface {
 			}
 			
 		}
-		catch (NotAFileException err)
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-		}
-		catch (InterruptedException|IOException err) 
+		catch (InterruptedException|IOException |NotAFileException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}

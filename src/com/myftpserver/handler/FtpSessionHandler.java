@@ -1,13 +1,13 @@
 package com.myftpserver.handler;
 
 import com.myftpserver.*;
+
 import org.apache.log4j.Logger;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
-
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 /*
@@ -44,8 +44,8 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
-	private String clientIp=new String(),commandString=new String();
 	private String userName=new String(),txType="I",currentPath=new String();
+	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	/**
 	 * FTP Session Handler
 	 * @param ch a channel for user interaction
@@ -253,6 +253,22 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public int getClientDataPortNo()
 	{
 		return clientDataPortNo;
+	}
+	/**
+	 * Set original file name for rename
+	 * @param reNameFrom
+	 */
+	public void setReNameFrom(String reNameFrom) 
+	{
+		this.reNameFrom=reNameFrom;		
+	}
+	/**
+	 * Get original file name for rename
+	 * @return original file name for rename
+	 */
+	public String getReNameFrom() 
+	{
+		return this.reNameFrom;		
 	}
 	/**
 	 * Get server object
