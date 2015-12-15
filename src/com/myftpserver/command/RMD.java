@@ -1,9 +1,8 @@
 package com.myftpserver.command;
 
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
+
 
 import org.apache.log4j.Logger;
 
@@ -13,10 +12,12 @@ import com.util.Utility;
 import com.myftpserver.Configuration;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.QuotaExceedException;
+import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
+import com.myftpserver.exception.NotADirectoryException;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -37,7 +38,7 @@ import com.myftpserver.exception.PathNotFoundException;
  * @author SITO3
  *
  */
-public class MKD implements FtpCommandInterface
+public class RMD implements FtpCommandInterface
 {
 
 	@Override
@@ -50,6 +51,8 @@ public class MKD implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath, Logger logger) 
 	{
+		boolean result;
+		File serverFolder;
 		String serverPath=new String(),newPathName,message;
 		Configuration config=fs.getConfig();
 		FileManager fm=fs.getConfig().getFileManager();
@@ -61,24 +64,39 @@ public class MKD implements FtpCommandInterface
 				newPathName=fs.getCurrentPath()+"/"+newPathName;
 			serverPath=fm.putFile(fs,newPathName);
 			logger.debug("serverPath="+serverPath+",newPathName="+newPathName);
-			Files.createDirectories(Paths.get(serverPath));
-			message=config.getFtpMessage("257_MKD");
-			message=message.replaceAll("%1", inPath);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
+			serverFolder=new File(serverPath);
+			if (serverFolder.isDirectory())
+			{	
+				result=serverFolder.delete();
+				if (result)
+				{
+					message=config.getFtpMessage("250_RMD");
+					message=message.replaceAll("%1", inPath);
+					Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
+				}
+				else
+					throw new PathNotFoundException("");
+			}
+			else
+			{	
+				message=config.getFtpMessage("550_Not_A_Directory");
+				message=message.replaceAll("%1", inPath);
+				throw new NotADirectoryException(message);
+			}
 		} 
-		catch (InterruptedException|QuotaExceedException err) 
+		catch (InterruptedException|QuotaExceedException|NotADirectoryException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
-		catch (PathNotFoundException|InvalidPathException|IOException err) 
+		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			message=config.getFtpMessage("550_MKD_Failure");
+			message=config.getFtpMessage("550_RMD_Failure");
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied"));
 		} 
 	}
 }

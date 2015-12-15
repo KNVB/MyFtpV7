@@ -46,18 +46,25 @@ public class DELE implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger)
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String inPath, Logger logger)
 	{
 		Configuration config=fs.getConfig();
 		FileManager fm=fs.getConfig().getFileManager();
-		logger.debug("param="+param+"|");
+		logger.debug("param="+inPath+"|");
 		try 
 		{
-			String serverPath=fm.getFile(fs,param);
-			Files.delete(Paths.get(serverPath));
+			String serverPath=fm.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
+			if (Files.isDirectory(Paths.get(serverPath)))
+			{
+				String message=config.getFtpMessage("550_Not_A_File");
+				message=message.replaceAll("%1", inPath);
+				throw new NotAFileException(message);
+			}
+			else	
+				Files.delete(Paths.get(serverPath));
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("250_Delete_Ok"));
 		}
-		catch (InterruptedException|IOException |NotAFileException err) 
+		catch (IOException|NotAFileException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
@@ -67,7 +74,7 @@ public class DELE implements FtpCommandInterface {
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied"));
 		}
 		
 	}	
