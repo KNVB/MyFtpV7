@@ -29,7 +29,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class TYPE implements FtpCommandInterface 
 {
-
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
