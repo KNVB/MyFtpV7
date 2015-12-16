@@ -44,7 +44,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
-	private String userName=new String(),txType="I",currentPath=new String();
+	private String userName=new String(),dataType="A",currentPath=new String();
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	/**
 	 * FTP Session Handler
@@ -191,20 +191,21 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return currentPath;
 	}
 	/**
-	 * Get Transfer type (e.g ASCII,bin)
-	 * @return transfer type (i.e. A,I) 
+	 * Get Data type (e.g ASCII,bin)
+	 * According to RFC959, default data type is 'A' 
+	 * @return data type (i.e. A,I) 
 	 */
-	public String getTransferType()
+	public String getDataType()
 	{
-		return txType;
+		return dataType;
 	}
 	/**
-	 * Set Transfer type (e.g ASCII,bin)
-	 * @param type transfer type (i.e. A,I)
+	 * Set Data type (e.g ASCII,bin)
+	 * @param type data type (i.e. A,I)
 	 */
 	public void setTransferType(String type) 
 	{
-		txType=type;
+		dataType=type;
 	}
 	/**
 	 * Get passive server for passive mode operation 
