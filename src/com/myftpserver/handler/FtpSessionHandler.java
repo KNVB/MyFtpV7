@@ -203,7 +203,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 * Set Data type (e.g ASCII,bin)
 	 * @param type data type (i.e. A,I)
 	 */
-	public void setTransferType(String type) 
+	public void setDataType(String type) 
 	{
 		dataType=type;
 	}

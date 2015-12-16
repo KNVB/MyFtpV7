@@ -45,7 +45,7 @@ public class TYPE implements FtpCommandInterface
 			switch (param)
 			{
 				case "I":
-				case "A":fs.setTransferType(param);
+				case "A":fs.setDataType(param);
 						 Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getConfig().getFtpMessage("200_Transfer_Set"));
 						 break;
 				default:
