@@ -191,8 +191,8 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return currentPath;
 	}
 	/**
-	 * Get Data type (e.g ASCII,bin)
-	 * According to RFC959, default data type is 'A' 
+	 * Get data type (e.g ASCII,bin)
+	 * According to RFC959, default data type is 'A'
 	 * @return data type (i.e. A,I) 
 	 */
 	public String getDataType()
@@ -200,7 +200,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return dataType;
 	}
 	/**
-	 * Set Data type (e.g ASCII,bin)
+	 * Set data type (e.g ASCII,bin)
 	 * @param type data type (i.e. A,I)
 	 */
 	public void setDataType(String type) 
