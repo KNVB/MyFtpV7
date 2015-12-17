@@ -2,11 +2,19 @@ package com.myftpserver.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
+import org.apache.log4j.Logger;
 
 import com.myftpserver.PassiveServer;
 import com.myftpserver.listener.SendFileCompleteListener;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.channel.ChannelHandlerContext;
@@ -57,13 +65,29 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 	public void handlerAdded(ChannelHandlerContext ctx)throws IOException
 	{
 		if (passiveServer!=null)
-			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));	
+		{
+			//ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));
+			try {
+				sendFile(ctx);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	@Override
     public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
 		if (passiveServer==null)
-			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer));
+		{	
+			//ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer));
+			try {
+				sendFile(ctx);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
     }
 	
 	@Override
@@ -76,6 +100,25 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 			throws Exception {
 		// TODO Auto-generated method stub
 	}
-	
-	
+	private void sendFile(ChannelHandlerContext ctx) throws Exception
+	{
+		Logger logger=fs.getConfig().getLogger();
+		logger.debug("Data type="+fs.getDataType()+"|");
+		if (fs.getDataType().equals("A"))
+		{
+			String line;
+			ChannelFuture cf=null;
+			BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(this.fileName),"ISO-8859-1"));
+			
+			while ((line = br.readLine()) != null) 
+			{
+				cf=ctx.writeAndFlush(Unpooled.copiedBuffer(line+"\r\n",CharsetUtil.ISO_8859_1));
+			}
+			br.close();
+			SendFileCompleteListener qq=new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer);
+			qq.operationComplete(cf);
+		}
+		else
+			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer));
+	}
 }
