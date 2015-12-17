@@ -35,16 +35,16 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	FtpSessionHandler fs;
 	String fileName;
 	ChannelHandlerContext responseCtx;
-	PassiveServer txServer=null;
+	PassiveServer passiveServer=null;
 	Logger logger;
 	String remoteIp;
 	Configuration config;
 
-	public SendFileCompleteListener(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer txServer)
+	public SendFileCompleteListener(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer passiveServer)
 	{
 		this.fs=fs;
 		this.fileName=fileName;
-		this.txServer=txServer;
+		this.passiveServer=passiveServer;
 		this.responseCtx=responseCtx;
 		this.remoteIp=fs.getClientIp();
 		this.logger=fs.getConfig().getLogger();
@@ -54,10 +54,10 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok")); 
-		if (txServer==null)
+		if (passiveServer==null)
 			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
 		else
-			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, txServer));
+			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));
 	}
 
 }

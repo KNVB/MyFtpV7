@@ -1,5 +1,4 @@
-package com.myftpserver.handler;
-
+package com.myftpserver.handler; 
 import java.io.File;
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -121,4 +120,5 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 		else
 			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer));
 	}
+
 }
