@@ -11,8 +11,10 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import com.myftpserver.User;
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
@@ -42,6 +44,7 @@ import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 public class PassiveServer 
 {
 	private int port;
+	private User user;
 	private Channel ch;
 	private Logger logger;
 	private FtpSessionHandler fs;
@@ -58,6 +61,7 @@ public class PassiveServer
 	{
 		this.fs=fs;
 		this.port=port;
+		this.user=fs.getUser();
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getConfig().getLogger();
 		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
@@ -95,6 +99,7 @@ public class PassiveServer
 	 */
 	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
+		ch.pipeline().addLast(new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
 	}
@@ -105,6 +110,7 @@ public class PassiveServer
 	 */
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
+		ch.pipeline().addLast(new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
 	}
 	/**

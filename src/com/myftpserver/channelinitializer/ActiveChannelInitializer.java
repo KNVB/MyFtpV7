@@ -1,5 +1,6 @@
 package com.myftpserver.channelinitializer;
 
+import com.myftpserver.User;
 import com.myftpserver.MyFtpServer;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.SendFileHandler;
@@ -11,6 +12,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,6 +36,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 {
 	private int mode;
+	private User user;
 	private String fileName;
 	private FtpSessionHandler fs;
 	private StringBuffer fileNameList;
@@ -49,6 +52,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
 	{
 		this.fs=fs;
+		this.user=fs.getUser();
 		this.mode=mode;
 		this.fileName=fileName;
 		this.responseCtx=responseCtx;
@@ -62,6 +66,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, StringBuffer fileNameList) 
 	{
 		this.fs=fs;
+		this.user=fs.getUser();
 		this.mode=MyFtpServer.SENDDIRLIST;
 		this.responseCtx=responseCtx;
 		this.fileNameList=fileNameList;
@@ -71,10 +76,12 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	{
 		switch (mode)
 		{
-			case MyFtpServer.SENDFILE:ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
+			case MyFtpServer.SENDFILE:ch.pipeline().addLast(new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
+									  ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 									  ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs,responseCtx, txServer));
 									  break;
-			case MyFtpServer.RECEIVEFILE:ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));
+			case MyFtpServer.RECEIVEFILE:ch.pipeline().addLast(new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));  
+										 ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));
 											break;
 			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,txServer));
 											break;

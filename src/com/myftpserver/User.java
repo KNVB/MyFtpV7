@@ -26,6 +26,8 @@ public class User
 {
 	int quota=0; //Quota in Kilo byte
 	boolean active=false;
+	long ulBWLimit=1024,dlBWLimit=512;//Upload and Download speed in Kilo byte per second
+	
 	TreeMap<String, String> serverPathACL = null,clientPathACL=null;
 	String name=new String(),password=new String(),homeDir=new String();
 	/**
@@ -143,7 +145,7 @@ public class User
 	}
 	/**
 	 * Is the user account active 
-	 * @return true if the user account is active
+	 * @return if true the user account is active
 	 */
 	public boolean isActive() 
 	{
@@ -151,10 +153,43 @@ public class User
 	}
 	/**
 	 * Set the user account active 
-	 * @param active active
+	 * @param active whether user account is active
 	 */	
 	public void setActive(boolean active) 
 	{
 		this.active = active;
 	}
+	/**
+	 *Get upload speed limit for the user
+	 *@return the upload speed limit in Kilo Byte/s for the user
+	 */
+	public long getUploadSpeedLitmit()
+	{
+		return this.ulBWLimit;
+	}
+	/**
+	 *Set upload speed limit for the user
+	 *@param limit the upload speed limit in Kilo Byte/s for the user 
+	 */
+	public void setUploadSpeedLitmit(long limit)
+	{
+		this.ulBWLimit=limit;
+	}
+	/**
+	 *Get download speed limit for the user
+	 *@return the download speed limit in Kilo Byte/s for the user
+	 */
+	public long getDownloadSpeedLitmit()
+	{
+		return this.dlBWLimit;
+	}
+	/**
+	 *Set download speed limit for the user
+	 *@param limit the download speed limit in Kilo Byte/s for the user 
+	 */
+	public void setDownloadSpeedLitmit(long limit)
+	{
+		this.dlBWLimit=limit;
+	}
+	
 }
