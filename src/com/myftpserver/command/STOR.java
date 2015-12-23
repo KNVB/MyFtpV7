@@ -2,7 +2,7 @@ package com.myftpserver.command;
 
 import java.nio.file.InvalidPathException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 

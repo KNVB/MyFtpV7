@@ -2,7 +2,7 @@ package com.myftpserver.listener;
 
 import com.myftpserver.MyFtpServer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

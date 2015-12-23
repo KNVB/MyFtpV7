@@ -10,7 +10,7 @@ import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.NotADirectoryException;
 import com.myftpserver.exception.PathNotFoundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 /*

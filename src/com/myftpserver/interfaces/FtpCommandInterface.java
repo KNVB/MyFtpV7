@@ -2,7 +2,7 @@ package com.myftpserver.interfaces;
 
 import com.myftpserver.handler.FtpSessionHandler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 

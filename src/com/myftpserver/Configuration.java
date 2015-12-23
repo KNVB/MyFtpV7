@@ -42,7 +42,7 @@ public class Configuration
 	private UserManager userManager=null;
 	private FileManager fileManager=null;
 
-	private org.apache.log4j.Logger logger=null;
+	private org.apache.logging.log4j.Logger logger=null;
 	private String ftpMessageLocale=new String();
 	private String configFile = "conf/server-config";
 	Stack<Integer> passivePorts=new Stack<Integer>();
@@ -52,7 +52,7 @@ public class Configuration
 	 * This object contains all server configuration setting  
 	 * @param logger Logger for message logging
 	 */
-	public Configuration(org.apache.log4j.Logger logger)
+	public Configuration(org.apache.logging.log4j.Logger logger)
 	{
 		this.logger=logger;
 	}
@@ -157,7 +157,7 @@ public class Configuration
 	 * Get message logger
 	 * @return message logger 
 	 */
-	public org.apache.log4j.Logger getLogger()
+	public org.apache.logging.log4j.Logger getLogger()
 	{
 		return logger;
 	}

@@ -6,7 +6,7 @@ import com.myftpserver.interfaces.FtpCommandInterface;
 
 import io.netty.channel.ChannelHandlerContext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *

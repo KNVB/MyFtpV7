@@ -1,6 +1,7 @@
 package com.myftpserver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Stack;
 
@@ -60,7 +61,7 @@ public class MyFtpServer
      */
 	public MyFtpServer()
 	{
-		logger=Logger.getLogger(this.getClass());
+		logger=LogManager.getLogger(this.getClass());
 		logger.info("Log4j is ready.");
 		config=new Configuration(logger);
 		if (config.load(this))

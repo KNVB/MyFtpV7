@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import io.netty.channel.ChannelHandlerContext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.Configuration;

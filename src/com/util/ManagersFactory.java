@@ -4,7 +4,7 @@ import com.myftpserver.*;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

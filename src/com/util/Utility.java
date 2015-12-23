@@ -1,6 +1,6 @@
 package com.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;

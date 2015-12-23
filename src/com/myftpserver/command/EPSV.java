@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 
 import io.netty.channel.ChannelHandlerContext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.Configuration;
 import com.myftpserver.MyFtpServer;

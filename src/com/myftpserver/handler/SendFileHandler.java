@@ -5,7 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.PassiveServer;
 import com.myftpserver.listener.SendFileCompleteListener;
