@@ -1,5 +1,7 @@
 package com.myftpserver.interfaces;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 import com.myftpserver.exception.*;
@@ -132,11 +134,12 @@ public abstract class FileManager
 	 * @param fs FtpSessionHandler
 	 * @param inPath virtual path
 	 * @return a directory full listing in a StringBuffer object
+	 * @throws IOException
 	 * @throws AccessDeniedException
 	 * @throws PathNotFoundException
 	 * @throws InterruptedException
 	 */
-	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotADirectoryException,PathNotFoundException, InterruptedException;
+	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException,PathNotFoundException,NotADirectoryException, InterruptedException;
 	/**
 	 * Generate a directory listing for a virtual path (contains file name only)
 	 * @param fs FtpSessionHandler
