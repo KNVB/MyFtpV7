@@ -83,6 +83,8 @@ public class DbOp
 			  u.setPassword(rs.getString("password"));
 			  u.setQuota(rs.getInt("quota"));
 			  u.setActive(true);
+			  u.setDownloadSpeedLitmit(rs.getLong("downloadSpeedLimit"));
+			  u.setUploadSpeedLitmit(rs.getLong("uploadSpeedLimit"));
 			}
 			else
 				result=UserManager.INVAILD_USERNAME_OR_PASSWORD;

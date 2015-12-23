@@ -1,7 +1,5 @@
 package com.myftpserver.interfaces;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 
 import com.myftpserver.exception.*;
@@ -134,20 +132,21 @@ public abstract class FileManager
 	 * @param fs FtpSessionHandler
 	 * @param inPath virtual path
 	 * @return a directory full listing in a StringBuffer object
-	 * @throws IOException
 	 * @throws AccessDeniedException
-	 * @throws PathNotFoundException
 	 * @throws InterruptedException
+ 	 * @throws NotADirectoryException
+	 * @throws PathNotFoundException
 	 */
-	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException,PathNotFoundException,NotADirectoryException, InterruptedException;
+	public abstract StringBuffer getFullDirList(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotADirectoryException,PathNotFoundException, InterruptedException;
 	/**
 	 * Generate a directory listing for a virtual path (contains file name only)
 	 * @param fs FtpSessionHandler
 	 * @param inPath virtual path
 	 * @return a directory listing in a StringBuffer object (contains file name only)
 	 * @throws AccessDeniedException
-	 * @throws PathNotFoundException
 	 * @throws InterruptedException
+	 * @throws NotADirectoryException
+	 * @throws PathNotFoundException
 	 */
 	public abstract StringBuffer getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, NotADirectoryException, PathNotFoundException, InterruptedException;
 	/**
@@ -156,8 +155,9 @@ public abstract class FileManager
 	 * @param inPath virtual path 
 	 * @return server path
 	 * @throws AccessDeniedException
-	 * @throws PathNotFoundException
 	 * @throws InterruptedException
+	 * @throws NotAFileException
+	 * @throws PathNotFoundException
 	 */
 	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException;
 	/**
@@ -166,8 +166,8 @@ public abstract class FileManager
 	 * @param inPath a virtual path that the file to be uploaded 
 	 * @return server path
 	 * @throws AccessDeniedException
-	 * @throws PathNotFoundException
 	 * @throws InterruptedException
+	 * @throws PathNotFoundException
 	 * @throws QuotaExceedException
 	 */
 	public abstract String putFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException;

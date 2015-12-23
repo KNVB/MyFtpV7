@@ -26,7 +26,7 @@ public class User
 {
 	int quota=0; //Quota in Kilo byte
 	boolean active=false;
-	long ulBWLimit=1024,dlBWLimit=512;//Upload and Download speed in Kilo byte per second
+	long ulBWLimit=0,dlBWLimit=0;//Upload and Download speed in Kilo byte per second
 	
 	TreeMap<String, String> serverPathACL = null,clientPathACL=null;
 	String name=new String(),password=new String(),homeDir=new String();
