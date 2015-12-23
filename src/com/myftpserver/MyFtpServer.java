@@ -12,8 +12,10 @@ import java.io.FileNotFoundException;
 import com.myftpserver.Configuration;
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
 
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 /*
@@ -186,11 +188,11 @@ public class MyFtpServer
         {
 			ServerBootstrap bootStrap = new ServerBootstrap();
             bootStrap.group(bossGroup, workerGroup);
+            bootStrap.localAddress(config.getServerPort());
             bootStrap.channel(NioServerSocketChannel.class);
             bootStrap.childHandler(new CommandChannelInitializer(this));
-            bootStrap.localAddress(config.getServerPort());         
+            bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             logger.info("My FTP Server is started.");
-
             // Wait until the server socket is closed.
             bootStrap.bind();
         } 

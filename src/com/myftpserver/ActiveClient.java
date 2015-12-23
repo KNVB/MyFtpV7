@@ -5,7 +5,9 @@ import java.net.InetSocketAddress;
 import org.apache.log4j.Logger;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -58,8 +60,9 @@ public class ActiveClient
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
-            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getClientDataPortNo()));
+            b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             b.handler(new ActiveChannelInitializer(fs,responseCtx,fileNameList));
+            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getClientDataPortNo()));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }

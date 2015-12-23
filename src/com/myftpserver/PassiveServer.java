@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.stream.ChunkedWriteHandler;
@@ -71,6 +73,7 @@ public class PassiveServer
             bootStrap.group(bossGroup, workerGroup);
             bootStrap.channel(NioServerSocketChannel.class);
             bootStrap.childHandler(new PassiveChannelInitializer(fs,this));
+            bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             bootStrap.bind(inSocketAddress);
             logger.info("Passive Server listening " +host+":" + port);
             
