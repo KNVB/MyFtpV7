@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
-	<appender name="debug" class="org.apache.log4j.ConsoleAppender">
+	<appender name="debugMsg" class="org.apache.log4j.ConsoleAppender">
+	    <param name="threshold" value="debug" />
 	    <layout class="org.apache.log4j.PatternLayout">
 		<param name="ConversionPattern" 
 		  value="%d{yyyy-MM-dd HH:mm:ss} %-5p %l - %m%n" />
 	    </layout>
+        <filter class="org.apache.log4j.filter.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG"/>
+            <param name="LevelMax" value="DEBUG"/>
+        </filter>
+	</appender>
+	<appender name="infoMsg" class="org.apache.log4j.ConsoleAppender">
+	    <param name="threshold" value="info" />
+	    <layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" 
+		  value="%d{yyyy-MM-dd HH:mm:ss} %m%n" />
+	    </layout>
+        <filter class="org.apache.log4j.filter.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="INFO"/>
+        </filter>
 	</appender>
 	<root>
-		<level value="INFO" />
-		<appender-ref ref="info" />
+		<appender-ref ref="debugMsg" />
+		<appender-ref ref="infoMsg" />
 	</root>
-	<root>
-		<level value="DEBUG" />
-		<appender-ref ref="debug" />
-	</root>
-	
 </log4j:configuration>
