@@ -1,13 +1,8 @@
 package com.myftpserver;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import java.util.Stack;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-import java.io.FileNotFoundException;
 
 import com.myftpserver.Configuration;
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
@@ -65,43 +60,19 @@ public class MyFtpServer
      */
 	public MyFtpServer()
 	{
-    	if (initLogger())
+		logger=Logger.getLogger(this.getClass());
+		logger.info("Log4j is ready.");
+		config=new Configuration(logger);
+		if (config.load(this))
 		{
-			config=new Configuration(logger);
-			if (config.load(this))
+			logger.info("Server Initialization completed.");
+			if ((config.isSupportPassiveMode()) && (config.isPassivePortSpecified()))
 			{
-				logger.info("Server Initialization completed.");
-				if ((config.isSupportPassiveMode()) && (config.isPassivePortSpecified()))
-				{
-					passivePorts=config.passivePorts;
-					//logger.debug(passivePorts==null);
-				}
-				logger.info("Available passive port:"+passivePorts.toString());
+				passivePorts=config.passivePorts;
+				//logger.debug(passivePorts==null);
 			}
+			logger.info("Available passive port:"+passivePorts.toString());
 		}
-	}
- //-------------------------------------------------------------------------------------------
-    private boolean initLogger()
-	{
-		boolean result=false;
-		Properties logp = new Properties();
-		try 
-		{	
-			logp.load(new FileReader("conf/log4j.properties"));
-			PropertyConfigurator.configure(logp);
-			logger=Logger.getLogger("My Ftp Server");
-			logger.info("Log4j is ready.");
-			result=true;	
-		}
-		catch (FileNotFoundException e) 
-		{
-			System.out.println("file log4j.properties not found:"+e.getMessage());
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("An exception occur when loading file log4j.properties.");
-		}
-		return result;
 	}
 //-------------------------------------------------------------------------------------------	
     /**
