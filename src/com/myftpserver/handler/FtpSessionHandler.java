@@ -86,11 +86,10 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public void channelRead0(ChannelHandlerContext ctx, String msg) 
 	{
 		commandString=msg.trim();
-		logger.info("commandString="+commandString);
 		String commands[]=commandString.split("\n");
 		for (String command:commands)
 		{
-			logger.debug("command:"+command);
+			logger.info("Command:"+command+" received from "+this.clientIp);
 			ftpCommandHandler.doCommand(ctx,command.trim(), logger);
 		}
 	}

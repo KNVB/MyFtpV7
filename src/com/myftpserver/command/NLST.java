@@ -70,7 +70,7 @@ public class NLST implements FtpCommandInterface {
 				resultList=fm.getFileNameList(fs,clientPath);
 			if (fs.isPassiveModeTransfer)
 			{
-				logger.debug("Passive mode");
+				logger.info("Passive mode");
 				PassiveServer ps=fs.getPassiveServer();
 				ps.sendFileNameList(resultList,ctx);
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
@@ -78,7 +78,7 @@ public class NLST implements FtpCommandInterface {
 			else
 			{
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-				logger.debug("Active mode");
+				logger.info("Active mode");
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.sendFileNameList(resultList);
 			}

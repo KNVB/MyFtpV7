@@ -51,7 +51,7 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture ch) throws Exception 
 	{
-		fs.getConfig().getLogger().debug("File name list transfered to "+remoteIp+" Completed.");
+		fs.getConfig().getLogger().info("File name list transfered to "+remoteIp+" Completed.");
 		if (passiveServer!=null)
 			ch.addListener(new PassiveChannelCloseListener(fs, responseCtx, passiveServer));
 		ch.channel().close();
