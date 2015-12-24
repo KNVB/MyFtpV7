@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-api-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-core-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/Netty_4.0.33_log4j2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
