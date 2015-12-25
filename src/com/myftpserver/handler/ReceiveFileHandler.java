@@ -8,6 +8,7 @@ import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 
 
+import com.myftpserver.User;
 import com.myftpserver.listener.ReceiveFilerCompleteListener;
 
 import io.netty.buffer.ByteBuf;
@@ -69,7 +70,12 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception 
 	{ 
-		logger.info("ReceiveFileHandler channel active");
+		User user=fs.getUser();
+		logger.debug("ReceiveFileHandler channel active");
+		if (user.getUploadSpeedLitmit()==0L)
+			logger.info("File upload speed is limited by connection speed");
+		else
+			logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
 		try
 		{
 			bos=new BufferedOutputStream(new FileOutputStream(new File(fileName)));
@@ -84,7 +90,6 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
 	{ 
-		
 		ByteBuf in = (ByteBuf) msg;
 		logger.debug("ReceiveFileHandler channelRead buffer capacity="+in.capacity()+",readable byte count="+in.readableBytes());
 	    try 
@@ -109,7 +114,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 				bos.flush();
 				bos.close();
 				bos=null;
-				logger.info("ReceiveFileHandler channel inactive");
+				logger.debug("ReceiveFileHandler channel inactive");
 				ctx.channel().close().addListener(new ReceiveFilerCompleteListener(fs,passiveServer,responseCtx));
 			}
 			catch (Exception err)

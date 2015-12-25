@@ -116,7 +116,7 @@ public class MyFtpServer
 	{
 		logger.debug("Before:"+connectionCount);
 		connectionCount--;
-		logger.debug("After:"+connectionCount);
+		logger.info("Concurrent Connection Count:"+connectionCount);
 	}
 //-------------------------------------------------------------------------------------------	
 	/**

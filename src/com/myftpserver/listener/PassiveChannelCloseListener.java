@@ -32,6 +32,7 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
 		this.passiveServer.stop();
+		this.passiveServer=null;
 		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), config.getFtpMessage("226_Transfer_Ok"));
 	}
 }

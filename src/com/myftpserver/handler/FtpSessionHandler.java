@@ -77,6 +77,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public void close()
 	{
 		ch.close();
+		ch=null;		
 	}
 	/**
 	 * User input command event handler

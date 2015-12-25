@@ -80,14 +80,14 @@ public class LIST implements FtpCommandInterface
 			resultList=fm.getFullDirList(fs,clientPath);
 			if (fs.isPassiveModeTransfer)
 			{
-				logger.info("Passive mode");
+				logger.info("Transfer Directory listing in Passive mode");
 				PassiveServer ps=fs.getPassiveServer();
 				ps.sendFileNameList(resultList,ctx);
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 			}
 			else
 			{
-				logger.info("Active mode");
+				logger.info("Transfer Directory listing in Active mode");
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.sendFileNameList(resultList);

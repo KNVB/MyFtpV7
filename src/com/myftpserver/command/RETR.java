@@ -56,14 +56,14 @@ public class RETR implements FtpCommandInterface {
 			String serverPath=fm.getFile(fs,param);
 			if (fs.isPassiveModeTransfer)
 			{
-				logger.debug("Passive mode");
+				logger.debug("User download file in Passive mode");
 				PassiveServer ps=fs.getPassiveServer();
 				ps.sendFile(serverPath,ctx);
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 			}
 			else
 			{
-				logger.debug("Active mode");
+				logger.debug("User download file in Active mode");
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.sendFile(serverPath);

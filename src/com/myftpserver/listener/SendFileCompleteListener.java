@@ -58,6 +58,7 @@ public class SendFileCompleteListener implements ChannelFutureListener
 			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
 		else
 			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));
+		logger.info("File download completed.");	
 	}
 
 }

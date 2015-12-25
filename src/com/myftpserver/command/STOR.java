@@ -63,7 +63,7 @@ public class STOR implements FtpCommandInterface
 
 			if (fs.isPassiveModeTransfer)
 			{
-				logger.debug("Passive mode");
+				logger.debug("User upload file in Passive mode");
 				PassiveServer ps=fs.getPassiveServer();
 				ps.receiveFile(serverPath,ctx);
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
@@ -71,7 +71,7 @@ public class STOR implements FtpCommandInterface
 			else
 			{
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-				logger.debug("Active mode");
+				logger.debug("User upload file in Active mode");
 				ActiveClient activeClient=new ActiveClient(fs,ctx);
 				activeClient.receiveFile(serverPath);
 			}

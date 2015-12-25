@@ -30,13 +30,16 @@ public class CommandChannelClosureListener implements ChannelFutureListener
 {
 	MyFtpServer s;
 	Logger logger; 
-	String remoteIp,ftpMessage;
-	public CommandChannelClosureListener(MyFtpServer t)
+	String remoteIp=null;
+	public CommandChannelClosureListener(MyFtpServer t,String remoteIp)
 	{
 		s=t;
+		this.remoteIp=remoteIp;
+		this.logger=s.getLogger();
 	}
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
+		logger.info("Command Channel (Remote IP:"+remoteIp+")is closed.");
 		s.sessionClose();
 	}
 }

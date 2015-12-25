@@ -54,6 +54,6 @@ public class ReceiveFilerCompleteListener implements ChannelFutureListener
 			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,responseCtx));
 		else
 			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,responseCtx,txServer));
-		logger.debug("File Transfer completed.");		
+		logger.info("File upload completed.");		
 	}
 }

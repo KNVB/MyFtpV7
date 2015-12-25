@@ -47,6 +47,7 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
+		//System.out.println("Remote IP="+remoteIp);
 		if (s.isOverConnectionLimit())
 		{
 			//Utility.sendMessageToClient(ch, s.getLogger(),remoteIp,s.getConfig().getFtpMessage("330_Connection_Full"));
@@ -55,7 +56,7 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 		}
 		else
 		{
-			ch.closeFuture().addListener(new CommandChannelClosureListener(s));
+			ch.closeFuture().addListener(new CommandChannelClosureListener(s,remoteIp));
 			Utility.sendMessageToClient(ch,s.getLogger(),remoteIp,"220 "+s.getConfig().getFtpMessage("Greeting_Message"));
 			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getConfig().getCommandChannelConnectionTimeOut(), 30, 0));
 
