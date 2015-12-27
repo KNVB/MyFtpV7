@@ -39,7 +39,7 @@ public class CommandChannelClosureListener implements ChannelFutureListener
 	}
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		logger.info("Command Channel (Remote IP:"+remoteIp+")is closed.");
+		logger.info("Command Channel (Remote IP:"+remoteIp+") is closed.");
 		s.sessionClose();
 	}
 }
