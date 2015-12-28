@@ -63,11 +63,12 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 	}
 	public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
-		//Utility.sendFileNameList(ctx.channel(),responseCtx,fileNameList,fs,passiveServer);
+		Utility.sendFileNameList(ctx.channel(),responseCtx,fileNameList,fs,passiveServer);
 	}
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{
-		Utility.sendFileNameList(ctx.channel(),responseCtx,fileNameList,fs,passiveServer);
+		if (passiveServer!=null)
+			Utility.sendFileNameList(ctx.channel(),responseCtx,fileNameList,fs,passiveServer);
 	}
 	@Override
 	protected void channelRead0(ChannelHandlerContext arg0, ByteBuf arg1)

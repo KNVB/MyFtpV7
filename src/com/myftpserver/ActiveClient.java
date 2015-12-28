@@ -69,7 +69,7 @@ public class ActiveClient
         catch (Exception eg)
 		{
 			eg.printStackTrace();
-        	logger.debug(eg.getMessage());
+        	//logger.debug(eg.getMessage());
 		}
         finally 
         {
