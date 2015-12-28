@@ -71,8 +71,9 @@ public class MyFtpServer
 			{
 				passivePorts=config.passivePorts;
 				//logger.debug(passivePorts==null);
+				logger.info("Available passive port:"+passivePorts.toString());
 			}
-			logger.info("Available passive port:"+passivePorts.toString());
+			
 		}
 	}
 //-------------------------------------------------------------------------------------------	
