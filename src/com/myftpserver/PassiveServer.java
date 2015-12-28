@@ -102,7 +102,7 @@ public class PassiveServer
 	 */
 	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
-		ch.pipeline().addLast(new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
+		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
 	}
@@ -113,7 +113,7 @@ public class PassiveServer
 	 */
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
-		ch.pipeline().addLast(new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
+		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
 	}
 	/**
