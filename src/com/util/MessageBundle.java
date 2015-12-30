@@ -20,10 +20,10 @@ import net.sf.j18n.J18n;
 /**
  * origin from http://www.coderanch.com/t/525337/java/java/read-Franch-ResourceBundle
  */
-public class FtpMessage 
+public class MessageBundle 
 {
 	ResourceBundle  ftpMessage;
-	public FtpMessage(Locale l)
+	public MessageBundle(Locale l)
 	{
 		try
 		{ 	

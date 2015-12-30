@@ -4,12 +4,14 @@ import com.myftpserver.*;
 import com.myftpserver.exception.*;
 import com.myftpserver.interfaces.UserManager;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.util.MessageBundle;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import org.apache.logging.log4j.Logger;
 /*
@@ -60,12 +62,13 @@ public class DbOp
 	 */
 	public User login(FtpSessionHandler fs, String password) throws LoginFailureException
 	{
+		String sql;
 		User u=null;
 		int result=0;
-		String sql;
-		String userName=fs.getUserName();
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
+		String userName=fs.getUserName();
+		ServerConfig serverConfig=fs.getServerConfig();
 		try
 		{
 			sql="select * from user where user_name=? and password=? and active=1";
@@ -76,13 +79,20 @@ public class DbOp
 			if (rs.next())
 			{
 			  u=new User();
-			  //u.setHomeDir(rs.getString("home_dir"));
 			  u.setName(rs.getString("user_name"));
 			  u.setPassword(rs.getString("password"));
 			  u.setQuota(rs.getInt("quota"));
 			  u.setActive(true);
 			  u.setDownloadSpeedLitmit(rs.getLong("downloadSpeedLimit"));
 			  u.setUploadSpeedLitmit(rs.getLong("uploadSpeedLimit"));
+			  
+				  Locale userLocale=new Locale(rs.getString("userLocale"));
+			  
+			  
+			  /*if ((rs.getString("userLocale")!=null) && (!rs.getString("userLocale").equals(serverConfig.getServerLocale())))
+				  fs.setMessageBundle(new MessageBundle()));
+			  else
+				  fs.setMessageBundle(serverConfig.getMessageBundle());*/
 			}
 			else
 				result=UserManager.INVAILD_USERNAME_OR_PASSWORD;
@@ -98,7 +108,7 @@ public class DbOp
 		if (result!=0)
 		{
 			u=null;
-			throw new LoginFailureException(config.getFtpMessage("530_Invalid_Login")); 
+			throw new LoginFailureException(serverConfig.getFtpMessage("530_Invalid_Login")); 
 		}
 		return u;
 	}

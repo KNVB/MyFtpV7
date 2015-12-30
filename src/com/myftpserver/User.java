@@ -2,6 +2,8 @@ package com.myftpserver;
  
 import java.io.File;
 import java.util.TreeMap;
+
+import com.util.MessageBundle;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -27,7 +29,8 @@ public class User
 	int quota=0; //Quota in Kilo byte
 	boolean active=false;
 	long ulBWLimit=0,dlBWLimit=0;//Upload and Download speed in Kilo byte per second
-	
+	private MessageBundle ftpMessage;
+	String userLocale=new String("en_us");
 	TreeMap<String, String> serverPathACL = null,clientPathACL=null;
 	String name=new String(),password=new String(),homeDir=new String();
 	/**
@@ -45,6 +48,7 @@ public class User
 			serverPathACL=new TreeMap<String, String>();
 			clientPathACL=new TreeMap<String, String>();
 		}
+		
 	}
 	/**
 	 * Get client/virtual path Access Control List
@@ -191,5 +195,12 @@ public class User
 	{
 		this.dlBWLimit=limit;
 	}
-	
+	/*public String getUserLocale() 
+	{
+		return userLocale;
+	}*/
+	public void setUserLocale(String userLocale) 
+	{
+		this.userLocale = userLocale;
+	}	
 }

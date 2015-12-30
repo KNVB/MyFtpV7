@@ -2,7 +2,7 @@ package com.myftpserver.impl;
 
 import com.myftpserver.User;
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 
@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 import java.util.Collections;
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
+
+import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -42,11 +44,11 @@ import java.nio.file.NoSuchFileException;
  */
 public class MyFileManager extends FileManager 
 {
-	public MyFileManager(Configuration c) 
+	public MyFileManager(Logger logger) 
 	{
-		super(c);
+		super(logger);
 	}
-	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
+/*	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
 	{
 		try
 		{
@@ -305,5 +307,5 @@ public class MyFileManager extends FileManager
 	public void close() 
 	{
 		
-	}		
+	}*/		
 }

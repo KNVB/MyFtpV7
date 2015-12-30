@@ -3,6 +3,7 @@ package com.myftpserver;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.Stack;
 
@@ -31,10 +32,14 @@ public class ServerConfig
 {
 	private Logger logger=null;
 	private String encoding=null;
+	private MessageBundle messageBundle;
 	private ManagersFactory mf=null;
+	private String serverLocale=null;
 	private FileInputStream fis=null;
+	
 	private UserManager userManager=null;
 	private FileManager fileManager=null;
+	
 	private String configFile = "conf/server-config";
 	Stack<Integer> passivePorts=new Stack<Integer>();
 	private int serverPort,maxConnection=0,commandChannelConnectionTimeOut=30000;
@@ -62,12 +67,13 @@ public class ServerConfig
 			fis=new FileInputStream(configFile);
 			PropertyResourceBundle bundle = new PropertyResourceBundle(fis);
 			logger.info("Configuration file is loaded");
-			encoding=bundle.getString("encoding");
+			serverLocale=bundle.getString("serverLocale");
+			messageBundle=new MessageBundle(new Locale(serverLocale));
 			serverPort=Integer.parseInt(bundle.getString("port"));
 			maxConnection=Integer.parseInt(bundle.getString("maxConnection"));
 			commandChannelConnectionTimeOut=Integer.parseInt(bundle.getString("commandChannelConnectionTimeOut"));
 			supportPassiveMode=Boolean.parseBoolean(bundle.getString("supportPassiveMode"));
-			logger.info("Server config. is support passive mode="+supportPassiveMode);
+			logger.info("support passive mode="+supportPassiveMode);
 			if (supportPassiveMode)
 			{
 				if (bundle.containsKey("passivePortRange"))
@@ -156,6 +162,15 @@ public class ServerConfig
 	public String getEncoding()
 	{
 		return encoding;
+	}
+	/**
+	 * Get message text from a key
+	 * @param key the message key
+	 * @return value the corresponding message text
+	 */
+	public String getFtpMessage(String key)
+	{
+		return messageBundle.getMessage(key);
 	}	
 	/**
 	 * Get FTP server maximum current connection 
@@ -188,5 +203,17 @@ public class ServerConfig
 	public FileManager getFileManager()
 	{
 		return fileManager;
+	}
+	/**
+	 * Get Server default locale
+	 * @return Server default locale
+	 */
+	public String getServerLocale() 
+	{
+		return serverLocale;
+	}
+	public MessageBundle getMessageBundle()
+	{
+		return this.messageBundle;
 	}
 }

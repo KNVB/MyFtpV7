@@ -38,14 +38,13 @@ public class ManagersFactory
 	{
 		bundle=b;
 		this.logger=logger;
-		serverConfig=c;
 	}
 	public FileManager getFileManager()
 	{
 		FileManager fm=null;
 		try 
 		{
-			fm = (FileManager) getManager("fileManager.classname").newInstance(this.serverConfig);
+			fm = (FileManager) getManager("fileManager.classname").newInstance(this.logger);
 		}
 		catch (IllegalArgumentException | InvocationTargetException |InstantiationException e) 
 		{
@@ -62,7 +61,7 @@ public class ManagersFactory
 		UserManager um=null;
 		try 
 		{
-			um = (UserManager) getManager("userManager.classname").newInstance(this.serverConfig);
+			um = (UserManager) getManager("userManager.classname").newInstance(this.logger);
 		}
 		catch (InstantiationException |IllegalArgumentException | InvocationTargetException e) 
 		{
@@ -80,7 +79,7 @@ public class ManagersFactory
 		Constructor c=null;
 		try
 		{
-			c=Class.forName(bundle.getString(key)).getConstructor(ServerConfig.class);
+			c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
 			return c;
 		}
 		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 

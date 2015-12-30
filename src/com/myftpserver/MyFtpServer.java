@@ -64,6 +64,24 @@ public final class MyFtpServer
 		else
 			logger.debug("Server Configuration cannot be loaded");
 	}
+	//-------------------------------------------------------------------------------------------	
+    /**
+	 * Get message logger
+	 * @return message logger 
+	 */
+    public Logger getLogger() 
+	{
+		return logger;
+	}
+//-------------------------------------------------------------------------------------------
+	/**
+	 * Get Configuration object
+	 * @return Configuration object
+	 */
+	public ServerConfig getServerConfig()
+	{
+		return serverConfig;
+	}	
 //-------------------------------------------------------------------------------------------	
 	/**
 	 * Called by FtpSessionHandler object when a FTP session is ended.
@@ -162,5 +180,5 @@ public final class MyFtpServer
 	{
 		MyFtpServer m=new MyFtpServer();
 		m.start();	
-	}	
+	}
 }

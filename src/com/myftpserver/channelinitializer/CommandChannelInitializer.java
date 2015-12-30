@@ -56,17 +56,17 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 		if (s.isOverConnectionLimit())
 		{
 			//Utility.sendMessageToClient(ch, s.getLogger(),remoteIp,s.getConfig().getFtpMessage("330_Connection_Full"));
-			String msg=s.getConfig().getFtpMessage("330_Connection_Full");
+			String msg=s.getServerConfig().getFtpMessage("330_Connection_Full");
 			Utility.disconnectFromClient(ch,logger,remoteIp,msg);
 		}
 		else
 		{
 			ch.closeFuture().addListener(new CommandChannelClosureListener(s,remoteIp));
-			Utility.sendMessageToClient(ch,logger,remoteIp,"220 "+s.getConfig().getFtpMessage("Greeting_Message"));
-			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getConfig().getCommandChannelConnectionTimeOut(), 30, 0));
+			Utility.sendMessageToClient(ch,logger,remoteIp,"220 "+s.getServerConfig().getFtpMessage("Greeting_Message"));
+			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getServerConfig().getCommandChannelConnectionTimeOut(), 30, 0));
 
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
-			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));
+			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s.getServerConfig(),remoteIp));
 		}
 	}
 
