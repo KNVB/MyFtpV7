@@ -52,7 +52,6 @@ public final class MyFtpServer
 			if ((serverConfig.isSupportPassiveMode()) && (serverConfig.isPassivePortSpecified()))
 			{
 				passivePorts=serverConfig.passivePorts;
-				//logger.debug(passivePorts==null);
 				logger.info("Available passive port:"+passivePorts.toString());
 			}
 		}
