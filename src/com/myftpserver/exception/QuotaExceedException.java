@@ -19,15 +19,16 @@ package com.myftpserver.exception;
  * @author SITO3
  *
  */
-public class AccessDeniedException extends Exception 
+public class QuotaExceedException extends Exception 
 {
-	private static final long serialVersionUID = -4886964826372496090L;
+	private static final long serialVersionUID = -3487638359243265219L;
 	/**
-	 * Checked exception thrown when a file system operation is denied, typically due to a file permission or other access check.
-	 * @param msg message text
+	 * Checked exception thrown when a user quota exceed
 	 */
-	public AccessDeniedException(String msg)
+	public QuotaExceedException(String msg)
 	{
+		//550_Quota_Exceed
 		super(msg);
 	}
+	
 }

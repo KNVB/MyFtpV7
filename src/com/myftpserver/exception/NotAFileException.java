@@ -19,14 +19,14 @@ package com.myftpserver.exception;
  * @author SITO3
  *
  */
-public class AccessDeniedException extends Exception 
+public class NotAFileException extends Exception 
 {
 	private static final long serialVersionUID = -4886964826372496090L;
 	/**
-	 * Checked exception thrown when a file system operation is denied, typically due to a file permission or other access check.
+	 * Checked exception thrown when a path is not a plain file
 	 * @param msg message text
 	 */
-	public AccessDeniedException(String msg)
+	public NotAFileException(String msg)
 	{
 		super(msg);
 	}

@@ -3,7 +3,6 @@ package com.myftpserver.interfaces;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
