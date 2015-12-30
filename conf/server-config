@@ -10,5 +10,3 @@ passivePortRange=1232-1234
 #client connection time out in second
 commandChannelConnectionTimeOut=900
 #commandChannelConnectionTimeOut=10
-ftpMessageLocale=en_us
-#ftpMessageLocale=zh_tw
