@@ -1,6 +1,7 @@
 package com.myftpserver;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
@@ -73,7 +74,7 @@ public class ActiveClient
 		}
         finally 
         {
-        	group.shutdownGracefully().sync();
+        	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
         	fs.getConfig().getLogger().debug("Active Mode client is shutdown gracefully.");
         }
 	}
