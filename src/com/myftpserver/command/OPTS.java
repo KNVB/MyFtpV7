@@ -25,23 +25,16 @@ import io.netty.channel.ChannelHandlerContext;
  * @author SITO3
  *
  */
-public class QUIT implements FtpCommandInterface
+public class OPTS implements FtpCommandInterface
 {
-
 	@Override
-	public String helpMessage(FtpSessionHandler fs) 
-	{
+	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
-	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx,String param) 
 	{
-		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
-		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
-		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs, fs.getLogger(), remoteIp, goodByeMsg);
-	}
+		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Opt_Response"));
+ 	}
+
 }

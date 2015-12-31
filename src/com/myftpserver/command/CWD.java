@@ -1,10 +1,14 @@
 package com.myftpserver.command;
 
-import com.util.Utility;
+import com.util.*;
+import com.myftpserver.exception.*;
+import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
 import io.netty.channel.ChannelHandlerContext;
+
+import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -25,7 +29,7 @@ import io.netty.channel.ChannelHandlerContext;
  * @author SITO3
  *
  */
-public class QUIT implements FtpCommandInterface
+public class CWD implements FtpCommandInterface 
 {
 
 	@Override
@@ -35,13 +39,21 @@ public class QUIT implements FtpCommandInterface
 		return null;
 	}
 
-	
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param)
 	{
-		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
-		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
-		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs, fs.getLogger(), remoteIp, goodByeMsg);
+		Logger logger=fs.getLogger();
+		FileManager fm=fs.getServerConfig().getFileManager();
+		logger.debug("param="+param+"|");
+		
+		try 
+		{
+			fm.changeDirectory(fs,param);
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("200_Ok"));
+		} 
+		catch (AccessDeniedException | PathNotFoundException err) 
+		{
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+		}
 	}
 }

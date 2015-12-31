@@ -29,9 +29,10 @@ import org.apache.logging.log4j.Logger;
 public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 {
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger) 
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
 	{
 		String message=new String();
+		Logger logger=fs.getLogger();
 		if (param ==null)
 		{
 			message=fs.getFtpMessage("500_Null_Command");

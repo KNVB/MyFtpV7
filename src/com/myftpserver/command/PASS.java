@@ -42,8 +42,9 @@ public class PASS implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,	Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
 	{
+		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
 		String message=new String();
 		if ((param==null) || (param.isEmpty()))

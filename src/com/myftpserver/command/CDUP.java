@@ -1,10 +1,11 @@
 package com.myftpserver.command;
 
-import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
 import io.netty.channel.ChannelHandlerContext;
+
+import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -25,7 +26,7 @@ import io.netty.channel.ChannelHandlerContext;
  * @author SITO3
  *
  */
-public class QUIT implements FtpCommandInterface
+public class CDUP extends CWD implements FtpCommandInterface 
 {
 
 	@Override
@@ -35,13 +36,9 @@ public class QUIT implements FtpCommandInterface
 		return null;
 	}
 
-	
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param)
 	{
-		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
-		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
-		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs, fs.getLogger(), remoteIp, goodByeMsg);
+		super.execute(fs, ctx, "..");
 	}
 }

@@ -39,7 +39,6 @@ public interface FtpCommandInterface
 	 * @param fs FtpSessionHandler
 	 * @param ctx  A ChannelHandlerContext for sending execution result to client
 	 * @param param Parameter for the raw FTP command 
-	 * @param logger  message logger 
 	 */
-	public void execute (FtpSessionHandler fs,ChannelHandlerContext ctx,String param,Logger logger); 
+	public void execute (FtpSessionHandler fs,ChannelHandlerContext ctx,String param); 
 }
