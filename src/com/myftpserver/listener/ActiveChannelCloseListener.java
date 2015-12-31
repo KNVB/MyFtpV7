@@ -1,9 +1,12 @@
-package com.myftpserver.command;
+package com.myftpserver.listener;
 
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FtpCommandInterface;
 
+import org.apache.logging.log4j.Logger;
+
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -25,23 +28,24 @@ import io.netty.channel.ChannelHandlerContext;
  * @author SITO3
  *
  */
-public class QUIT implements FtpCommandInterface
+public class ActiveChannelCloseListener  implements ChannelFutureListener 
 {
-
-	@Override
-	public String helpMessage(FtpSessionHandler fs) 
+	Logger logger;
+	String remoteIp;
+	FtpSessionHandler fs;
+	ChannelHandlerContext responseCtx;
+	public ActiveChannelCloseListener(FtpSessionHandler fs, ChannelHandlerContext responseCtx) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		this.fs=fs;
+		this.responseCtx=responseCtx;
+		this.remoteIp=fs.getClientIp();
+		this.logger=fs.getLogger();
 	}
 
-	
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
+	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
-		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
-		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs.getChannel(), fs.getLogger(), remoteIp, goodByeMsg);
+		logger.debug("Active Mode Transfer channel is closed");
+		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok"));
 	}
 }

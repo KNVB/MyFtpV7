@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import java.net.InetSocketAddress;
+
 import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -7,10 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
-import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.FtpCommandInterface;
-import com.myftpserver.interfaces.UserManager;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -31,7 +31,7 @@ import com.myftpserver.interfaces.UserManager;
  * @author SITO3
  *
  */
-public class PASS implements FtpCommandInterface 
+public class PASV implements FtpCommandInterface 
 {
 
 	@Override
@@ -44,32 +44,33 @@ public class PASS implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
 	{
+		int port;
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
-		String message=new String();
-		if ((param==null) || (param.isEmpty()))
+		MyFtpServer server=fs.getServer();
+		String message=new String(),localIP=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
+		if (serverConfig.isSupportPassiveMode())
 		{
-			message=fs.getFtpMessage("500_Null_Command");
+			port=server.getNextPassivePort();
+			if (port==-1)
+				message=fs.getFtpMessage("550_CANT_CONNECT_CLNT");
+			else
+			{	
+				logger.debug("Port "+port+" is assigned.");
+				fs.isPassiveModeTransfer=true;
+				message=fs.getFtpMessage("227_Enter_Passive_Mode");
+				message=message.replaceAll("%1", localIP.replaceAll("\\.", ","));
+				message=message.replaceAll("%2", String.valueOf(port/256));
+				message=message.replaceAll("%3", String.valueOf(port % 256));
+				PassiveServer ps=new PassiveServer(fs,localIP,port);
+				fs.setPassiveServer(ps);
+			}				
 		}
 		else
 		{
-			UserManager um=serverConfig.getUserManager();
-			FileManager fm=serverConfig.getFileManager();
-			try 
-			{
-				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)"+(um==null));
-				User user=um.login(fs, param);
-				fs.setUser(user);
-				fs.setIsLogined(true);
-				fs.setCurrentPath("/");
-				fm.getRealHomePath(fs);
-				message=fs.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
-			} 
-			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
-			{
-				Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),e.getMessage());
-			} 
+			fs.isPassiveModeTransfer=false;
+			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
+		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 }

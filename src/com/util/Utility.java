@@ -2,11 +2,12 @@ package com.util;
 
 import org.apache.logging.log4j.Logger;
 
-//import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.listener.SendFileListener;
+import com.myftpserver.listener.ReceiveFileListener;
+import com.myftpserver.listener.SendFileListListener;
 import com.myftpserver.listener.SessionClosureListener;
 import com.myftpserver.listener.CommandCompleteListener;
-//import com.myftpserver.listener.SendFileNameListCompleteListener;
 
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
@@ -38,13 +39,17 @@ public class Utility
 	{
 		ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new CommandCompleteListener(logger,remoteIp,ftpMessage));
 	}
-	/*public static void sendFileNameList(Channel ch,ChannelHandlerContext responseCtx,StringBuffer fileNameList,FtpSessionHandler fs,PassiveServer passiveServer)
+	public static void sendFileListToClient(ChannelHandlerContext responsCtx,FtpSessionHandler fs,StringBuffer resultList) 
 	{
-		ch.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs,responseCtx,passiveServer));
-	}*/		
-	public static void disconnectFromClient(FtpSessionHandler fs, Logger logger,String remoteIp,String goodByeMessage)
+		responsCtx.writeAndFlush(Unpooled.copiedBuffer(fs.getFtpMessage("150_Open_Data_Conn")+"\r\n",CharsetUtil.UTF_8)).addListener(new SendFileListListener(responsCtx,fs,resultList));
+	}
+	public static void sendFileToClient(ChannelHandlerContext responsCtx,FtpSessionHandler fs, String fileName) 
 	{
-		fs.getChannel().writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SessionClosureListener(fs,null,logger,remoteIp,goodByeMessage));
+		responsCtx.writeAndFlush(Unpooled.copiedBuffer(fs.getFtpMessage("150_Open_Data_Conn")+"\r\n",CharsetUtil.UTF_8)).addListener(new SendFileListener(responsCtx,fs,fileName));
+	}
+	public static void receiveFileFromClient(ChannelHandlerContext responsCtx,FtpSessionHandler fs, String fileName) 
+	{
+		responsCtx.writeAndFlush(Unpooled.copiedBuffer(fs.getFtpMessage("150_Open_Data_Conn")+"\r\n",CharsetUtil.UTF_8)).addListener(new ReceiveFileListener(responsCtx,fs,fileName));
 	}
 	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
 	{

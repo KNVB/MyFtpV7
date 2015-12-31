@@ -5,11 +5,12 @@ import com.util.MessageBundle;
 import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.Channel;
+import io.netty.handler.timeout.IdleState;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -43,7 +44,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private boolean isLogined=false;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
-//	private PassiveServer passiveServer=null;
+	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String userName=new String(),dataType="A",currentPath=new String();
@@ -98,35 +99,6 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	{
 		return ch;
 	}
-	/**
-	 * Close the FTP session
-	 */
-	public void close()
-	{
-		ch.close();
-		ch=null;		
-	}
-	/**
-	 * It is used to handle time out issue
-	 * @param ctx the channel that user input command
-	 * @param evt the event object
-	 */
-	@Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception 
-	{
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent e = (IdleStateEvent) evt;
-            if (e.state() == IdleState.READER_IDLE) 
-            {
-                //String goodByeMessage=s.getConfig().getFtpMessage("421_Idle_Timeout");
-                //goodByeMessage=goodByeMessage.replaceAll("%1",String.valueOf(s.getConfig().getCommandChannelConnectionTimeOut()));
-            	//ctx.writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8));
-            	close();
-            } else if (e.state() == IdleState.WRITER_IDLE) {
-               // ctx.writeAndFlush(new PingMessage());
-            }
-        }
-    }
 	/**
 	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
 	 * @param ctx the channel that user input command
@@ -215,18 +187,18 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 * Get passive server for passive mode operation 
 	 * @return PassiveServer object
 	 */
-	/*public PassiveServer getPassiveServer() 
+	public PassiveServer getPassiveServer() 
 	{
 		return this.passiveServer;
-	}*/
+	}
 	/**
 	 * Set passive server for passive mode operation 
 	 * @param passiveServer PassiveServer object
 	 */
-	/*public void setPassiveServer(PassiveServer passiveServer) 
+	public void setPassiveServer(PassiveServer passiveServer) 
 	{
 		this.passiveServer=passiveServer;
-	}*/
+	}
 	/**
 	 * Set User object
 	 * @param user User object
@@ -300,5 +272,42 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public String getFtpMessage(String key) 
 	{
 		return messageBundle.getMessage(key);
+	}
+	/**
+	 * Get server object
+	 * @return MyFtpServer object
+	 */
+	public MyFtpServer getServer() 
+	{
+		return s;
+	}
+	/**
+	 * It is used to handle time out issue
+	 * @param ctx the channel that user input command
+	 * @param evt the event object
+	 */
+	@Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception 
+	{
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            if (e.state() == IdleState.READER_IDLE) 
+            {
+                //String goodByeMessage=s.getConfig().getFtpMessage("421_Idle_Timeout");
+                //goodByeMessage=goodByeMessage.replaceAll("%1",String.valueOf(s.getConfig().getCommandChannelConnectionTimeOut()));
+            	//ctx.writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8));
+            	close();
+            } else if (e.state() == IdleState.WRITER_IDLE) {
+               // ctx.writeAndFlush(new PingMessage());
+            }
+        }
+    }	
+	/**
+	 * Close the FTP session
+	 */
+	public void close()
+	{
+		ch.close();
+		ch=null;		
 	}
 }

@@ -33,11 +33,24 @@ import com.myftpserver.channelinitializer.CommandChannelInitializer;
  */
 public final class MyFtpServer 
 {
+	/**
+	 * Specify the transfer is send a file to client
+	 */
+	public static final int SENDFILE=0;
+	/**
+	 * Specify the transfer is receive a file to client
+	 */	
+	public static final int RECEIVEFILE=1;
+	/**
+	 * Specify the transfer is send a file listing to client
+	 */
+	public static final int SENDDIRLIST=2;
+	
 	private static Logger logger=null;
 	private Stack<Integer> passivePorts;
 	private static int connectionCount=0;
 	private ServerConfig serverConfig=null;
-	
+		
 	private EventLoopGroup bossGroup=new NioEventLoopGroup();
     private EventLoopGroup workerGroup=new NioEventLoopGroup(); 
 //-------------------------------------------------------------------------------------------    

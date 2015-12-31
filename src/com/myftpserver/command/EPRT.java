@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import org.apache.logging.log4j.Logger;
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -25,23 +27,37 @@ import io.netty.channel.ChannelHandlerContext;
  * @author SITO3
  *
  */
-public class QUIT implements FtpCommandInterface
+public class EPRT implements FtpCommandInterface 
 {
 
 	@Override
-	public String helpMessage(FtpSessionHandler fs) 
-	{
+	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
-		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
-		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
-		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs.getChannel(), fs.getLogger(), remoteIp, goodByeMsg);
+		String temp[]=param.trim().split("\\|");
+		Logger logger=fs.getLogger();
+		if (temp.length!=4)
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
+		else
+		{	
+			try
+			{
+				int portNo=Integer.parseInt(temp[temp.length-1]);
+				logger.debug("Port="+portNo);
+				fs.isPassiveModeTransfer=false;
+				fs.setClientDataPortNo(portNo);
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("200_Port_Ok"));
+			}
+			catch (Exception e)
+			{
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("550_CANT_CONNECT_CLNT"));
+			}
+		}
 	}
+
 }
