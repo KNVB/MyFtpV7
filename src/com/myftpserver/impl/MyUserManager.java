@@ -22,6 +22,15 @@ public class MyUserManager extends UserManager
 	public MyUserManager(Logger logger) 
 	{
 		super(logger);
+		try 
+		{
+			dbo=new DbOp(logger);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			dbo=null;
+		}
 	}
 
 
