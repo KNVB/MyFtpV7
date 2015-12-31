@@ -43,7 +43,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private boolean isLogined=false;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
-	private PassiveServer passiveServer=null;
+//	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String userName=new String(),dataType="A",currentPath=new String();
@@ -65,12 +65,22 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.isPassiveModeTransfer=false;
 		this.serverConfig=s.getServerConfig();
 		this.ftpCommandHandler=new FtpCommandExecutor(this);
+		messageBundle=serverConfig.getMessageBundle();
 	}
-	@Override
-	protected void channelRead0(ChannelHandlerContext arg0, String arg1)throws Exception 
+	/**
+	 * User input command event handler
+	 * @param ctx the channel that user input command
+	 * @param msg the command that user inputted
+	 */
+	public void channelRead0(ChannelHandlerContext ctx, String msg) 
 	{
-		// TODO Auto-generated method stub
-		
+		commandString=msg.trim();
+		String commands[]=commandString.split("\n");
+		for (String command:commands)
+		{
+			logger.info("Command:"+command+" received from "+this.clientIp);
+			ftpCommandHandler.doCommand(ctx,command.trim(), logger);
+		}
 	}
 	/**
 	 * Get message logger
@@ -205,18 +215,18 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 * Get passive server for passive mode operation 
 	 * @return PassiveServer object
 	 */
-	public PassiveServer getPassiveServer() 
+	/*public PassiveServer getPassiveServer() 
 	{
 		return this.passiveServer;
-	}
+	}*/
 	/**
 	 * Set passive server for passive mode operation 
 	 * @param passiveServer PassiveServer object
 	 */
-	public void setPassiveServer(PassiveServer passiveServer) 
+	/*public void setPassiveServer(PassiveServer passiveServer) 
 	{
 		this.passiveServer=passiveServer;
-	}
+	}*/
 	/**
 	 * Set User object
 	 * @param user User object
@@ -273,8 +283,22 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	{
 		return serverConfig;
 	}
+	/**
+	 * Set FTP message bundle
+	 * @param messageBundle
+	 */
 	public void setMessageBundle(MessageBundle messageBundle) 
 	{
 		this.messageBundle=messageBundle;
+		logger.debug("locale for this session ="+messageBundle.getLocale());
+	}
+	/**
+	 * Get message text from a key
+	 * @param key the message key
+	 * @return value the corresponding message text
+	 */
+	public String getFtpMessage(String key) 
+	{
+		return messageBundle.getMessage(key);
 	}
 }

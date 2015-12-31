@@ -10,8 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.io.File;
 import java.util.Stack;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -38,8 +38,8 @@ public final class MyFtpServer
 	private static int connectionCount=0;
 	private ServerConfig serverConfig=null;
 	
-	private EventLoopGroup bossGroup = new NioEventLoopGroup();
-    private EventLoopGroup workerGroup = new NioEventLoopGroup();
+	private EventLoopGroup bossGroup=new NioEventLoopGroup();
+    private EventLoopGroup workerGroup=new NioEventLoopGroup(); 
 //-------------------------------------------------------------------------------------------    
 	/**
      * FTP Server object
@@ -49,8 +49,9 @@ public final class MyFtpServer
 		File file = new File("conf/MyFtpServer.xml");
 		LoggerContext context =(org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
 		context.setConfigLocation(file.toURI());
-		logger = LogManager.getLogger(this.getClass()); 
-		logger.debug("Log4j is ready.");
+		
+		logger = LogManager.getLogger(MyFtpServer.class.getName()); 
+		logger.debug("Log4j2 is ready.");
 		serverConfig=new ServerConfig(logger);
 		if (serverConfig.load(this))
 		{	
@@ -168,9 +169,10 @@ public final class MyFtpServer
 	*/
 	public void stop()
 	{
-		
-		//bossGroup.shutdownGracefully();
-        //workerGroup.shutdownGracefully();
+		bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
+        bossGroup=null;
+        workerGroup=null;
         logger.info("Server shutdown gracefully.");
 		LoggerContext context = (LoggerContext) LogManager.getContext();
 		Configurator.shutdown(context);

@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.User;
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -108,12 +107,11 @@ public class FileUtil
 		Logger logger;
 		User user=fs.getUser();
 		String restPath,pathPerm,paths[];
-		Configuration config=fs.getConfig();
 		String serverPath=null,result=null,tempResult=null;
 		String clientPath=inPath,currentPath=fs.getCurrentPath();
 		TreeMap<String, String> clientPathACL=user.getClientPathACL();
 		
-		logger=config.getLogger();
+		logger=fs.getLogger();
 		if (clientPath.indexOf("/")==-1)
 		{	
 			clientPath=currentPath+clientPath;
@@ -127,7 +125,7 @@ public class FileUtil
 		tempResult=clientPathACL.get(restPath);
 		if (tempResult==null)
 		{
-			throw new PathNotFoundException(config.getFtpMessage("530_Home_Dir_Not_Found"));
+			throw new PathNotFoundException(fs.getFtpMessage("530_Home_Dir_Not_Found"));
 		}
 		else
 		{

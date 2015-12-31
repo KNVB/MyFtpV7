@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.MyFtpServer;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandChannelClosureListener;
 
@@ -52,21 +53,20 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
-		//System.out.println("Remote IP="+remoteIp);
 		if (s.isOverConnectionLimit())
 		{
-			//Utility.sendMessageToClient(ch, s.getLogger(),remoteIp,s.getConfig().getFtpMessage("330_Connection_Full"));
 			String msg=s.getServerConfig().getFtpMessage("330_Connection_Full");
 			Utility.disconnectFromClient(ch,logger,remoteIp,msg);
 		}
 		else
 		{
+			ServerConfig serverConfig=s.getServerConfig();
 			ch.closeFuture().addListener(new CommandChannelClosureListener(s,remoteIp));
-			Utility.sendMessageToClient(ch,logger,remoteIp,"220 "+s.getServerConfig().getFtpMessage("Greeting_Message"));
+			Utility.sendMessageToClient(ch,logger,remoteIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
 			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getServerConfig().getCommandChannelConnectionTimeOut(), 30, 0));
 
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
-			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s.getServerConfig(),remoteIp));
+			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));
 		}
 	}
 

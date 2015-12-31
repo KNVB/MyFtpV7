@@ -85,14 +85,10 @@ public class DbOp
 			  u.setActive(true);
 			  u.setDownloadSpeedLitmit(rs.getLong("downloadSpeedLimit"));
 			  u.setUploadSpeedLitmit(rs.getLong("uploadSpeedLimit"));
-			  
-				  Locale userLocale=new Locale(rs.getString("userLocale"));
-			  
-			  
-			  /*if ((rs.getString("userLocale")!=null) && (!rs.getString("userLocale").equals(serverConfig.getServerLocale())))
-				  fs.setMessageBundle(new MessageBundle()));
+			  if ((rs.getString("userLocale")!=null) && (!rs.getString("userLocale").equals(serverConfig.getServerLocale())))
+				  fs.setMessageBundle(new MessageBundle(new Locale(rs.getString("userLocale"))));
 			  else
-				  fs.setMessageBundle(serverConfig.getMessageBundle());*/
+				  fs.setMessageBundle(serverConfig.getMessageBundle());
 			}
 			else
 				result=UserManager.INVAILD_USERNAME_OR_PASSWORD;

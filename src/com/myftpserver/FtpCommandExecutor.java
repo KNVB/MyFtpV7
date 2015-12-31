@@ -53,7 +53,7 @@ public class FtpCommandExecutor
 	{
 		if (inString==null)
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),fs.getFtpMessage("500_NULL_Command"));
+			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("500_NULL_Command"));
 		}
 		else
 		{
@@ -83,7 +83,7 @@ public class FtpCommandExecutor
 					case "QUIT":
 					case "PASS":executeCommand(ctx,command,parameters);
 								break;
-					default:Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),fs.getFtpMessage("530_Not_Login"));
+					default:Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("530_Not_Login"));
 							break;	
 				}
 			}
@@ -100,7 +100,7 @@ public class FtpCommandExecutor
 		catch (InstantiationException | IllegalAccessException| ClassNotFoundException e) 
 		{
 			logger.info(cmdString.toUpperCase()+" command not implemented");
-			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),serverConfig.getFtpMessage("502_Command_Not_Implemeneted"));
+			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("502_Command_Not_Implemeneted"));
 		}
 		catch (Exception err)
 		{

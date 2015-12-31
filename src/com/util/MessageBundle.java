@@ -22,18 +22,20 @@ import net.sf.j18n.J18n;
  */
 public class MessageBundle 
 {
+	Locale defaultLocale;
 	ResourceBundle  ftpMessage;
 	public MessageBundle(Locale l)
 	{
+		defaultLocale=l;
 		try
 		{ 	
-			ftpMessage=J18n.getBundle("res.Messages",l);
+			ftpMessage=J18n.getBundle("res.Messages",defaultLocale);
 		}	
 		catch (MissingResourceException err)
 		{
 			//err.printStackTrace();
 			System.out.println("cannot found message for locale:"+l);
-			Locale defaultLocale=new Locale("en","US");
+			defaultLocale=new Locale("en","US");
 			ftpMessage= ResourceBundle.getBundle("res.Messages",defaultLocale);
 		}
 	}
@@ -49,7 +51,7 @@ public class MessageBundle
 	/**
 	 * Get message text from key and replace the nth parameter with replacement
 	 * @param key the message key
-	 * @param n the n parameter will be replaced
+	 * @param n the nth parameter will be replaced
 	 * @param keyword the replacement
 	 * @return the final result
 	 */
@@ -67,5 +69,8 @@ public class MessageBundle
 		}
 		return result;
 	}	
-
+	public String getLocale()
+	{
+		return defaultLocale.toString();
+	}
 }
