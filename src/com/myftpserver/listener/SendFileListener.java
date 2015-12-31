@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.ActiveClient;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
 public class SendFileListener implements ChannelFutureListener  
@@ -32,6 +33,8 @@ public class SendFileListener implements ChannelFutureListener
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File in Passive mode");
+			PassiveServer ps=fs.getPassiveServer();
+			ps.sendFile(responseCtx);
 		}
 		else
 		{

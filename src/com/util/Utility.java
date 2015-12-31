@@ -68,5 +68,5 @@ public class Utility
 	                + System.getProperty("os.version") + ", " + loc;
 	        logger.debug("System type="+result);
 	        return result;
-	}
+	}	
 }

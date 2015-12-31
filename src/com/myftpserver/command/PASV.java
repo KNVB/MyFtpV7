@@ -53,7 +53,9 @@ public class PASV implements FtpCommandInterface
 		{
 			port=server.getNextPassivePort();
 			if (port==-1)
+			{	
 				message=fs.getFtpMessage("550_CANT_CONNECT_CLNT");
+			}
 			else
 			{	
 				logger.debug("Port "+port+" is assigned.");
@@ -63,7 +65,7 @@ public class PASV implements FtpCommandInterface
 				message=message.replaceAll("%2", String.valueOf(port/256));
 				message=message.replaceAll("%3", String.valueOf(port % 256));
 				PassiveServer ps=new PassiveServer(fs,localIP,port);
-				fs.setPassiveServer(ps);
+				fs.setPassiveServer(ps);				
 			}				
 		}
 		else
@@ -71,6 +73,6 @@ public class PASV implements FtpCommandInterface
 			fs.isPassiveModeTransfer=false;
 			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
-		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 }

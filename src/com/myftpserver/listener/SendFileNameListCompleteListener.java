@@ -51,8 +51,7 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 		logger.info("File name list transfered to "+remoteIp+" Completed.");
 		if (passiveServer==null)
 			ch.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
-		//else
-		//	ch.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));	
-		
+		else
+			ch.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));	
 	}
 }

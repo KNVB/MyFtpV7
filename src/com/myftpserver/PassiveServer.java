@@ -17,9 +17,9 @@ import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import com.myftpserver.User;
-//import com.myftpserver.handler.SendFileHandler;
+import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
-//import com.myftpserver.handler.ReceiveFileHandler;
+import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
@@ -100,22 +100,22 @@ public class PassiveServer
 	 * @param serverPath A file to be sent to client 
 	 * @param responseCtx A ChannelHandlerContext for sending file transfer result to client
 	 */
-	/*public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
+	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
 		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
-	}*/
+	}
 	/**
 	 * Receive a file from client
 	 * @param serverPath the location of the file to be resided.
 	 * @param responseCtx A ChannelHandlerContext for sending file receive result to client
 	 */
-	/*public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
+	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
 		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
-	}*/
+	}
 	/**
 	 * Set a channel for passive mode
 	 * @param ch a channel for passive mode

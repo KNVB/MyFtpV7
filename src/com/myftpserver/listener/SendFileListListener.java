@@ -3,6 +3,7 @@ package com.myftpserver.listener;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.ActiveClient;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import io.netty.channel.ChannelFuture;
@@ -31,6 +32,8 @@ public class SendFileListListener implements ChannelFutureListener
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer Directory listing in Active mode");
+			PassiveServer ps=fs.getPassiveServer();
+			ps.sendFileNameList(resultList,responseCtx);
 		}
 		else
 		{
