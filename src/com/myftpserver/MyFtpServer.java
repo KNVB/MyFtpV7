@@ -51,7 +51,7 @@ public final class MyFtpServer
 		context.setConfigLocation(file.toURI());
 		logger = LogManager.getLogger(this.getClass()); 
 		logger.debug("Log4j is ready.");
-		ServerConfig serverConfig=new ServerConfig(logger);
+		serverConfig=new ServerConfig(logger);
 		if (serverConfig.load(this))
 		{	
 			logger.debug("Server Configuration is loaded successfully.");
