@@ -34,7 +34,7 @@ public class SendFileListener implements ChannelFutureListener
 		{
 			logger.info("Transfer File in Passive mode");
 			PassiveServer ps=fs.getPassiveServer();
-			ps.sendFile(responseCtx);
+			ps.sendFile(fileName, responseCtx);
 		}
 		else
 		{

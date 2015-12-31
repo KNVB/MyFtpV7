@@ -3,6 +3,7 @@ package com.myftpserver.listener;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.ActiveClient;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import io.netty.channel.ChannelFuture;
@@ -31,7 +32,9 @@ public class ReceiveFileListener implements ChannelFutureListener
 		logger.info("Message:"+fs.getFtpMessage("150_Open_Data_Conn")+" sent to:"+remoteIp);
 		if (fs.isPassiveModeTransfer)
 		{
-			logger.info("Receive File in Active mode");
+			logger.info("Receive File in Passiveive mode");
+			PassiveServer ps=fs.getPassiveServer();
+			ps.receiveFile(fileName, responseCtx);
 		}
 		else
 		{
