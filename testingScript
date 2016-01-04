@@ -8,7 +8,7 @@ ls /inetpub
 cd /inetpub
 cd /inetpub/wwwroot
 put Xmas-20141224-310.jpg
-rm Xmas-20141224-310.jpg
+del Xmas-20141224-310.jpg
 mkdir abc
 cd abc
 put Xmas-20141224-310.jpg

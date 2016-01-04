@@ -88,7 +88,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
 	{ 
 		ByteBuf in = (ByteBuf) msg;
-		logger.debug("ReceiveFileHandler channelRead buffer capacity="+in.capacity()+",readable byte count="+in.readableBytes());
+		//logger.debug("ReceiveFileHandler channelRead buffer capacity="+in.capacity()+",readable byte count="+in.readableBytes());
 	    try 
 	    {
 	        while (in.isReadable()) 
