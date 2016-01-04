@@ -1,6 +1,5 @@
 package com.myftpserver.listener;
 
-import com.util.Utility;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
