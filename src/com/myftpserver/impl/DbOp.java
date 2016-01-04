@@ -42,7 +42,7 @@ public class DbOp
 	private String jdbcDriver = new String();
 	/**
 	 * Database object,initialize db connection
-	 * @param c Configuration object
+	 * @param logger Message logger
 	 * @throws Exception
 	 */
 	public DbOp(Logger logger) throws Exception 

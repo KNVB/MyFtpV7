@@ -40,7 +40,7 @@ public abstract class UserManager
 	public Logger logger;
 	/**
 	 * User Manager interface
-	 * @param serverConfig Configuration object
+	 * @param logger Message logger
 	 */
 	public UserManager(Logger logger)
 	{

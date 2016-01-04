@@ -226,8 +226,11 @@ public class FileUtil
         	result="/";
         return result;
     }
-	
-	
+	/**
+	 * Delete directory recursively
+	 * @param path the path will be deleted
+	 * @return true if and only if the directory is successfully deleted; false otherwise 
+	 */	
 	public static boolean deleteDirectory(File path) 
 	{
 	    if( path.exists() ) {
