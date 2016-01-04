@@ -43,12 +43,12 @@ public class ActiveClient
 	ChannelHandlerContext responseCtx;
 	/** 
 	* This is an active mode client for file transfer and file listing transfer	
-	**/
-	public ActiveClient(FtpSessionHandler fs, ChannelHandlerContext ctx)
+	**/	
+	public ActiveClient(FtpSessionHandler fs, ChannelHandlerContext responseCtx) 
 	{
 		this.fs=fs;
-		logger=fs.getConfig().getLogger();
-		this.responseCtx=ctx;
+		this.responseCtx=responseCtx;
+		this.logger=fs.getLogger();
 	}
 	/**
 	 * Send file listing to client
@@ -75,7 +75,7 @@ public class ActiveClient
         finally 
         {
         	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
-        	fs.getConfig().getLogger().debug("Active Mode client is shutdown gracefully.");
+        	logger.debug("Active Mode client is shutdown gracefully.");
         }
 	}
 	/**
@@ -102,6 +102,7 @@ public class ActiveClient
         {
         	group.shutdownGracefully().sync();
         	logger.info("Active Mode client is shutdown gracefully.");
+        	group = null;
         }
     }
 	/**
@@ -129,5 +130,5 @@ public class ActiveClient
         	group.shutdownGracefully().sync();
         	logger.debug("Active Mode client is shutdown gracefully.");
         }		
-	}
+	}	
 }

@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.QuotaExceedException;
@@ -48,13 +48,14 @@ public class RMD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) 
 	{
 		boolean result;
 		File serverFolder;
+		Logger logger=fs.getLogger();
 		String serverPath=new String(),newPathName,message;
-		Configuration config=fs.getConfig();
-		FileManager fm=fs.getConfig().getFileManager();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
 		logger.debug("inPath="+inPath+"|");
 		try 
 		{
@@ -69,7 +70,7 @@ public class RMD implements FtpCommandInterface
 				result=serverFolder.delete();
 				if (result)
 				{
-					message=config.getFtpMessage("250_RMD");
+					message=fs.getFtpMessage("250_RMD");
 					message=message.replaceAll("%1", inPath);
 					Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
 				}
@@ -78,7 +79,7 @@ public class RMD implements FtpCommandInterface
 			}
 			else
 			{	
-				message=config.getFtpMessage("550_Not_A_Directory");
+				message=fs.getFtpMessage("550_Not_A_Directory");
 				message=message.replaceAll("%1", inPath);
 				throw new NotADirectoryException(message);
 			}
@@ -89,13 +90,13 @@ public class RMD implements FtpCommandInterface
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			message=config.getFtpMessage("550_RMD_Failure");
+			message=fs.getFtpMessage("550_RMD_Failure");
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied"));
 		} 
 	}
 }

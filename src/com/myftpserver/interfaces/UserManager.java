@@ -3,7 +3,6 @@ package com.myftpserver.interfaces;
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import java.util.Vector;
@@ -40,17 +39,12 @@ public abstract class UserManager
 	 */
 	public Logger logger;
 	/**
-	 * Configuration object
-	 */
-	public Configuration config;
-	/**
 	 * User Manager interface
-	 * @param c Configuration object
+	 * @param serverConfig Configuration object
 	 */
-	public UserManager(Configuration c)
+	public UserManager(Logger logger)
 	{
-		this.config=c;
-		this.logger=config.getLogger();
+		this.logger=logger;
 	}
 	/**
 	 * Get a list of user object

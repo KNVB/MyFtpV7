@@ -42,33 +42,36 @@ public class PASV implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,	Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
 	{
 		int port;
-		Configuration config=fs.getConfig();
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
 		MyFtpServer server=fs.getServer();
 		String message=new String(),localIP=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
-		if (config.isSupportPassiveMode())
+		if (serverConfig.isSupportPassiveMode())
 		{
 			port=server.getNextPassivePort();
 			if (port==-1)
-				message=fs.getConfig().getFtpMessage("550_CANT_CONNECT_CLNT");
+			{	
+				message=fs.getFtpMessage("550_CANT_CONNECT_CLNT");
+			}
 			else
 			{	
 				logger.debug("Port "+port+" is assigned.");
 				fs.isPassiveModeTransfer=true;
-				message=fs.getConfig().getFtpMessage("227_Enter_Passive_Mode");
+				message=fs.getFtpMessage("227_Enter_Passive_Mode");
 				message=message.replaceAll("%1", localIP.replaceAll("\\.", ","));
 				message=message.replaceAll("%2", String.valueOf(port/256));
 				message=message.replaceAll("%3", String.valueOf(port % 256));
 				PassiveServer ps=new PassiveServer(fs,localIP,port);
-				fs.setPassiveServer(ps);
+				fs.setPassiveServer(ps);				
 			}				
 		}
 		else
 		{
 			fs.isPassiveModeTransfer=false;
-			message=fs.getConfig().getFtpMessage("502_Command_Not_Implemeneted");
+			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}

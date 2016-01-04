@@ -33,19 +33,18 @@ public class ManagersFactory
 {
 	Logger logger;
 	PropertyResourceBundle bundle;
-	Configuration config;
-	public ManagersFactory(PropertyResourceBundle b,Configuration c)
+	ServerConfig serverConfig;
+	public ManagersFactory(PropertyResourceBundle b,ServerConfig c,Logger logger)
 	{
 		bundle=b;
-		logger=c.getLogger();
-		config=c;
+		this.logger=logger;
 	}
 	public FileManager getFileManager()
 	{
 		FileManager fm=null;
 		try 
 		{
-			fm = (FileManager) getManager("fileManager.classname").newInstance(this.config);
+			fm = (FileManager) getManager("fileManager.classname").newInstance(this.logger);
 		}
 		catch (IllegalArgumentException | InvocationTargetException |InstantiationException e) 
 		{
@@ -62,7 +61,7 @@ public class ManagersFactory
 		UserManager um=null;
 		try 
 		{
-			um = (UserManager) getManager("userManager.classname").newInstance(this.config);
+			um = (UserManager) getManager("userManager.classname").newInstance(this.logger);
 		}
 		catch (InstantiationException |IllegalArgumentException | InvocationTargetException e) 
 		{
@@ -80,7 +79,7 @@ public class ManagersFactory
 		Constructor c=null;
 		try
 		{
-			c=Class.forName(bundle.getString(key)).getConstructor(Configuration.class);
+			c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
 			return c;
 		}
 		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 

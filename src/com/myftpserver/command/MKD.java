@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -48,11 +48,13 @@ public class MKD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) 
 	{
 		String serverPath=new String(),newPathName,message;
-		Configuration config=fs.getConfig();
-		FileManager fm=fs.getConfig().getFileManager();
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		
 		logger.debug("inPath="+inPath+"|");
 		try 
 		{
@@ -62,7 +64,7 @@ public class MKD implements FtpCommandInterface
 			serverPath=fm.putFile(fs,newPathName);
 			logger.debug("serverPath="+serverPath+",newPathName="+newPathName);
 			Files.createDirectories(Paths.get(serverPath));
-			message=config.getFtpMessage("257_MKD");
+			message=fs.getFtpMessage("257_MKD");
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
 		} 
@@ -72,13 +74,13 @@ public class MKD implements FtpCommandInterface
 		}
 		catch (PathNotFoundException|InvalidPathException|IOException err) 
 		{
-			message=config.getFtpMessage("550_MKD_Failure");
+			message=fs.getFtpMessage("550_MKD_Failure");
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		} 
 	}
 }

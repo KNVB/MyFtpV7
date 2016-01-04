@@ -4,8 +4,6 @@ import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import org.apache.logging.log4j.Logger;
-
 import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -36,9 +34,9 @@ public class NOOP implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("200_Ok"));
+		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Ok"));
 	}
 
 }

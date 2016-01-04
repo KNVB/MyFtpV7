@@ -2,7 +2,6 @@ package com.myftpserver.impl;
 
 import com.myftpserver.User;
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 
@@ -20,6 +19,8 @@ import java.util.Map.Entry;
 import java.util.Collections;
 import java.nio.file.DirectoryStream;
 import java.nio.file.NoSuchFileException;
+
+import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -42,9 +43,9 @@ import java.nio.file.NoSuchFileException;
  */
 public class MyFileManager extends FileManager 
 {
-	public MyFileManager(Configuration c) 
+	public MyFileManager(Logger logger) 
 	{
-		super(c);
+		super(logger);
 	}
 	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
 	{
@@ -54,21 +55,21 @@ public class MyFileManager extends FileManager
 		}
 		catch (AccessDeniedException err)
 		{
-			throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+			throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
 		}
 		catch (PathNotFoundException err)
 		{
-			throw new InvalidHomeDirectoryException(config.getFtpMessage("530_Home_Dir_Not_Found"));
+			throw new InvalidHomeDirectoryException(fs.getFtpMessage("530_Home_Dir_Not_Found"));
 		}
 	}
 	public String getServerPath(FtpSessionHandler fs,String inPath, String requiredPermission)throws AccessDeniedException,PathNotFoundException
 	{
 		String serverPath=new String(),serverPathPerm=null,virtualPathPerm=null,finalPerm=null;
-		String clientPath=FileUtil.normalizeClientPath(fs.getConfig().getLogger(), fs.getCurrentPath(), inPath);
+		String clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
 		String serverPathAndPerm=FileUtil.getServerPathAndPermFromVirDir(fs,clientPath);
 		if (serverPathAndPerm.isEmpty())
 		{
-			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+			throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
 		}
 		else
 		{
@@ -83,13 +84,13 @@ public class MyFileManager extends FileManager
 			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm+",finalPerm="+finalPerm);
 			if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
 			{
-				throw new AccessDeniedException(config.getFtpMessage("550_Permission_Denied"));
+				throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
 			}
 			else
 			{
 				if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
 				{
-					throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+					throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
 				}
 			}
 		}
@@ -178,13 +179,13 @@ public class MyFileManager extends FileManager
 		}
 		catch (NotDirectoryException err)
 		{
-			String message=config.getFtpMessage("550_Not_A_Directory");
+			String message=fs.getFtpMessage("550_Not_A_Directory");
 			message=message.replaceAll("%1", inPath);
 			throw new NotADirectoryException(message);
 		}
 		catch (NoSuchFileException ex)
 		{
-			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+			throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
 		}
         catch (Exception ex) 
     	{
@@ -263,13 +264,13 @@ public class MyFileManager extends FileManager
 		}
 		catch (NotDirectoryException err)
 		{
-			String message=config.getFtpMessage("550_Not_A_Directory");
+			String message=fs.getFtpMessage("550_Not_A_Directory");
 			message=message.replaceAll("%1", inPath);
 			throw new NotADirectoryException(message);
 		}
 		catch (NoSuchFileException ex)
 		{
-			throw new PathNotFoundException(fs.getConfig().getFtpMessage("450_Directory_Not_Found"));
+			throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
 		}
         catch (Exception ex) 
     	{
@@ -280,7 +281,7 @@ public class MyFileManager extends FileManager
 	@Override
 	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException 
 	{
-		String message=config.getFtpMessage("550_Not_A_File");
+		String message=fs.getFtpMessage("550_Not_A_File");
 		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		if (Files.isDirectory(Paths.get(serverPath)))
 		{
@@ -294,7 +295,7 @@ public class MyFileManager extends FileManager
 	{
 		int index;
 		String fileName;
-		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(fs.getConfig().getLogger(), fs.getCurrentPath(), inPath);
+		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
 		index=clientPath.lastIndexOf("/");
 		fileName=clientPath.substring(index+1);
 		clientPath=clientPath.substring(0,index);
@@ -305,5 +306,5 @@ public class MyFileManager extends FileManager
 	public void close() 
 	{
 		
-	}		
+	}	
 }

@@ -65,7 +65,7 @@ public class PassiveServer
 		this.port=port;
 		this.user=fs.getUser();
 		this.myFtpServer=fs.getServer();
-		this.logger=fs.getConfig().getLogger();
+		this.logger=fs.getLogger();
 		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
 		try 
         {
@@ -132,6 +132,8 @@ public class PassiveServer
 	{
     	bossGroup.shutdownGracefully();
 		workerGroup.shutdownGracefully();
+		bossGroup=null;
+		workerGroup=null;
 		logger.debug("Passive Mode Server is shutdown gracefully.");
 		myFtpServer.returnPassivePort(port);
 	}

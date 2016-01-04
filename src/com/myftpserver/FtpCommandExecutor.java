@@ -31,7 +31,7 @@ import com.myftpserver.interfaces.FtpCommandInterface;
 public class FtpCommandExecutor 
 {
 	FtpSessionHandler thisSession=null;
-	Configuration config=null;
+	ServerConfig serverConfig=null;
 	org.apache.logging.log4j.Logger logger=null;
 	Channel ch=null;
 	/**
@@ -41,8 +41,7 @@ public class FtpCommandExecutor
 	public FtpCommandExecutor (FtpSessionHandler fs)
 	{
 		this.thisSession=fs;
-		this.config=fs.getConfig();
-		this.logger=config.getLogger();	 
+		this.logger=fs.getLogger();	 
 	}
 	/**
 	 * Execute a raw ftp command
@@ -54,7 +53,7 @@ public class FtpCommandExecutor
 	{
 		if (inString==null)
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("500_NULL_Command"));
+			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("500_NULL_Command"));
 		}
 		else
 		{
@@ -84,7 +83,7 @@ public class FtpCommandExecutor
 					case "QUIT":
 					case "PASS":executeCommand(ctx,command,parameters);
 								break;
-					default:Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("530_Not_Login"));
+					default:Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("530_Not_Login"));
 							break;	
 				}
 			}
@@ -96,12 +95,12 @@ public class FtpCommandExecutor
 		try
 		{
 			cmd=(FtpCommandInterface) Class.forName("com.myftpserver.command."+cmdString.toUpperCase()).newInstance();
-			cmd.execute(thisSession,ctx,parameters,logger);
+			cmd.execute(thisSession,ctx,parameters);
 		}
 		catch (InstantiationException | IllegalAccessException| ClassNotFoundException e) 
 		{
 			logger.info(cmdString.toUpperCase()+" command not implemented");
-			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),config.getFtpMessage("502_Command_Not_Implemeneted"));
+			Utility.sendMessageToClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("502_Command_Not_Implemeneted"));
 		}
 		catch (Exception err)
 		{

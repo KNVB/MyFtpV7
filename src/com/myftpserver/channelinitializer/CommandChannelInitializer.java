@@ -2,8 +2,11 @@ package com.myftpserver.channelinitializer;
 
 import java.net.InetSocketAddress;
 
+import org.apache.logging.log4j.Logger;
+
 import com.util.Utility;
 import com.myftpserver.MyFtpServer;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandChannelClosureListener;
 
@@ -34,31 +37,33 @@ import io.netty.handler.codec.string.StringDecoder;
  */
 public class CommandChannelInitializer extends ChannelInitializer<Channel>
 {
+	Logger logger;
 	MyFtpServer s;
 	/**
 	 * Initialize a command channel for user interaction
 	 * @param t MyFtpServer object
+	 * @param logger 
 	 */
-	public CommandChannelInitializer(MyFtpServer t)
+	public CommandChannelInitializer(MyFtpServer t, Logger logger)
 	{
 		s=t;
+		this.logger=logger;
 	}
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
-		//System.out.println("Remote IP="+remoteIp);
 		if (s.isOverConnectionLimit())
 		{
-			//Utility.sendMessageToClient(ch, s.getLogger(),remoteIp,s.getConfig().getFtpMessage("330_Connection_Full"));
-			String msg=s.getConfig().getFtpMessage("330_Connection_Full");
-			Utility.disconnectFromClient(ch,s.getLogger(),remoteIp,msg);
+			String msg=s.getServerConfig().getFtpMessage("330_Connection_Full");
+			Utility.disconnectFromClient(ch,logger,remoteIp,msg);
 		}
 		else
 		{
+			ServerConfig serverConfig=s.getServerConfig();
 			ch.closeFuture().addListener(new CommandChannelClosureListener(s,remoteIp));
-			Utility.sendMessageToClient(ch,s.getLogger(),remoteIp,"220 "+s.getConfig().getFtpMessage("Greeting_Message"));
-			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getConfig().getCommandChannelConnectionTimeOut(), 30, 0));
+			Utility.sendMessageToClient(ch,logger,remoteIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
+			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getServerConfig().getCommandChannelConnectionTimeOut(), 30, 0));
 
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
 			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));

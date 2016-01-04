@@ -44,15 +44,15 @@ public class LIST implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
-		logger.debug("param="+param);
-		//logger.debug("Server currentPath:"+fs.getServerCurrentPath());
+		Logger logger=fs.getLogger();
 		String p[]=param.split(" ");
 		String clientPath=new String();
-		Configuration config=fs.getConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		StringBuffer resultList=new StringBuffer();
-		FileManager fm=fs.getConfig().getFileManager();
+		FileManager fm=serverConfig.getFileManager();
+		logger.debug("param="+param);
 		switch (p.length)
 		{
 			case 0:clientPath="";
@@ -78,20 +78,7 @@ public class LIST implements FtpCommandInterface
 		try
 		{
 			resultList=fm.getFullDirList(fs,clientPath);
-			if (fs.isPassiveModeTransfer)
-			{
-				logger.info("Transfer Directory listing in Passive mode");
-				PassiveServer ps=fs.getPassiveServer();
-				ps.sendFileNameList(resultList,ctx);
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-			}
-			else
-			{
-				logger.info("Transfer Directory listing in Active mode");
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-				ActiveClient activeClient=new ActiveClient(fs,ctx);
-				activeClient.sendFileNameList(resultList);
-			}
+			Utility.sendFileListToClient(ctx,fs,resultList);
 		}
 		catch (InterruptedException |NotADirectoryException err)
 		{
@@ -99,11 +86,11 @@ public class LIST implements FtpCommandInterface
 		} 
 		catch (PathNotFoundException |InvalidPathException err)
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e)
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		} 
 	}	
 }

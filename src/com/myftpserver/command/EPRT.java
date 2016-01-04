@@ -37,23 +37,25 @@ public class EPRT implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
 		String temp[]=param.trim().split("\\|");
-		//fs.setClientDataPort(Integer.parseInt(temp[temp.length-1]));
+		Logger logger=fs.getLogger();
 		if (temp.length!=4)
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getConfig().getFtpMessage("500_Null_Command"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
 		else
 		{	
 			try
 			{
 				int portNo=Integer.parseInt(temp[temp.length-1]);
+				logger.debug("Port="+portNo);
+				fs.isPassiveModeTransfer=false;
 				fs.setClientDataPortNo(portNo);
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getConfig().getFtpMessage("200_Port_Ok"));
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("200_Port_Ok"));
 			}
 			catch (Exception e)
 			{
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getConfig().getFtpMessage("550_CANT_CONNECT_CLNT"));
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("550_CANT_CONNECT_CLNT"));
 			}
 		}
 	}

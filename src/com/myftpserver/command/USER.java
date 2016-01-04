@@ -1,7 +1,6 @@
 package com.myftpserver.command;
 
 import com.util.Utility;
-import com.myftpserver.*;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -30,17 +29,17 @@ import org.apache.logging.log4j.Logger;
 public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 {
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger) 
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
 	{
-		Configuration config=fs.getConfig();
 		String message=new String();
+		Logger logger=fs.getLogger();
 		if (param ==null)
 		{
-			message=config.getFtpMessage("500_Null_Command");
+			message=fs.getFtpMessage("500_Null_Command");
 		}
 		else
 		{
-			message=config.getFtpMessage("331_Password_Required");
+			message=fs.getFtpMessage("331_Password_Required");
 			message=message.replaceAll("%1", param);
 			fs.setUserName(param);
 		}

@@ -7,9 +7,7 @@ import org.apache.logging.log4j.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
-import com.myftpserver.ActiveClient;
-import com.myftpserver.Configuration;
-import com.myftpserver.PassiveServer;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -47,11 +45,13 @@ public class STOR implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
+		Logger logger=fs.getLogger();
 		String serverPath=new String(),fileName;
-		Configuration config=fs.getConfig();
-		FileManager fm=fs.getConfig().getFileManager();
+		ServerConfig serverConfig=fs.getServerConfig();
+		
+		FileManager fm=serverConfig.getFileManager();
 		logger.debug("param="+param+"|");
 		try 
 		{
@@ -60,21 +60,7 @@ public class STOR implements FtpCommandInterface
 				fileName=fs.getCurrentPath()+"/"+fileName;
 			serverPath=fm.putFile(fs,fileName);
 			logger.debug("serverPath="+serverPath+",fileName="+fileName);
-
-			if (fs.isPassiveModeTransfer)
-			{
-				logger.debug("User upload file in Passive mode");
-				PassiveServer ps=fs.getPassiveServer();
-				ps.receiveFile(serverPath,ctx);
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-			}
-			else
-			{
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-				logger.debug("User upload file in Active mode");
-				ActiveClient activeClient=new ActiveClient(fs,ctx);
-				activeClient.receiveFile(serverPath);
-			}
+			Utility.receiveFileFromClient(ctx,fs,serverPath);
 		} 
 		catch (InterruptedException|QuotaExceedException err) 
 		{
@@ -83,11 +69,11 @@ public class STOR implements FtpCommandInterface
 		
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		}
 	}
 }

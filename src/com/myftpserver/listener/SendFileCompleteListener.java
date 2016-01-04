@@ -1,7 +1,6 @@
 package com.myftpserver.listener;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
@@ -38,7 +37,6 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	PassiveServer passiveServer=null;
 	Logger logger;
 	String remoteIp;
-	Configuration config;
 
 	public SendFileCompleteListener(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer passiveServer)
 	{
@@ -47,13 +45,12 @@ public class SendFileCompleteListener implements ChannelFutureListener
 		this.passiveServer=passiveServer;
 		this.responseCtx=responseCtx;
 		this.remoteIp=fs.getClientIp();
-		this.logger=fs.getConfig().getLogger();
-		this.config=fs.getConfig();
+		this.logger=fs.getLogger();
 	}
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok")); 
+		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok")); 
 		if (passiveServer==null)
 			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
 		else

@@ -2,18 +2,18 @@ package com.myftpserver.command;
 
 import java.nio.file.InvalidPathException;
 
+import org.apache.logging.log4j.Logger;
+
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
-import com.myftpserver.*;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.NotADirectoryException;
 import com.myftpserver.exception.PathNotFoundException;
-
-import org.apache.logging.log4j.Logger;
-
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,8 +34,8 @@ import io.netty.channel.ChannelHandlerContext;
  * @author SITO3
  *
  */
-public class NLST implements FtpCommandInterface {
-
+public class NLST implements FtpCommandInterface 
+{
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
@@ -43,13 +43,14 @@ public class NLST implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,Logger logger)	
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
 		boolean fullList=false;
+		Logger logger=fs.getLogger();
 		String clientPath=new String();
-		Configuration config=fs.getConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		StringBuffer resultList=new StringBuffer();
-		FileManager fm=fs.getConfig().getFileManager();
+		FileManager fm=serverConfig.getFileManager();
 
 		if (param.startsWith("-"))
 		{
@@ -62,27 +63,14 @@ public class NLST implements FtpCommandInterface {
 			fullList=false;
 		}
 		logger.debug("fullList="+fullList+",clientPath="+clientPath+",param="+param);
-		try
+		try 
 		{
 			if (fullList)
 				resultList=fm.getFullDirList(fs,clientPath);
 			else
 				resultList=fm.getFileNameList(fs,clientPath);
-			if (fs.isPassiveModeTransfer)
-			{
-				logger.info("Transfer Directory listing in Passive mode");
-				PassiveServer ps=fs.getPassiveServer();
-				ps.sendFileNameList(resultList,ctx);
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-			}
-			else
-			{
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("150_Open_Data_Conn"));
-				logger.info("Transfer Directory listing in Active mode");
-				ActiveClient activeClient=new ActiveClient(fs,ctx);
-				activeClient.sendFileNameList(resultList);
-			}
-		}
+			Utility.sendFileListToClient(ctx,fs,resultList);
+		}		
 		catch (InterruptedException |NotADirectoryException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
@@ -90,16 +78,16 @@ public class NLST implements FtpCommandInterface {
 		}
 		catch (PathNotFoundException |InvalidPathException err)
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e)
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		} 
 		catch (Exception err)
 		{
 			err.printStackTrace();
 		}
 	}
-	
+
 }

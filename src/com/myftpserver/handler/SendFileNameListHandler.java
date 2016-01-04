@@ -2,17 +2,17 @@ package com.myftpserver.handler;
 
 import java.io.IOException;
 
-//import org.apache.log4j.Logger;
-
-import com.util.Utility;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.listener.SendFileNameListCompleteListener;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.CharsetUtil;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -54,25 +54,24 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 		this.passiveServer=passiveServer;
 		this.fileNameList=fileNameList;
 	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext arg0, Throwable arg1)
-			throws Exception {
-		// TODO Auto-generated method stub
-
-	}
 	public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
-		Utility.sendFileNameList(ctx.channel(),responseCtx,fileNameList,fs,passiveServer);
+		ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs,responseCtx,passiveServer));
 	}
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{
 		if (passiveServer!=null)
-			Utility.sendFileNameList(ctx.channel(),responseCtx,fileNameList,fs,passiveServer);
+			ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs,responseCtx,passiveServer));
 	}
 	@Override
 	protected void channelRead0(ChannelHandlerContext arg0, ByteBuf arg1)
 			throws Exception {
 		// TODO Auto-generated method stub
 	}
+	@Override
+	public void exceptionCaught(ChannelHandlerContext arg0, Throwable arg1)
+			throws Exception {
+		// TODO Auto-generated method stub
+	}
+
 }

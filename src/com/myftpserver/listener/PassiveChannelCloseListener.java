@@ -1,8 +1,9 @@
 package com.myftpserver.listener;
 
-import com.myftpserver.Configuration;
+
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.util.Utility;
 
 import org.apache.logging.log4j.Logger;
 
@@ -14,18 +15,16 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 {
 	Logger logger;
 	String remoteIp;
-	Configuration config;
 	FtpSessionHandler fs;
 	ChannelHandlerContext responseCtx;
 	private PassiveServer passiveServer;
 	public PassiveChannelCloseListener(FtpSessionHandler fs, ChannelHandlerContext responseCtx, PassiveServer passiveServer) 
 	{
 		this.fs=fs;
-		this.config=fs.getConfig();
 		this.responseCtx=responseCtx;
 		this.remoteIp=fs.getClientIp();
 		this.passiveServer=passiveServer;
-		this.logger=fs.getConfig().getLogger();
+		this.logger=fs.getLogger();
 	}
 
 	@Override
@@ -33,6 +32,6 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	{
 		this.passiveServer.stop();
 		this.passiveServer=null;
-		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), config.getFtpMessage("226_Transfer_Ok"));
+		Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), fs.getFtpMessage("226_Transfer_Ok"));
 	}
 }

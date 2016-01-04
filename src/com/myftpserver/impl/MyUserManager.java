@@ -4,25 +4,27 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.apache.logging.log4j.Logger;
+
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
 import com.myftpserver.interfaces.UserManager;
 import com.myftpserver.handler.FtpSessionHandler;
 
 public class MyUserManager extends UserManager  
 {
-	String strSql=new String();
-	ArrayList<Object> values=null;
 	DbOp dbo=null;
 	ResultSet rs=null;
-	public MyUserManager(Configuration c) 
+	String strSql=new String();
+	ArrayList<Object> values=null;
+
+	public MyUserManager(Logger logger) 
 	{
-		super(c);
+		super(logger);
 		try 
 		{
-			dbo=new DbOp(c);
+			dbo=new DbOp(logger);
 		} 
 		catch (Exception e) 
 		{
@@ -30,6 +32,7 @@ public class MyUserManager extends UserManager
 			dbo=null;
 		}
 	}
+
 
 	@Override
 	public Vector<User> listAllUser() {

@@ -1,5 +1,4 @@
 package com.myftpserver.command;
-import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -38,11 +37,11 @@ public class QUIT implements FtpCommandInterface
 
 	
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param, Logger logger) 
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
 	{
 		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
-		String goodByeMsg=fs.getConfig().getFtpMessage("221_Logout_Ok");
+		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
 		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs, logger, remoteIp, goodByeMsg);
+		Utility.disconnectFromClient(fs.getChannel(), fs.getLogger(), remoteIp, goodByeMsg);
 	}
 }

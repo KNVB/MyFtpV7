@@ -42,18 +42,19 @@ public class PASS implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param,	Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
 	{
-		Configuration config=fs.getConfig();
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
 		String message=new String();
 		if ((param==null) || (param.isEmpty()))
 		{
-			message=config.getFtpMessage("500_Null_Command");
+			message=fs.getFtpMessage("500_Null_Command");
 		}
 		else
 		{
-			UserManager um=config.getUserManager();
-			FileManager fm=config.getFileManager();
+			UserManager um=serverConfig.getUserManager();
+			FileManager fm=serverConfig.getFileManager();
 			try 
 			{
 				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)"+(um==null));
@@ -62,12 +63,12 @@ public class PASS implements FtpCommandInterface
 				fs.setIsLogined(true);
 				fs.setCurrentPath("/");
 				fm.getRealHomePath(fs);
-				message=config.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
+				message=fs.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
 				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 			} 
 			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
 			{
-				Utility.disconnectFromClient(fs, logger,fs.getClientIp(),e.getMessage());
+				Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),e.getMessage());
 			} 
 		}
 	}

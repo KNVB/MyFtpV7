@@ -1,19 +1,21 @@
 package com.myftpserver;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import java.util.Stack;
-
-import com.myftpserver.Configuration;
-import com.myftpserver.channelinitializer.CommandChannelInitializer;
-
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+
+import java.io.File;
+import java.util.Stack;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
+
+import com.myftpserver.channelinitializer.CommandChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -29,12 +31,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * 
- * @author SITO3
- * 
- */
-public class MyFtpServer 
+public final class MyFtpServer 
 {
 	/**
 	 * Specify the transfer is send a file to client
@@ -49,34 +46,39 @@ public class MyFtpServer
 	 */
 	public static final int SENDDIRLIST=2;
 	
-	private static int connectionCount=0;
-	private EventLoopGroup bossGroup = new NioEventLoopGroup();
-    private EventLoopGroup workerGroup = new NioEventLoopGroup();
-    private Logger logger=null;
-	private Configuration config=null;
+	private static Logger logger=null;
 	private Stack<Integer> passivePorts;
-//-------------------------------------------------------------------------------------------
-    /**
+	private static int connectionCount=0;
+	private ServerConfig serverConfig=null;
+		
+	private EventLoopGroup bossGroup=new NioEventLoopGroup();
+    private EventLoopGroup workerGroup=new NioEventLoopGroup(); 
+//-------------------------------------------------------------------------------------------    
+	/**
      * FTP Server object
      */
 	public MyFtpServer()
 	{
-		logger=LogManager.getLogger(this.getClass());
-		logger.info("Log4j is ready.");
-		config=new Configuration(logger);
-		if (config.load(this))
-		{
-			logger.info("Server Initialization completed.");
-			if ((config.isSupportPassiveMode()) && (config.isPassivePortSpecified()))
+		File file = new File("conf/MyFtpServer.xml");
+		LoggerContext context =(org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
+		context.setConfigLocation(file.toURI());
+		
+		logger = LogManager.getLogger(MyFtpServer.class.getName()); 
+		logger.debug("Log4j2 is ready.");
+		serverConfig=new ServerConfig(logger);
+		if (serverConfig.load(this))
+		{	
+			logger.debug("Server Configuration is loaded successfully.");
+			if ((serverConfig.isSupportPassiveMode()) && (serverConfig.isPassivePortSpecified()))
 			{
-				passivePorts=config.passivePorts;
-				//logger.debug(passivePorts==null);
+				passivePorts=serverConfig.passivePorts;
 				logger.info("Available passive port:"+passivePorts.toString());
 			}
-			
 		}
+		else
+			logger.debug("Server Configuration cannot be loaded");
 	}
-//-------------------------------------------------------------------------------------------	
+	//-------------------------------------------------------------------------------------------	
     /**
 	 * Get message logger
 	 * @return message logger 
@@ -90,25 +92,10 @@ public class MyFtpServer
 	 * Get Configuration object
 	 * @return Configuration object
 	 */
-	public Configuration getConfig()
+	public ServerConfig getServerConfig()
 	{
-		return config;
-	}
-//-------------------------------------------------------------------------------------------
-	/**
-	 * Check whether the concurrent connection is over the limit
-	 * @return true when the concurrent connection is over the limit
-	 */
-	public synchronized boolean isOverConnectionLimit()
-	{
-		if (connectionCount<config.getMaxConnection())
-		{	
-			connectionCount++;
-			return false;
-		}
-		else			
-			return true;
-	}
+		return serverConfig;
+	}	
 //-------------------------------------------------------------------------------------------	
 	/**
 	 * Called by FtpSessionHandler object when a FTP session is ended.
@@ -118,6 +105,20 @@ public class MyFtpServer
 		logger.debug("Before:"+connectionCount);
 		connectionCount--;
 		logger.info("Concurrent Connection Count:"+connectionCount);
+	}	
+	/**
+	 * Check whether the concurrent connection is over the limit
+	 * @return true when the concurrent connection is over the limit
+	 */
+	public synchronized boolean isOverConnectionLimit()
+	{
+		if (connectionCount<serverConfig.getMaxConnection())
+		{	
+			connectionCount++;
+			return false;
+		}
+		else			
+			return true;
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
@@ -128,9 +129,9 @@ public class MyFtpServer
 	public synchronized int getNextPassivePort()
 	{
 		int nextPassivePort=-1;
-		if (config.isSupportPassiveMode())
+		if (serverConfig.isSupportPassiveMode())
 		{
-			if (config.isPassivePortSpecified())
+			if (serverConfig.isPassivePortSpecified())
 			{
 				if (passivePorts.size()>0)
 					nextPassivePort=passivePorts.pop();
@@ -150,20 +151,20 @@ public class MyFtpServer
 			passivePorts.push(port);
 			logger.debug("Passive Port:"+port+" return");
 		}
-	}		
-//-------------------------------------------------------------------------------------------
-/**
- *  start FTP server
- */
+	}
+//-------------------------------------------------------------------------------------------	
+	/**
+	 *  start FTP server
+	 */
 	public void start()
 	{
 		try 
         {
 			ServerBootstrap bootStrap = new ServerBootstrap();
             bootStrap.group(bossGroup, workerGroup);
-            bootStrap.localAddress(config.getServerPort());
+            bootStrap.localAddress(serverConfig.getServerPort());
             bootStrap.channel(NioServerSocketChannel.class);
-            bootStrap.childHandler(new CommandChannelInitializer(this));
+            bootStrap.childHandler(new CommandChannelInitializer(this,logger));
             bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             logger.info("My FTP Server is started.");
             // Wait until the server socket is closed.
@@ -176,19 +177,23 @@ public class MyFtpServer
 		}	        
 	}
 //-------------------------------------------------------------------------------------------	
-/**
-*  stop FTP server
-*/
+	/**
+	*  stop FTP server
+	*/
 	public void stop()
 	{
-    	bossGroup.shutdownGracefully();
+		bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
+        bossGroup=null;
+        workerGroup=null;
         logger.info("Server shutdown gracefully.");
+		LoggerContext context = (LoggerContext) LogManager.getContext();
+		Configurator.shutdown(context);
 	}
-//-------------------------------------------------------------------------------------------	
-	public static void main(String[] args) throws Exception 
+//-------------------------------------------------------------------------------------------
+	public static void main(String[] args) 
 	{
 		MyFtpServer m=new MyFtpServer();
-		m.start();
+		m.start();	
 	}
 }

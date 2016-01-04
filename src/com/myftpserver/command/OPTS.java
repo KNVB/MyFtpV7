@@ -5,8 +5,6 @@ import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
 import io.netty.channel.ChannelHandlerContext;
-
-import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,9 +32,9 @@ public class OPTS implements FtpCommandInterface
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx,String param,Logger logger) 
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx,String param) 
 	{
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("200_Opt_Response"));
+		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Opt_Response"));
  	}
 
 }

@@ -3,7 +3,6 @@ package com.myftpserver.interfaces;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.exception.*;
-import com.myftpserver.Configuration;
 import com.myftpserver.handler.FtpSessionHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -81,17 +80,12 @@ public abstract class FileManager
 	 */
 	public Logger logger;
 	/**
-	 * Configuration object
-	 */
-	public Configuration config;
-	/**
 	 * File Manager interface
 	 * @param c Configuration object
 	 */
-	public FileManager(Configuration c)
+	public FileManager(Logger logger)
 	{
-		this.config=c;
-		this.logger=config.getLogger();
+		this.logger=logger;
 	}
 	/**
 	 * Get file/path size

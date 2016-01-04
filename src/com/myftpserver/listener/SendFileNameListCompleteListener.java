@@ -1,7 +1,6 @@
 package com.myftpserver.listener;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
@@ -35,28 +34,24 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	Logger logger;
 	String remoteIp;
 	FtpSessionHandler fs;
-	Configuration config;
 	PassiveServer passiveServer=null;
 	ChannelHandlerContext responseCtx;
 	public SendFileNameListCompleteListener(FtpSessionHandler fs,ChannelHandlerContext rCtx,PassiveServer txServer) 
 	{
 		this.fs=fs;
 		this.remoteIp=fs.getClientIp();
-		this.logger=fs.getConfig().getLogger();
+		this.logger=fs.getLogger();
 		this.responseCtx=rCtx;
-		this.config=fs.getConfig();
 		this.passiveServer=txServer;
 	}
 
 	@Override
 	public void operationComplete(ChannelFuture ch) throws Exception 
 	{
-		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, config.getFtpMessage("226_Transfer_Ok"));
-		fs.getConfig().getLogger().info("File name list transfered to "+remoteIp+" Completed.");
+		logger.info("File name list transfered to "+remoteIp+" Completed.");
 		if (passiveServer==null)
 			ch.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
 		else
 			ch.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));	
-		
 	}
 }

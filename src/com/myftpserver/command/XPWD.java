@@ -16,8 +16,8 @@ public class XPWD extends PWD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
-		super.execute(fs, ctx, param, logger);
+		super.execute(fs, ctx, param);
 	}
 }

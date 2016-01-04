@@ -40,15 +40,16 @@ public class CWD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger)
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param)
 	{
-		FileManager fm=fs.getConfig().getFileManager();
+		Logger logger=fs.getLogger();
+		FileManager fm=fs.getServerConfig().getFileManager();
 		logger.debug("param="+param+"|");
 		
 		try 
 		{
 			fm.changeDirectory(fs,param);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("200_Ok"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("200_Ok"));
 		} 
 		catch (AccessDeniedException | PathNotFoundException err) 
 		{

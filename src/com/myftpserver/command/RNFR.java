@@ -9,7 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -45,11 +45,12 @@ public class RNFR implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) 
 	{
-		Configuration config=fs.getConfig();
-		FileManager fm=fs.getConfig().getFileManager();
-		String message=config.getFtpMessage("550_Not_A_File");
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		String message=fs.getFtpMessage("550_Not_A_File");
 		try 
 		{
 			String serverPath=fm.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
@@ -62,7 +63,7 @@ public class RNFR implements FtpCommandInterface {
 			{
 				fs.setReNameFrom(serverPath);
 			}
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("350_Ready_For_RNTO"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("350_Ready_For_RNTO"));
 		}
 		catch (NotAFileException err) 
 		{
@@ -70,11 +71,11 @@ public class RNFR implements FtpCommandInterface {
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		}
 	}
 

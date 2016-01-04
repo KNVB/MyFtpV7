@@ -66,11 +66,9 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 	{
 		if (passiveServer!=null)
 		{
-			//ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,passiveServer));
 			try {
 				sendFile(ctx);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -80,11 +78,9 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 	{
 		if (passiveServer==null)
 		{	
-			//ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer));
 			try {
 				sendFile(ctx);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -103,7 +99,7 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 	private void sendFile(ChannelHandlerContext ctx) throws Exception
 	{
 		User user=fs.getUser();
-		Logger logger=fs.getConfig().getLogger();
+		Logger logger=fs.getLogger();
 		logger.debug("Data type="+fs.getDataType()+"|");
 		if (user.getDownloadSpeedLitmit()==0L)
 			logger.info("File download speed is limited by connection speed");

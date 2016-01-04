@@ -6,8 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.Configuration;
 import com.myftpserver.MyFtpServer;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -42,20 +42,21 @@ public class EPSV implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger) 
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
 		int port;
-		Configuration config=fs.getConfig();
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
 		String message=new String(),localIp=new String();
 		MyFtpServer myFtpServer=fs.getServer();
-		if (config.isSupportPassiveMode())
+		if (serverConfig.isSupportPassiveMode())
 		{
 			port=myFtpServer.getNextPassivePort();
 			if (port==-1)
-				message=fs.getConfig().getFtpMessage("550_CANT_CONNECT_CLNT");
+				message=fs.getFtpMessage("550_CANT_CONNECT_CLNT");
 			else
 			{	
-				message=fs.getConfig().getFtpMessage("229_EPSV_Ok");
+				message=fs.getFtpMessage("229_EPSV_Ok");
 				message=message.replaceAll("%1", String.valueOf(port));
 				localIp=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
 				fs.isPassiveModeTransfer=true;						
@@ -65,7 +66,7 @@ public class EPSV implements FtpCommandInterface
 		}
 		else
 		{
-			message=fs.getConfig().getFtpMessage("502_Command_Not_Implemeneted");
+			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
 		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);	
 		

@@ -6,7 +6,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
+import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -46,23 +46,24 @@ public class DELE implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String inPath, Logger logger)
+	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String inPath)
 	{
-		Configuration config=fs.getConfig();
-		FileManager fm=fs.getConfig().getFileManager();
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
 		logger.debug("param="+inPath+"|");
 		try 
 		{
 			String serverPath=fm.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
 			if (Files.isDirectory(Paths.get(serverPath)))
 			{
-				String message=config.getFtpMessage("550_Not_A_File");
+				String message=fs.getFtpMessage("550_Not_A_File");
 				message=message.replaceAll("%1", inPath);
 				throw new NotAFileException(message);
 			}
 			else	
 				Files.delete(Paths.get(serverPath));
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("250_Delete_Ok"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
 		}
 		catch (IOException|NotAFileException err) 
 		{
@@ -70,11 +71,11 @@ public class DELE implements FtpCommandInterface {
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
 		}
 		catch (AccessDeniedException e) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),config.getFtpMessage("550_Permission_Denied"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied"));
 		}
 		
 	}	

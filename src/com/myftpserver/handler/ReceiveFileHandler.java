@@ -4,7 +4,6 @@ import java.io.*;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.Configuration;
 import com.myftpserver.PassiveServer;
 
 
@@ -41,7 +40,6 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	private Logger logger;
 	private String fileName;
 	private FtpSessionHandler fs;
-	private Configuration config;
 	private ChannelHandlerContext responseCtx;
 	private BufferedOutputStream bos=null;
 	private PassiveServer passiveServer=null;
@@ -55,11 +53,10 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	public ReceiveFileHandler(FtpSessionHandler fs,String fileName, ChannelHandlerContext responseCtx, PassiveServer passiveServer)
 	{
 		this.fs=fs;
-		this.config=fs.getConfig();
 		this.fileName=fileName;
 		this.responseCtx=responseCtx;
 		this.passiveServer=passiveServer;
-		this.logger=fs.getConfig().getLogger();
+		this.logger=fs.getLogger();
 	}
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx)throws IOException,Exception
@@ -84,7 +81,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 		{
 			logger.debug(err.getMessage());
 			ctx.channel().close();
-			Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),config.getFtpMessage("553_Cannot_Create_File").replace("%1", err.getMessage()));
+			Utility.sendMessageToClient(responseCtx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("553_Cannot_Create_File").replace("%1", err.getMessage()));
 		}
     }
 	@Override

@@ -37,8 +37,8 @@ public class CDUP extends CWD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param, Logger logger)
+	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param)
 	{
-		super.execute(fs, ctx, "..", logger);
+		super.execute(fs, ctx, "..");
 	}
 }
