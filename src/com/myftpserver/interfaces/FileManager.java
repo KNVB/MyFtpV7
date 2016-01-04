@@ -81,7 +81,7 @@ public abstract class FileManager
 	public Logger logger;
 	/**
 	 * File Manager interface
-	 * @param c Configuration object
+	 * @param logger Message logger
 	 */
 	public FileManager(Logger logger)
 	{
