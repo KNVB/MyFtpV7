@@ -1,0 +1,20 @@
+def
+def
+lcd "D:\SITO3\Desktop"
+cd /SITO3/Documents
+bin
+get Xmas-20141224-310.jpg
+ls /inetpub
+cd /inetpub
+cd /inetpub/wwwroot
+put Xmas-20141224-310.jpg
+rm Xmas-20141224-310.jpg
+mkdir abc
+cd abc
+put Xmas-20141224-310.jpg
+cd ..
+rmdir abc
+cd /
+rmdir abc
+put Xmas-20141224-310.jpg
+bye

@@ -65,17 +65,13 @@ public class RNFR implements FtpCommandInterface {
 			}
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("350_Ready_For_RNTO"));
 		}
-		catch (NotAFileException err) 
+		catch (NotAFileException |AccessDeniedException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
-		}
-		catch (AccessDeniedException e) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		}
 	}
 

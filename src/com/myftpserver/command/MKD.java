@@ -68,7 +68,7 @@ public class MKD implements FtpCommandInterface
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
 		} 
-		catch (InterruptedException|QuotaExceedException err) 
+		catch (InterruptedException|QuotaExceedException|AccessDeniedException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
@@ -78,9 +78,5 @@ public class MKD implements FtpCommandInterface
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
-		catch (AccessDeniedException e) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
-		} 
 	}
 }

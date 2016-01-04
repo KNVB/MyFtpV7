@@ -80,17 +80,12 @@ public class LIST implements FtpCommandInterface
 			resultList=fm.getFullDirList(fs,clientPath);
 			Utility.sendFileListToClient(ctx,fs,resultList);
 		}
-		catch (InterruptedException |NotADirectoryException err)
+		catch (InterruptedException |AccessDeniedException|NotADirectoryException err)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		} 
 		catch (PathNotFoundException |InvalidPathException err)
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
-		}
-		catch (AccessDeniedException e)
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
-		} 
-	}	
+		}	}	
 }

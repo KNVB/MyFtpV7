@@ -1,17 +1,10 @@
 package com.myftpserver.command;
 
-import java.nio.file.InvalidPathException;
+import io.netty.channel.ChannelHandlerContext;
 
-import com.util.*;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import io.netty.channel.ChannelHandlerContext;
-
-import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -32,30 +25,17 @@ import org.apache.logging.log4j.Logger;
  * @author SITO3
  *
  */
-public class SIZE implements FtpCommandInterface
+public class XRMD extends RMD implements FtpCommandInterface  
 {
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
-		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
-		FileManager fm=serverConfig.getFileManager();
-		String message=new String();
-		try 
-		{
-			long size=fm.getPathSize(fs, param);
-			message=fs.getFtpMessage("213_File_Size");
-			message=message.replaceAll("%1", String.valueOf(size));
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
-		} 
-		catch (PathNotFoundException|InvalidPathException |AccessDeniedException err) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
-		}
+		super.execute(fs, ctx, param);
 	}
 }

@@ -54,7 +54,7 @@ public class RETR implements FtpCommandInterface {
 			String serverPath=fm.getFile(fs,param);
 			Utility.sendFileToClient(ctx,fs,serverPath);
 		}
-		catch (InterruptedException|NotAFileException err) 
+		catch (InterruptedException|NotAFileException |AccessDeniedException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
@@ -62,10 +62,5 @@ public class RETR implements FtpCommandInterface {
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
-		catch (AccessDeniedException e) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
-		}
-		
 	}	
 }

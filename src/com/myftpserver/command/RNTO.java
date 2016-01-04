@@ -66,7 +66,7 @@ public class RNTO implements FtpCommandInterface {
 			Files.move(renameFrom, renameTo);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Rename_Ok"));
 		}
-		catch (InterruptedException|QuotaExceedException err) 
+		catch (InterruptedException|AccessDeniedException|QuotaExceedException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
@@ -74,10 +74,6 @@ public class RNTO implements FtpCommandInterface {
 		catch (PathNotFoundException|InvalidPathException|IOException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
-		}
-		catch (AccessDeniedException e) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied")+":"+e.getMessage());
 		}
 	}
 

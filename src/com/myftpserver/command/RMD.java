@@ -9,6 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
 import com.myftpserver.ServerConfig;
+import com.myftpserver.impl.FileUtil;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.QuotaExceedException;
@@ -67,7 +68,7 @@ public class RMD implements FtpCommandInterface
 			serverFolder=new File(serverPath);
 			if (serverFolder.isDirectory())
 			{	
-				result=serverFolder.delete();
+				result=FileUtil.deleteDirectory(serverFolder);
 				if (result)
 				{
 					message=fs.getFtpMessage("250_RMD");
@@ -84,19 +85,16 @@ public class RMD implements FtpCommandInterface
 				throw new NotADirectoryException(message);
 			}
 		} 
-		catch (InterruptedException|QuotaExceedException|NotADirectoryException err) 
+		catch (InterruptedException|QuotaExceedException|AccessDeniedException |NotADirectoryException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
+			//err.printStackTrace();
 			message=fs.getFtpMessage("550_RMD_Failure");
 			message=message.replaceAll("%1", inPath);
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
-		catch (AccessDeniedException e) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied"));
-		} 
 	}
 }

@@ -65,7 +65,7 @@ public class DELE implements FtpCommandInterface {
 				Files.delete(Paths.get(serverPath));
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
 		}
-		catch (IOException|NotAFileException err) 
+		catch (IOException|AccessDeniedException|NotAFileException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
@@ -73,10 +73,5 @@ public class DELE implements FtpCommandInterface {
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
 		}
-		catch (AccessDeniedException e) 
-		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_Permission_Denied"));
-		}
-		
 	}	
 }
