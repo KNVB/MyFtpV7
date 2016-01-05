@@ -2,9 +2,10 @@ package com.util;
 
 import org.apache.logging.log4j.Logger;
 
+import com.myftpserver.ActiveClient;
+import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.SendFileListener;
-import com.myftpserver.listener.ReceiveFileListener;
 import com.myftpserver.listener.SendFileListListener;
 import com.myftpserver.listener.SessionClosureListener;
 import com.myftpserver.listener.CommandCompleteListener;
@@ -47,9 +48,24 @@ public class Utility
 	{
 		responsCtx.writeAndFlush(Unpooled.copiedBuffer(fs.getFtpMessage("150_Open_Data_Conn")+"\r\n",CharsetUtil.UTF_8)).addListener(new SendFileListener(responsCtx,fs,fileName));
 	}
-	public static void receiveFileFromClient(ChannelHandlerContext responsCtx,FtpSessionHandler fs, String fileName) 
+	public static void receiveFileFromClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String fileName) throws InterruptedException 
 	{
-		responsCtx.writeAndFlush(Unpooled.copiedBuffer(fs.getFtpMessage("150_Open_Data_Conn")+"\r\n",CharsetUtil.UTF_8)).addListener(new ReceiveFileListener(responsCtx,fs,fileName));
+		Logger logger=fs.getLogger();
+		if (fs.isPassiveModeTransfer)
+		{
+			logger.info("Receive File in Passiveive mode");
+			PassiveServer ps=fs.getPassiveServer();
+			ps.receiveFile(fileName, responseCtx);
+			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+		}
+		else
+		{
+			logger.info("Receive File in Active mode");
+			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
+			activeClient.receiveFile(fileName);
+		}		
+		
 	}
 	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
 	{

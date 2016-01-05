@@ -74,7 +74,7 @@ public class NLST implements FtpCommandInterface
 		catch (InterruptedException |AccessDeniedException|NotADirectoryException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-			err.printStackTrace();
+			//err.printStackTrace();
 		}
 		catch (PathNotFoundException |InvalidPathException err)
 		{

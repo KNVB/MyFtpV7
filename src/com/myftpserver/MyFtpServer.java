@@ -149,7 +149,7 @@ public final class MyFtpServer
 		if (!passivePorts.contains(port))
 		{	
 			passivePorts.push(port);
-			logger.debug("Passive Port:"+port+" return");
+			logger.info("Passive Port:"+port+" return");
 		}
 	}
 //-------------------------------------------------------------------------------------------	

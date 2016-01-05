@@ -36,14 +36,27 @@ public class TYPE implements FtpCommandInterface
 	@Override
 	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
 	{
+		String type,formSet="",message=fs.getFtpMessage("200_Transfer_Set");
 		if (fs.isLogined())
 		{
 			param=param.trim().toUpperCase();
-			switch (param)
+			if (param.indexOf(" ")>-1)
 			{
-				case "I":
-				case "A":fs.setDataType(param);
-						 Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("200_Transfer_Set"));
+				type=param.substring(0,1);
+				formSet=param.substring(param.indexOf(" "));
+			}
+			else
+			{
+				type=param;
+				formSet="N";
+			}
+			message=message.replaceAll("%1", type);
+			message=message.replaceAll("%2", formSet);
+			switch (type)
+			{
+				case "I":message=message.substring(0,message.indexOf(";"));
+				case "A":fs.setDataType(type);
+						 Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), message);
 						 break;
 				default:
 					Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("504_Command_Not_Support_This_Parameter"));

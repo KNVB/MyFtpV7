@@ -79,6 +79,7 @@ public class FtpCommandExecutor
 				switch (command)
 				{
 					case "USER":
+					case "SYST":	
 					case "OPTS":
 					case "QUIT":
 					case "PASS":executeCommand(ctx,command,parameters);
