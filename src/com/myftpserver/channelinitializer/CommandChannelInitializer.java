@@ -14,6 +14,7 @@ import io.netty.channel.Channel;
 import io.netty.util.CharsetUtil;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -66,6 +67,7 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getServerConfig().getCommandChannelConnectionTimeOut(), 30, 0));
 
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
+			ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
 			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));
 		}
 	}
