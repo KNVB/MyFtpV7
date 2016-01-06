@@ -82,15 +82,16 @@ public class MyFileManager extends FileManager
 			if (serverPathPerm!=null)
 				finalPerm+=serverPathPerm;
 			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm+",finalPerm="+finalPerm);
-			if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
+			
+			if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
 			{
-				throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
+				throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
 			}
 			else
 			{
-				if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+				if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
 				{
-					throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
+					throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
 				}
 			}
 		}
@@ -301,6 +302,13 @@ public class MyFileManager extends FileManager
 		clientPath=clientPath.substring(0,index);
 		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
 		serverPath+=File.separator+fileName;
+		return serverPath;
+	}
+	@Override
+	public String deleteDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException
+	{
+		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
+		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
 		return serverPath;
 	}
 	public void close() 

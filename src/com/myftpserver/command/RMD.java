@@ -12,7 +12,6 @@ import com.myftpserver.ServerConfig;
 import com.myftpserver.impl.FileUtil;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -63,7 +62,7 @@ public class RMD implements FtpCommandInterface
 			newPathName=inPath;
 			if (newPathName.indexOf("/")==-1)
 				newPathName=fs.getCurrentPath()+"/"+newPathName;
-			serverPath=fm.putFile(fs,newPathName);
+			serverPath=fm.deleteDirectory(fs,newPathName);
 			logger.debug("serverPath="+serverPath+",newPathName="+newPathName);
 			serverFolder=new File(serverPath);
 			if (serverFolder.isDirectory())
@@ -85,11 +84,11 @@ public class RMD implements FtpCommandInterface
 				throw new NotADirectoryException(message);
 			}
 		} 
-		catch (InterruptedException|QuotaExceedException|AccessDeniedException |NotADirectoryException err) 
+		catch (AccessDeniedException|NotADirectoryException|PathNotFoundException err) 
 		{
 			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
-		catch (PathNotFoundException|InvalidPathException err) 
+		catch (InvalidPathException err) 
 		{
 			//err.printStackTrace();
 			message=fs.getFtpMessage("550_RMD_Failure");

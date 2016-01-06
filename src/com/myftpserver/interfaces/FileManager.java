@@ -132,5 +132,14 @@ public abstract class FileManager
 	 * @throws QuotaExceedException
 	 */
 	public abstract String putFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException;
+	/**
+	 * Generate a server path for delete directory 
+	 * @param fs  FtpSessionHandler
+	 * @param inPath  a virtual path that the path to be uploaded 
+	 * @return server path
+	 * @throws AccessDeniedException
+	 * @throws PathNotFoundException
+	 */
+	public abstract String deleteDirectory(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException;
 	public abstract void close();
 }

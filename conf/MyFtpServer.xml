@@ -8,7 +8,7 @@
                         result=null;
                         switch (logEvent.getLevel())
                         {
-                        	//case org.apache.logging.log4j.Level.DEBUG:
+                        	case org.apache.logging.log4j.Level.DEBUG:
                         	case org.apache.logging.log4j.Level.INFO:result=logEvent.getLevel();
                         											 break;
                         	default:result=null;										  	
