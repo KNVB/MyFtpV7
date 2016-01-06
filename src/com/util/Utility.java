@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.listener.CloseDataChannel;
 import com.myftpserver.listener.SendFileListener;
 import com.myftpserver.listener.SendFileListListener;
 import com.myftpserver.listener.SessionClosureListener;
@@ -36,6 +37,10 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class Utility
 {
+	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
+	{
+		ch.writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SessionClosureListener(null,ch,logger,remoteIp,goodByeMessage));
+	}
 	public static void sendMessageToClient(Channel ch, Logger logger,String remoteIp,String ftpMessage) 
 	{
 		ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new CommandCompleteListener(logger,remoteIp,ftpMessage));
@@ -67,10 +72,11 @@ public class Utility
 		}		
 		
 	}
-	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
+	public static void closeDataChannel(ChannelHandlerContext ctx,FtpSessionHandler fs, String message) 
 	{
-		ch.writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SessionClosureListener(null,ch,logger,remoteIp,goodByeMessage));
+		ctx.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new CloseDataChannel(fs,message));
 	}	
+
 	public static final String getSystemType(Logger logger)
 	{
 		 String loc = System.getProperty("user.timezone");
@@ -84,5 +90,5 @@ public class Utility
 	                + System.getProperty("os.version") + ", " + loc;
 	        logger.debug("System type="+result);
 	        return result;
-	}	
+	}
 }
