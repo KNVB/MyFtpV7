@@ -47,6 +47,7 @@ public class CloseDataChannel  implements ChannelFutureListener
 		if (passiveServer!=null)
 		{
 			passiveServer.stop();
+			fs.setPassiveServer(null);
 		}
 	}
 
