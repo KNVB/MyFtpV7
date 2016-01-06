@@ -27,46 +27,13 @@ import com.myftpserver.handler.FtpSessionHandler;
 public abstract class FileManager 
 {
 	/**
-	 * Access ok error code
-	 */
-	public static final int ACCESS_OK=0;
-	/**
-	 * Excess quota error code
-	 */
-	public static final int EXCESS_QUOTA=1;
-	/**
-	 * Access denied error code
-	 */
-	public static final int ACCESS_DENIED=2;
-	public static final int MULTI_HOME_DIR=3;
-	/**
-	 * Invalid home directory error code
-	 */
-	public static final int INVALID_HOME_DIR=4;
-	/**
-	 * Home directory not found error code
-	 */
-	public static final int HOME_DIR_NOT_FOUND=5;
-	/**
-	 * Invalid home directory permission error code
-	 */
-	public static final int INVALID_HOME_DIR_PERM=6;
-	/**
-	 * Directory not found error code
-	 */
-	public static final int PATH_NOT_FOUND=7;
-	/**
 	 * No access permission
 	 */
-	public static final String NO_ACCESS="x";
+	public static final String NO_ACCESS="-";
 	/**
 	 * Read only permission
 	 */
 	public static final String READ_PERMISSION="r";
-	/**
-	 * List directory permission
-	 */
-	public static final String LIST_PERMISSION="l";
 	/**
 	 * Write permission
 	 */
@@ -74,7 +41,7 @@ public abstract class FileManager
 	/**
 	 * Write Tree permission
 	 */
-	public static final String TREE_WRITE_PERMISSION="t";
+	public static final String EXECUTE_PERMISSION="x";
 	/**
 	 * Message logger
 	 */

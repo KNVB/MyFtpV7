@@ -106,7 +106,7 @@ public class MyFileManager extends FileManager
 	@Override
 	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
 	{
-		getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		getServerPath(fs,inPath,FileManager.EXECUTE_PERMISSION);
 		fs.setCurrentPath(FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath));
 	}
 	@Override
