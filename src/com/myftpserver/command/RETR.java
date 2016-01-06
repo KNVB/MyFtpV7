@@ -1,5 +1,6 @@
 package com.myftpserver.command;
 
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 import com.util.Utility;
@@ -54,7 +55,7 @@ public class RETR implements FtpCommandInterface {
 			String serverPath=fm.getFile(fs,param);
 			Utility.sendFileToClient(ctx,fs,serverPath);
 		}
-		catch (InterruptedException|NotAFileException |AccessDeniedException err) 
+		catch (InterruptedException|NotAFileException |AccessDeniedException |IOException err) 
 		{
 			Utility.closeDataChannel(ctx,fs,err.getMessage());
 		}
