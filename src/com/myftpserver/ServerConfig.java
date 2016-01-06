@@ -66,14 +66,13 @@ public class ServerConfig
 		{
 			fis=new FileInputStream(configFile);
 			PropertyResourceBundle bundle = new PropertyResourceBundle(fis);
-			logger.info("Configuration file is loaded");
+			logger.debug("Server Configuration is loaded successfully.");
 			serverLocale=bundle.getString("serverLocale");
 			messageBundle=new MessageBundle(new Locale(serverLocale));
 			serverPort=Integer.parseInt(bundle.getString("port"));
 			maxConnection=Integer.parseInt(bundle.getString("maxConnection"));
 			commandChannelConnectionTimeOut=Integer.parseInt(bundle.getString("commandChannelConnectionTimeOut"));
 			supportPassiveMode=Boolean.parseBoolean(bundle.getString("supportPassiveMode"));
-			logger.info("support passive mode="+supportPassiveMode);
 			if (supportPassiveMode)
 			{
 				if (bundle.containsKey("passivePortRange"))

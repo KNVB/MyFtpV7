@@ -10,3 +10,4 @@ passivePortRange=1232-1234
 commandChannelConnectionTimeOut=900
 #commandChannelConnectionTimeOut=10
 serverLocale=en_us
+#serverLocale=zh_tw

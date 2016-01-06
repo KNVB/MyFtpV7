@@ -68,11 +68,17 @@ public final class MyFtpServer
 		serverConfig=new ServerConfig(logger);
 		if (serverConfig.load(this))
 		{	
-			logger.debug("Server Configuration is loaded successfully.");
-			if ((serverConfig.isSupportPassiveMode()) && (serverConfig.isPassivePortSpecified()))
+			logger.info("Server locale="+ serverConfig.getServerLocale());
+			logger.info("support passive mode="+serverConfig.isSupportPassiveMode());
+			if (serverConfig.isSupportPassiveMode()) 
 			{
-				passivePorts=serverConfig.passivePorts;
-				logger.info("Available passive port:"+passivePorts.toString());
+				if (serverConfig.isPassivePortSpecified())
+				{
+					passivePorts=serverConfig.passivePorts;
+					logger.info("Available passive port:"+passivePorts.toString());
+				}
+				else
+					logger.info("NO passive port is/are specified!!!");
 			}
 		}
 		else
@@ -158,6 +164,7 @@ public final class MyFtpServer
 	 */
 	public void start()
 	{
+		String message=serverConfig.getFtpMessage("Server_Started");
 		try 
         {
 			ServerBootstrap bootStrap = new ServerBootstrap();
@@ -166,9 +173,11 @@ public final class MyFtpServer
             bootStrap.channel(NioServerSocketChannel.class);
             bootStrap.childHandler(new CommandChannelInitializer(this,logger));
             bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-            logger.info("My FTP Server is started.");
+            
             // Wait until the server socket is closed.
             bootStrap.bind();
+            message=message.replaceAll("%1",String.valueOf(serverConfig.getServerPort())); 
+            logger.info(message);
         } 
         catch (Exception e) 
         {
