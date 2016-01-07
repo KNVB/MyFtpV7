@@ -1,13 +1,11 @@
 package com.myftpserver.listener;
 
-import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -33,24 +31,17 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	Logger logger;
 	String remoteIp;
 	FtpSessionHandler fs;
-	PassiveServer passiveServer=null;
-	ChannelHandlerContext responseCtx;
-	public SendFileNameListCompleteListener(FtpSessionHandler fs,ChannelHandlerContext rCtx,PassiveServer txServer) 
+	public SendFileNameListCompleteListener(FtpSessionHandler fs) 
 	{
 		this.fs=fs;
 		this.remoteIp=fs.getClientIp();
 		this.logger=fs.getLogger();
-		this.responseCtx=rCtx;
-		this.passiveServer=txServer;
 	}
 
 	@Override
 	public void operationComplete(ChannelFuture ch) throws Exception 
 	{
-		logger.info("File name list transfered to "+remoteIp+" Completed.");
-		if (passiveServer==null)
-			ch.channel().close();
-		else
-			ch.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));	
+		logger.info("File name list is transfered to "+remoteIp+" Completed.");
+		ch.channel().close();
 	}
 }

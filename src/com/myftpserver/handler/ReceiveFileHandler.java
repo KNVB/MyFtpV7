@@ -4,11 +4,9 @@ import java.io.*;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.PassiveServer;
-
-
 import com.myftpserver.User;
-import com.myftpserver.listener.ReceiveFilerCompleteListener;
+import com.myftpserver.PassiveServer;
+import com.myftpserver.listener.ReceiveFileCompleteListener;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -112,7 +110,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 				bos.close();
 				bos=null;
 				logger.debug("ReceiveFileHandler channel inactive");
-				ctx.channel().close().addListener(new ReceiveFilerCompleteListener(fs,passiveServer,responseCtx));
+				ctx.channel().close().addListener(new ReceiveFileCompleteListener(fs,fileName));
 			}
 			catch (Exception err)
 			{
