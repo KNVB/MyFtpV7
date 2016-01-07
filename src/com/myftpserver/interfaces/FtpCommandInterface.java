@@ -20,7 +20,7 @@ import com.myftpserver.handler.FtpSessionHandler;
  * limitations under the License.
  */
 /**
- * 
+ * FTP command interface
  * @author SITO3
  *
  */

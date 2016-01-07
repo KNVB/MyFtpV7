@@ -7,8 +7,8 @@ import com.myftpserver.interfaces.UserManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.PropertyResourceBundle;
+import java.lang.reflect.InvocationTargetException;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,11 +34,20 @@ public class ManagersFactory
 	Logger logger;
 	PropertyResourceBundle bundle;
 	ServerConfig serverConfig;
-	public ManagersFactory(PropertyResourceBundle b,ServerConfig c,Logger logger)
+	/**
+	 * Factory class for instantiate an Manager object  
+	 * @param b PropertyResourceBundle object
+	 * @param logger Message logger
+	 */
+	public ManagersFactory(PropertyResourceBundle b,Logger logger)
 	{
 		bundle=b;
 		this.logger=logger;
 	}
+	/**
+	 * Get an file manager object
+	 * @return an file manager object
+	 */
 	public FileManager getFileManager()
 	{
 		FileManager fm=null;
@@ -55,7 +64,10 @@ public class ManagersFactory
 		}
 		return fm;
 	}
-
+	/**
+	 * Get an user manager object
+	 * @return an user manager object
+	 */
 	public UserManager getUserManager()
 	{
 		UserManager um=null;

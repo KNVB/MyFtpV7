@@ -18,7 +18,10 @@ public class MyUserManager extends UserManager
 	ResultSet rs=null;
 	String strSql=new String();
 	ArrayList<Object> values=null;
-
+	/**
+	 * An File Manager implementation
+	 * @param logger Message logger
+	 */
 	public MyUserManager(Logger logger) 
 	{
 		super(logger);

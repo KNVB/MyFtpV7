@@ -39,7 +39,7 @@ public abstract class FileManager
 	 */
 	public static final String WRITE_PERMISSION="w";
 	/**
-	 * Write Tree permission
+	 * Execute permission
 	 */
 	public static final String EXECUTE_PERMISSION="x";
 	/**

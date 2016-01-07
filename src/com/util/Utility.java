@@ -37,14 +37,42 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class Utility
 {
+	/**
+	 * Utility for sending response message to client and then perform some action 
+	 */
+	public Utility()
+	{
+		
+	}
+	/**
+	 * It sends a good bye message to client and then close a ftp channel
+	 * @param ch ftp channel
+	 * @param logger message logger
+	 * @param remoteIp client IP address
+	 * @param goodByeMessage Good bye message
+	 */
 	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
 	{
 		ch.writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new SessionClosureListener(null,ch,logger,remoteIp,goodByeMessage));
 	}
+	/**
+	 * It sends a response message to client
+	 * @param ch ftp channel
+	 * @param logger  message logger
+	 * @param remoteIp client IP address 
+	 * @param ftpMessage response message
+	 */
 	public static void sendMessageToClient(Channel ch, Logger logger,String remoteIp,String ftpMessage) 
 	{
 		ch.writeAndFlush(Unpooled.copiedBuffer(ftpMessage+"\r\n",CharsetUtil.UTF_8)).addListener(new CommandCompleteListener(logger,remoteIp,ftpMessage));
 	}
+	/**
+	 * It sends a file list to client
+	 * @param responseCtx response channel
+	 * @param fs ftp session
+	 * @param resultList File List
+	 * @throws InterruptedException
+	 */
 	public static void sendFileListToClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
@@ -63,6 +91,14 @@ public class Utility
 			activeClient.sendFileNameList(resultList);
 		}
 	}
+	/**
+	 * It sends a file to client
+	 * @param responseCtx response channel
+	 * @param fs ftp session
+	 * @param fileName The file name that to be send to client
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
 	public static void sendFileToClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String fileName) throws InterruptedException, IOException 
 	{
 		Logger logger=fs.getLogger();
@@ -81,6 +117,13 @@ public class Utility
 			activeClient.sendFile(fileName);
 		}
 	}
+	/**
+	 * It received a file to client
+	 * @param responseCtx response channel
+	 * @param fs ftp session
+	 * @param fileName The file name that to be uploaded by client
+	 * @throws InterruptedException
+	 */
 	public static void receiveFileFromClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String fileName) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
@@ -100,11 +143,21 @@ public class Utility
 		}		
 		
 	}
-	public static void handleTransferException(ChannelHandlerContext ctx,FtpSessionHandler fs, String message) 
+	/**
+	 * It handle an transfer exception; it sends an error message and then close data transfer channel if necessary 
+	 * @param responseCtx response channel
+	 * @param fs ftp session
+	 * @param message The error message that to be send to client
+	 */
+	public static void handleTransferException(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String message) 
 	{
-		ctx.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
+		responseCtx.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
 	}	
-
+	/**
+	 * Prepare response for system inquiry
+	 * @param logger Message logger
+	 * @return A response for system inquiry
+	 */
 	public static final String getSystemType(Logger logger)
 	{
 		 String loc = System.getProperty("user.timezone");

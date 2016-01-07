@@ -31,6 +31,11 @@ public class CommandChannelClosureListener implements ChannelFutureListener
 	MyFtpServer s;
 	Logger logger; 
 	String remoteIp=null;
+	/**
+	 * It is triggered when an user close an ftp session 
+	 * @param t FTP server object
+	 * @param remoteIp Client ip address
+	 */
 	public CommandChannelClosureListener(MyFtpServer t,String remoteIp)
 	{
 		s=t;

@@ -31,8 +31,13 @@ public class ReceiveFileCompleteListener implements ChannelFutureListener
 {
 	private Logger logger;
 	private String fileName;
+	@SuppressWarnings("unused")
 	private FtpSessionHandler fs;
-	
+	/**
+	 * It is triggered when a file is uploaded to server successfully by client
+	 * @param fs FTP session
+	 * @param fileName The full path name for the uploaded file
+	 */
 	public ReceiveFileCompleteListener(FtpSessionHandler fs, String fileName)
 	{
 		this.fs=fs;

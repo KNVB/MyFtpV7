@@ -28,6 +28,12 @@ public class CommandCompleteListener implements ChannelFutureListener
 {
 	Logger logger; 
 	String remoteIp,ftpMessage;
+	/**
+	 * It is triggered when a ftp command is executed successfully 
+	 * @param logger Message logger
+	 * @param remoteIp client IP Address
+	 * @param ftpMessage return message for the action perform 
+	 */
 	public CommandCompleteListener(Logger logger, String remoteIp,String ftpMessage) 
 	{
 		this.logger=logger;

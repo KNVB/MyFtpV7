@@ -43,6 +43,10 @@ import org.apache.logging.log4j.Logger;
  */
 public class MyFileManager extends FileManager 
 {
+	/**
+	 * An User Manager implementation
+	 * @param logger Message logger
+	 */
 	public MyFileManager(Logger logger) 
 	{
 		super(logger);

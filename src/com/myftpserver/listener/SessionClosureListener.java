@@ -33,7 +33,15 @@ public class SessionClosureListener implements ChannelFutureListener
 	Logger logger=null;
 	Channel ch; 
 	String remoteIp=new String(),ftpMessage=new String();
-	
+	/**
+	 * It is triggered when an user close connection<br> 
+	 * It will sent a good bye message to client and then close the connection 
+	 * @param fs FTP session
+	 * @param ch The channel that the FTP session resided
+	 * @param logger Message logger
+	 * @param remoteIp Client IP Address
+	 * @param goodByeMsg Good bye message
+	 */
 	public SessionClosureListener(FtpSessionHandler fs,Channel ch, Logger logger, String remoteIp,String goodByeMsg) 
 	{
 		this.logger=logger;

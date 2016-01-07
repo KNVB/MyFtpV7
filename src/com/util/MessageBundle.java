@@ -24,9 +24,13 @@ public class MessageBundle
 {
 	Locale defaultLocale;
 	ResourceBundle  ftpMessage;
-	public MessageBundle(Locale l)
+	/**
+	 * Message bundle object for localized message
+	 * @param locale an Locale object
+	 */
+	public MessageBundle(Locale locale)
 	{
-		defaultLocale=l;
+		defaultLocale=locale;
 		try
 		{ 	
 			ftpMessage=J18n.getBundle("res.Messages",defaultLocale);
@@ -34,7 +38,7 @@ public class MessageBundle
 		catch (MissingResourceException err)
 		{
 			//err.printStackTrace();
-			System.out.println("cannot found message for locale:"+l);
+			System.out.println("cannot found message for locale:"+locale);
 			defaultLocale=new Locale("en","US");
 			ftpMessage= ResourceBundle.getBundle("res.Messages",defaultLocale);
 		}

@@ -27,7 +27,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * limitations under the License.
  */
 /**
- * 
+ * FTP session handler: It manage an ftp session
  * @author SITO3
  *
  */

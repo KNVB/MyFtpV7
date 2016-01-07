@@ -31,6 +31,10 @@ public class SendFileNameListCompleteListener implements ChannelFutureListener
 	Logger logger;
 	String remoteIp;
 	FtpSessionHandler fs;
+	/**
+	 * It is triggered when a file listing is sent to client successfully
+	 * @param fs FTP session
+	 */
 	public SendFileNameListCompleteListener(FtpSessionHandler fs) 
 	{
 		this.fs=fs;

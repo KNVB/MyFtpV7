@@ -18,6 +18,12 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	FtpSessionHandler fs;
 	ChannelHandlerContext responseCtx;
 	private PassiveServer passiveServer;
+	/**
+	 * It is triggered when a passive mode channel is closed.  
+	 * @param fs FTP session 
+	 * @param responseCtx Response Channel
+	 * @param passiveServer Passive Server object
+	 */
 	public PassiveChannelCloseListener(FtpSessionHandler fs, ChannelHandlerContext responseCtx, PassiveServer passiveServer) 
 	{
 		this.fs=fs;

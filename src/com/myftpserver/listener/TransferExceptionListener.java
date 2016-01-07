@@ -33,6 +33,11 @@ public class TransferExceptionListener  implements ChannelFutureListener
 	String message;
 	FtpSessionHandler fs;
 	PassiveServer passiveServer;
+	/**
+	 * It is used to handle transfer exception 
+	 * @param fs FTP session
+	 * @param message the error message
+	 */
 	public TransferExceptionListener(FtpSessionHandler fs, String message)
 	{
 		this.fs=fs;

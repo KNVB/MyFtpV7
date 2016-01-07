@@ -35,10 +35,17 @@ import com.myftpserver.handler.FtpSessionHandler;
 /**
  * 
  * @author SITO3
- *
+ * 
  */
 public class FileUtil 
 {
+	/**
+	 * File Utility
+	 */
+	public FileUtil()
+	{
+		
+	}
 	/**
 	 * Get server path and it's permission
 	 * @param logger message logger

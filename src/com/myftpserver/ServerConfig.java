@@ -107,7 +107,7 @@ public class ServerConfig
 					havePassivePortSpecified=(passivePorts.size()>0);
 				}
 			}
-			mf=new ManagersFactory(bundle,this,logger);
+			mf=new ManagersFactory(bundle,logger);
 			userManager=mf.getUserManager();
 			logger.info("User Manager class is loaded.");
 			fileManager=mf.getFileManager();

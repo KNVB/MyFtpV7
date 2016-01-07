@@ -31,6 +31,11 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	Logger logger;
 	String fileName;
 	FtpSessionHandler fs;
+	/**
+	 * It is triggered when a file is downloaded by client successfully
+	 * @param fileName FTP session
+	 * @param fs The full path name for the file that was downloaded
+	 */
 	public SendFileCompleteListener(String fileName,FtpSessionHandler fs)
 	{
 		this.fs=fs;
@@ -40,7 +45,6 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok")); 
 		cf.channel().close();
 		logger.info("File "+fileName+" download completed.");	
 	}
