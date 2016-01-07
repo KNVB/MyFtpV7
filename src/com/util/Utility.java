@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.ActiveClient;
 import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.listener.CloseDataChannel;
+import com.myftpserver.listener.TransferExceptionListener;
 import com.myftpserver.listener.SessionClosureListener;
 import com.myftpserver.listener.CommandCompleteListener;
 
@@ -100,9 +100,9 @@ public class Utility
 		}		
 		
 	}
-	public static void closeDataChannel(ChannelHandlerContext ctx,FtpSessionHandler fs, String message) 
+	public static void handleTransferException(ChannelHandlerContext ctx,FtpSessionHandler fs, String message) 
 	{
-		ctx.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new CloseDataChannel(fs,message));
+		ctx.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
 	}	
 
 	public static final String getSystemType(Logger logger)

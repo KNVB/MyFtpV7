@@ -64,12 +64,12 @@ public class STOR implements FtpCommandInterface
 		} 
 		catch (InterruptedException|QuotaExceedException|AccessDeniedException err) 
 		{
-			Utility.closeDataChannel(ctx,fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		}
 		
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.closeDataChannel(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 	}
 }

@@ -27,13 +27,13 @@ import io.netty.channel.ChannelFutureListener;
  * @author SITO3
  *
  */
-public class CloseDataChannel  implements ChannelFutureListener 
+public class TransferExceptionListener  implements ChannelFutureListener 
 {
 	Logger logger;
 	String message;
 	FtpSessionHandler fs;
 	PassiveServer passiveServer;
-	public CloseDataChannel(FtpSessionHandler fs, String message)
+	public TransferExceptionListener(FtpSessionHandler fs, String message)
 	{
 		this.fs=fs;
 		this.message=message;
