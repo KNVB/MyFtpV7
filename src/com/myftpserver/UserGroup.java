@@ -21,8 +21,8 @@ package com.myftpserver;
  */
 public class UserGroup 
 {
-	long quota=0;
-	String homeDir=null,groupName=null;
+	private long quota=0;
+	private String homeDir=null,groupName=null;
 	/**
 	 * FTP user group object
 	 */

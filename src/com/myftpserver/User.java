@@ -25,12 +25,12 @@ import java.util.TreeMap;
  */
 public class User 
 {
-	int quota=0; //Quota in Kilo byte
-	boolean active=false;
-	long ulBWLimit=0,dlBWLimit=0;//Upload and Download speed in Kilo byte per second
-	String userLocale=new String("en_us");
-	TreeMap<String, String> serverPathACL = null,clientPathACL=null;
-	String name=new String(),password=new String(),homeDir=new String();
+	private int quota=0; //Quota in Kilo byte
+	private boolean active=false;
+	private long ulBWLimit=0,dlBWLimit=0;//Upload and Download speed in Kilo byte per second
+	private String userLocale=new String("en_us");
+	private TreeMap<String, String> serverPathACL = null,clientPathACL=null;
+	private String name=new String(),password=new String(),homeDir=new String();
 	/**
 	 * FTP user object	
 	 */

@@ -43,23 +43,20 @@ import io.netty.channel.SimpleChannelInboundHandler;
 @Sharable
 public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelHandler 
 {
-	String fileName;
-	ChannelHandlerContext responseCtx;
-	PassiveServer passiveServer=null;
-	FtpSessionHandler fs;
+	private String fileName;
+	private FtpSessionHandler fs;
+	private PassiveServer passiveServer=null;
 	/**
 	 * Send file handler
 	 * @param fileName A file to be sent to client 
 	 * @param fs FtpSessionHandler object
-	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client
 	 * @param passiveServer PassiveServer object
 	 */
-	public SendFileHandler(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer passiveServer)
+	public SendFileHandler(String fileName,FtpSessionHandler fs,PassiveServer passiveServer)
 	{
 		this.fs=fs;
 		this.fileName=fileName;
 		this.passiveServer=passiveServer;
-		this.responseCtx=responseCtx;
 	}
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx)throws IOException

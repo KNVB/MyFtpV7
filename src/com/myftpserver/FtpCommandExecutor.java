@@ -1,6 +1,5 @@
 package com.myftpserver;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
 import org.apache.logging.log4j.Logger;
@@ -30,10 +29,8 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class FtpCommandExecutor 
 {
-	FtpSessionHandler thisSession=null;
-	ServerConfig serverConfig=null;
-	org.apache.logging.log4j.Logger logger=null;
-	Channel ch=null;
+	private FtpSessionHandler thisSession=null;
+	private org.apache.logging.log4j.Logger logger=null;
 	/**
 	 * FTP command executor
 	 * @param fs FtpSessionHandler object

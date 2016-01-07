@@ -26,8 +26,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class CommandCompleteListener implements ChannelFutureListener
 {
-	Logger logger; 
-	String remoteIp,ftpMessage;
+	private Logger logger; 
+	private String remoteIp,ftpMessage;
 	/**
 	 * It is triggered when a ftp command is executed successfully 
 	 * @param logger Message logger

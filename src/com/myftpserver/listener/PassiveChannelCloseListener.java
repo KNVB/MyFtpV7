@@ -32,10 +32,10 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class PassiveChannelCloseListener implements ChannelFutureListener 
 {
-	Logger logger;
-	String remoteIp;
-	FtpSessionHandler fs;
-	ChannelHandlerContext responseCtx;
+	private Logger logger;
+	private String remoteIp;
+	private FtpSessionHandler fs;
+	private ChannelHandlerContext responseCtx;
 	private PassiveServer passiveServer;
 	/**
 	 * It is triggered when a passive mode channel is closed.  
@@ -57,6 +57,6 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	{
 		this.passiveServer.stop();
 		this.passiveServer=null;
-		Utility.sendMessageToClient(this.responseCtx.channel(),logger, fs.getClientIp(), fs.getFtpMessage("226_Transfer_Ok"));
+		Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok"));
 	}
 }

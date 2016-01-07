@@ -32,11 +32,10 @@ public class ServerConfig
 {
 	private Logger logger=null;
 	private String encoding=null;
-	private MessageBundle messageBundle;
 	private ManagersFactory mf=null;
 	private String serverLocale=null;
 	private FileInputStream fis=null;
-	
+	private MessageBundle messageBundle;
 	private UserManager userManager=null;
 	private FileManager fileManager=null;
 	

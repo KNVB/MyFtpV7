@@ -38,8 +38,8 @@ import io.netty.handler.codec.string.StringDecoder;
  */
 public class CommandChannelInitializer extends ChannelInitializer<Channel>
 {
-	Logger logger;
-	MyFtpServer s;
+	private Logger logger;
+	private MyFtpServer s;
 	/**
 	 * Initialize a command channel for user interaction
 	 * @param t MyFtpServer object

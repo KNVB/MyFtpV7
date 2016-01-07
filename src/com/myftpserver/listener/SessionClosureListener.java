@@ -29,10 +29,10 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class SessionClosureListener implements ChannelFutureListener  
 {
-	FtpSessionHandler fs=null;
-	Logger logger=null;
-	Channel ch; 
-	String remoteIp=new String(),ftpMessage=new String();
+	private Channel ch; 
+	private Logger logger=null;
+	private FtpSessionHandler fs=null;
+	private String remoteIp=new String(),ftpMessage=new String();
 	/**
 	 * It is triggered when an user close connection<br> 
 	 * It will sent a good bye message to client and then close the connection 

@@ -28,9 +28,10 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class SendFileCompleteListener implements ChannelFutureListener
 {
-	Logger logger;
-	String fileName;
-	FtpSessionHandler fs;
+	private Logger logger;
+	private String fileName;
+	@SuppressWarnings("unused")
+	private FtpSessionHandler fs;
 	/**
 	 * It is triggered when a file is downloaded by client successfully
 	 * @param fileName FTP session

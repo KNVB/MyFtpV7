@@ -28,9 +28,9 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class CommandChannelClosureListener implements ChannelFutureListener
 {
-	MyFtpServer s;
-	Logger logger; 
-	String remoteIp=null;
+	private MyFtpServer s;
+	private Logger logger; 
+	private String remoteIp=null;
 	/**
 	 * It is triggered when an user close an ftp session 
 	 * @param t FTP server object

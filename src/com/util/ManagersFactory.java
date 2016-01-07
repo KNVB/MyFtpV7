@@ -1,6 +1,5 @@
 package com.util;
 
-import com.myftpserver.*;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
 
@@ -31,9 +30,9 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ManagersFactory 
 {
-	Logger logger;
-	PropertyResourceBundle bundle;
-	ServerConfig serverConfig;
+	private Logger logger;
+	private PropertyResourceBundle bundle;
+	
 	/**
 	 * Factory class for instantiate an Manager object  
 	 * @param b PropertyResourceBundle object

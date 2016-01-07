@@ -27,8 +27,8 @@ import net.sf.j18n.J18n;
  */
 public class MessageBundle 
 {
-	Locale defaultLocale;
-	ResourceBundle  ftpMessage;
+	private Locale defaultLocale;
+	private ResourceBundle ftpMessage;
 	/**
 	 * Message bundle object for localized message
 	 * @param locale an Locale object

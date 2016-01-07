@@ -30,10 +30,10 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class ActiveChannelCloseListener  implements ChannelFutureListener 
 {
-	Logger logger;
-	String remoteIp;
-	FtpSessionHandler fs;
-	ChannelHandlerContext responseCtx;
+	private Logger logger;
+	private String remoteIp;
+	private FtpSessionHandler fs;
+	private ChannelHandlerContext responseCtx;
 	/**
 	 * It is triggered when an active mode channel is closed.  
 	 * @param fs FTP session 

@@ -107,7 +107,7 @@ public class PassiveServer
 		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
 		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
+		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs, this));
 	}
 	/**
 	 * Receive a file from client

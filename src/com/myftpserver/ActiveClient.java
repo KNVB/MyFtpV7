@@ -38,9 +38,9 @@ import com.myftpserver.channelinitializer.ActiveChannelInitializer;
  */
 public class ActiveClient 
 {
-	Logger logger;
-	FtpSessionHandler fs;
-	ChannelHandlerContext responseCtx;
+	private Logger logger;
+	private FtpSessionHandler fs;
+	private ChannelHandlerContext responseCtx;
 	/** 
 	* This is an active mode client for file transfer and file listing transfer	
 	**/	

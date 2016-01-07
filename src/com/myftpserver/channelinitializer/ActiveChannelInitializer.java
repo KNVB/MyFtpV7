@@ -80,7 +80,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 		{
 			case MyFtpServer.SENDFILE:ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 									  ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-									  ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs,responseCtx, txServer));
+									  ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs, txServer));
 									  break;
 		    case MyFtpServer.RECEIVEFILE:ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));  
 										 ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));

@@ -29,10 +29,10 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class TransferExceptionListener  implements ChannelFutureListener 
 {
-	Logger logger;
-	String message;
-	FtpSessionHandler fs;
-	PassiveServer passiveServer;
+	private String message;
+	private Logger logger=null;
+	private FtpSessionHandler fs;
+	private PassiveServer passiveServer;
 	/**
 	 * It is used to handle transfer exception 
 	 * @param fs FTP session
