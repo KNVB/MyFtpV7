@@ -51,7 +51,7 @@ public class SendFileCompleteListener implements ChannelFutureListener
 	{
 		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok")); 
 		if (passiveServer==null)
-			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
+			cf.channel().close();
 		else
 			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));
 		logger.info("File download completed.");	

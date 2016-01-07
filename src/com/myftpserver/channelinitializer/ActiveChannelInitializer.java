@@ -3,11 +3,11 @@ package com.myftpserver.channelinitializer;
 import com.myftpserver.User;
 import com.myftpserver.MyFtpServer;
 import com.myftpserver.PassiveServer;
-
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
+import com.myftpserver.listener.ActiveChannelCloseListener;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -75,6 +75,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
+		ch.closeFuture().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
 		switch (mode)
 		{
 			case MyFtpServer.SENDFILE:ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
