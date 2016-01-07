@@ -45,7 +45,7 @@ public abstract class FileManager
 	/**
 	 * Message logger
 	 */
-	public Logger logger;
+	protected Logger logger;
 	/**
 	 * File Manager interface
 	 * @param logger Message logger
