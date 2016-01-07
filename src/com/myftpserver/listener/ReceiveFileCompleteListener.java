@@ -1,6 +1,4 @@
 package com.myftpserver.listener;
-
-
 import com.myftpserver.handler.FtpSessionHandler;
 
 import org.apache.logging.log4j.Logger;

@@ -1,3 +1,10 @@
+package com.util;
+import java.util.*;
+
+import net.sf.j18n.J18n;
+/**
+ * origin from http://www.coderanch.com/t/525337/java/java/read-Franch-ResourceBundle
+ */
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -13,12 +20,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.util;
-import java.util.*;
-
-import net.sf.j18n.J18n;
 /**
- * origin from http://www.coderanch.com/t/525337/java/java/read-Franch-ResourceBundle
+ * 
+ * @author SITO3
+ *
  */
 public class MessageBundle 
 {
