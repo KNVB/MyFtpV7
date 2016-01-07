@@ -21,6 +21,7 @@ import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
+import com.myftpserver.listener.PassiveChannelCloseListener;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -93,7 +94,8 @@ public class PassiveServer
 	 */
 	public void sendFileNameList(StringBuffer fileNameList,ChannelHandlerContext responseCtx) 
 	{
-		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs,this));
+		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
+		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs));
 	}
 	/**
 	 * Send a file to client
@@ -102,6 +104,7 @@ public class PassiveServer
 	 */
 	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
 	{
+		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
 		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs,responseCtx, this));
@@ -113,6 +116,7 @@ public class PassiveServer
 	 */
 	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
 	{
+		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
 		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
 	}

@@ -2,7 +2,6 @@ package com.myftpserver.handler;
 
 import java.io.IOException;
 
-import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.SendFileNameListCompleteListener;
 
@@ -38,30 +37,25 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 {
 	private FtpSessionHandler fs;
 	private StringBuffer fileNameList;
-	private PassiveServer passiveServer=null;
-	private ChannelHandlerContext responseCtx;
 	/**
 	 * Send file name list handler
 	 * @param fileNameList  A StringBuffer object that contains file listing
 	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client
-	 * @param fs  FtpSessionHandler object
-	 * @param passiveServer PassiveServer object
+	 * @param fs  FtpSessionHandler object 
 	 */
-	public SendFileNameListHandler(StringBuffer fileNameList,ChannelHandlerContext responseCtx, FtpSessionHandler fs,PassiveServer passiveServer) 
+	public SendFileNameListHandler(StringBuffer fileNameList,ChannelHandlerContext responseCtx, FtpSessionHandler fs) 
 	{
 		this.fs=fs;
-		this.responseCtx=responseCtx;
-		this.passiveServer=passiveServer;
 		this.fileNameList=fileNameList;
 	}
 	public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
-		ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs,responseCtx,passiveServer));
+		ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs));
 	}
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{
-		if (passiveServer!=null)
-			ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs,responseCtx,passiveServer));
+		if (fs.isPassiveModeTransfer)
+			ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs));
 	}
 	@Override
 	protected void channelRead0(ChannelHandlerContext arg0, ByteBuf arg1)

@@ -73,19 +73,15 @@ public class NLST implements FtpCommandInterface
 		}		
 		catch (InterruptedException |AccessDeniedException|NotADirectoryException err) 
 		{
-			//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-			//err.printStackTrace();
-			Utility.closeDataChannel(ctx,fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		}
 		catch (PathNotFoundException |InvalidPathException err)
 		{
-			//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
-			Utility.closeDataChannel(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 		catch (Exception err)
 		{
-			//err.printStackTrace();
-			Utility.closeDataChannel(ctx,fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		}
 	}
 

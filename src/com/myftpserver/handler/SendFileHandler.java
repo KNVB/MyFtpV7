@@ -116,11 +116,11 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 				cf=ctx.writeAndFlush(Unpooled.copiedBuffer(line+"\r\n",CharsetUtil.ISO_8859_1));
 			}
 			br.close();
-			SendFileCompleteListener qq=new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer);
+			SendFileCompleteListener qq=new SendFileCompleteListener(this.fileName,this.fs);
 			qq.operationComplete(cf);
 		}
 		else
-			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs,this.responseCtx,this.passiveServer));
+			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs));
 	}
 
 }

@@ -1,13 +1,11 @@
 package com.myftpserver.listener;
 
-import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
 
 import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -30,31 +28,21 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class SendFileCompleteListener implements ChannelFutureListener
 {
-	FtpSessionHandler fs;
-	String fileName;
-	ChannelHandlerContext responseCtx;
-	PassiveServer passiveServer=null;
 	Logger logger;
-	String remoteIp;
-
-	public SendFileCompleteListener(String fileName,FtpSessionHandler fs,ChannelHandlerContext responseCtx, PassiveServer passiveServer)
+	String fileName;
+	FtpSessionHandler fs;
+	public SendFileCompleteListener(String fileName,FtpSessionHandler fs)
 	{
 		this.fs=fs;
 		this.fileName=fileName;
-		this.passiveServer=passiveServer;
-		this.responseCtx=responseCtx;
-		this.remoteIp=fs.getClientIp();
 		this.logger=fs.getLogger();
 	}
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		//Utility.sendMessageToClient(this.responseCtx.channel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok")); 
-		if (passiveServer==null)
-			cf.channel().close().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
-		else
-			cf.channel().close().addListener(new PassiveChannelCloseListener(fs,this.responseCtx, passiveServer));
-		logger.info("File download completed.");	
+		cf.channel().close();
+		logger.info("File "+fileName+" download completed.");	
 	}
 
 }
