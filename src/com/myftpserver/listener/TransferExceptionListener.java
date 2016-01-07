@@ -44,7 +44,7 @@ public class TransferExceptionListener  implements ChannelFutureListener
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
 		logger.info("Message:"+message+" sent to "+fs.getClientIp());
-		if (passiveServer!=null)
+		if (fs.isPassiveModeTransfer)
 		{
 			passiveServer.stop();
 			passiveServer=null;
