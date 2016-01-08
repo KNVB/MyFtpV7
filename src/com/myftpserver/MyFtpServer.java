@@ -9,6 +9,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.File;
 import java.util.Stack;
+import java.util.ArrayList;
+import java.net.UnknownHostException;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +18,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
+import com.util.Utility;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -203,6 +206,19 @@ public final class MyFtpServer
 	public static void main(String[] args) 
 	{
 		MyFtpServer m=new MyFtpServer();
-		m.start();	
+		m.start();
+		/*try 
+		{
+			ArrayList <String> Ip=Utility.getLocalHostLANAddress();
+			for (int i=0;i<Ip.size();i++)
+			{
+				System.out.println(Ip.get(i));
+			}
+		} 
+		catch (UnknownHostException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 }
