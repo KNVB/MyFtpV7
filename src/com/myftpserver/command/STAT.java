@@ -59,10 +59,10 @@ public class STAT implements FtpCommandInterface
 			bandWidthInfo=bandWidthInfo.replaceAll("%1",String.valueOf(user.getDownloadSpeedLitmit()));
 		}
 		if (user.getUploadSpeedLitmit()==0)
-			bandWidthInfo+=fs.getFtpMessage("No_Upload_BW_Limit");
+			bandWidthInfo+=" "+fs.getFtpMessage("No_Upload_BW_Limit");
 		else
 		{
-			bandWidthInfo+=fs.getFtpMessage("Upload_BW_Limit");
+			bandWidthInfo+=" "+fs.getFtpMessage("Upload_BW_Limit");
 			bandWidthInfo=bandWidthInfo.replaceAll("%1",String.valueOf(user.getUploadSpeedLitmit()));
 		}
 		message=message.replaceAll("%5",bandWidthInfo);
