@@ -179,8 +179,8 @@ public class ServerConfig
 		return maxConnection;
 	}
 	/**
-	 * Get FTP server connection time out
-	 * @return FTP server connection time out
+	 * Get FTP command channel time out in second
+	 * @return FTP command channel time out in second
 	 */		
 	public int getCommandChannelConnectionTimeOut() 
 	{
