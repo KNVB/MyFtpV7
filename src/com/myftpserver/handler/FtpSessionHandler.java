@@ -270,6 +270,14 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return messageBundle.getMessage(key);
 	}
 	/**
+	 * Get FTP command channel time out in second
+	 * @return FTP command channel time out in second
+	 */	
+	public int getSessionTimeOut()
+	{
+		return s.getServerConfig().getCommandChannelConnectionTimeOut();
+	}	
+	/**
 	 * Get server object
 	 * @return MyFtpServer object
 	 */
@@ -297,7 +305,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
                // ctx.writeAndFlush(new PingMessage());
             }
         }
-    }	
+    }
 	/**
 	 * Close the FTP session
 	 */
