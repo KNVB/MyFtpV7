@@ -138,7 +138,7 @@ public class PassiveServer
 		workerGroup.shutdownGracefully();
 		bossGroup=null;
 		workerGroup=null;
-		logger.debug("Passive Mode Server is shutdown gracefully.");
+		logger.info("Passive Mode Server is shutdown gracefully.");
 		myFtpServer.returnPassivePort(port);
 	}
 	/*public static void main(String[] args) throws Exception 

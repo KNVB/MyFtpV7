@@ -1,9 +1,11 @@
 package com.myftpserver.handler; 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.logging.log4j.Logger;
 
@@ -93,11 +95,11 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 			throws Exception {
 		// TODO Auto-generated method stub
 	}
-	private void sendFile(ChannelHandlerContext ctx) throws Exception
+	private void sendFile(ChannelHandlerContext ctx) throws UnsupportedEncodingException,FileNotFoundException,IOException,Exception
 	{
 		User user=fs.getUser();
 		Logger logger=fs.getLogger();
-		logger.debug("Data type="+fs.getDataType()+"|");
+		logger.debug("Data type="+fs.getDataType());
 		if (user.getDownloadSpeedLitmit()==0L)
 			logger.info("File download speed is limited by connection speed");
 		else
