@@ -38,13 +38,14 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 	 * It is triggered when an active mode channel is closed.  
 	 * @param fs FTP session 
 	 * @param responseCtx Response Channel
+	 * @param mode 
 	 */
 	public ActiveChannelCloseListener(FtpSessionHandler fs, ChannelHandlerContext responseCtx) 
 	{
 		this.fs=fs;
+		this.logger=fs.getLogger();
 		this.responseCtx=responseCtx;
 		this.remoteIp=fs.getClientIp();
-		this.logger=fs.getLogger();
 	}
 
 	@Override

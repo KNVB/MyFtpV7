@@ -89,6 +89,10 @@ public class DbOp
 				  fs.setMessageBundle(new MessageBundle(new Locale(rs.getString("userLocale"))));
 			  else
 				  fs.setMessageBundle(serverConfig.getMessageBundle());
+			  if (rs.getString("diskSpaceUsed")!=null)
+			  {
+				  u.setDiskSpaceUsed(rs.getDouble("diskSpaceUsed"));
+			  }
 			}
 			else
 				result=UserManager.INVAILD_USERNAME_OR_PASSWORD;

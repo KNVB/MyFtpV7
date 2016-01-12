@@ -67,6 +67,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	{ 
 		User user=fs.getUser();
 		logger.debug("ReceiveFileHandler channel active");
+		ctx.channel().closeFuture().addListener(new ReceiveFileCompleteListener(fs,fileName));
 		if (user.getUploadSpeedLitmit()==0L)
 			logger.info("File upload speed is limited by connection speed");
 		else
@@ -110,18 +111,18 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 				bos.close();
 				bos=null;
 				logger.debug("ReceiveFileHandler channel inactive");
-				ctx.channel().close().addListener(new ReceiveFileCompleteListener(fs,fileName));
+				//ctx.channel().close();
 			}
 			catch (Exception err)
 			{
 				logger.debug(err.getMessage());
-				ctx.channel().close();
+			//	ctx.channel().close();
 			}
 		}
-		else
+		/*else
 		{
 			ctx.channel().close();
-		}
+		}*/
     }
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 	{

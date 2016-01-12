@@ -299,12 +299,24 @@ public class MyFileManager extends FileManager
 	public String putFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException 
 	{
 		int index;
+		User user;
 		String fileName;
 		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
 		index=clientPath.lastIndexOf("/");
 		fileName=clientPath.substring(index+1);
 		clientPath=clientPath.substring(0,index);
 		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
+		user=fs.getUser();
+		if (user.getQuota()>-1.0)
+		{
+			if (user.getDiskSpaceUsed()>=user.getQuota())
+			{
+				String message=fs.getFtpMessage("550_Quota_Exceed");
+				message=message.replaceAll("%1", String.valueOf(user.getQuota()));
+				message=message.replaceAll("%2", String.valueOf(user.getDiskSpaceUsed()));
+				throw new QuotaExceedException(message); 
+			}
+		}
 		serverPath+=File.separator+fileName;
 		return serverPath;
 	}
