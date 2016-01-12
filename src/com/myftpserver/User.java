@@ -27,6 +27,7 @@ public class User
 {
 	private int quota=0; //Quota in Kilo byte
 	private boolean active=false;
+	private float diskSpaceUsed=0.0f;
 	private long ulBWLimit=0,dlBWLimit=0;//Upload and Download speed in Kilo byte per second
 	private String userLocale=new String("en_us");
 	private TreeMap<String, String> serverPathACL = null,clientPathACL=null;
@@ -208,5 +209,21 @@ public class User
 	public void setUserLocale(String userLocale) 
 	{
 		this.userLocale = userLocale;
+	}
+	/**
+	 * Get Disk Space used by this user
+	 * @return Disk Space used by this user
+	 */
+	public float getDiskSpaceUsed() 
+	{
+		return diskSpaceUsed;
+	}
+	/**
+	 * Set Disk Space used by this user
+	 * @param diskSpaceUsed Disk Space used by this user
+	 */
+	public void setDiskSpaceUsed(float diskSpaceUsed) 
+	{
+		this.diskSpaceUsed = diskSpaceUsed;
 	}	
 }
