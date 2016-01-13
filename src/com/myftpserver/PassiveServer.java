@@ -2,26 +2,19 @@ package com.myftpserver;
 
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
+
 import java.net.InetSocketAddress;
 
-import io.netty.channel.Channel;
+
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-import com.myftpserver.User;
-import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.handler.ReceiveFileHandler;
-import com.myftpserver.handler.SendFileNameListHandler;
-import com.myftpserver.listener.PassiveChannelCloseListener;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -47,8 +40,6 @@ import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 public class PassiveServer 
 {
 	private int port;
-	private User user;
-	private Channel ch;
 	private Logger logger;
 	private FtpSessionHandler fs;
 	private MyFtpServer myFtpServer;  
@@ -64,7 +55,6 @@ public class PassiveServer
 	{
 		this.fs=fs;
 		this.port=fs.getPassivePort();
-		this.user=fs.getUser();
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getLogger();
 	}
