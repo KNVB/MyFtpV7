@@ -40,7 +40,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private MyFtpServer s;
 	private Logger logger;
 	
-	private int clientDataPortNo=-1;
+	private int activeDataPortNo=-1,passiveDataPortNo=-1;
 	private boolean isLogined=false;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
@@ -217,7 +217,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 */
 	public void setClientDataPortNo(int portNo) 
 	{
-		clientDataPortNo=portNo;
+		activeDataPortNo=portNo;
 	}
 	/**
 	 * Get client data port no. (valid in active mode operation) 
@@ -225,8 +225,16 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 */
 	public int getClientDataPortNo()
 	{
-		return clientDataPortNo;
+		return activeDataPortNo;
 	}
+	public void setPassivePort(int port) 
+	{
+		this.passiveDataPortNo=port;
+	}
+	public int getPassivePort() 
+	{
+		return this.passiveDataPortNo;
+	}	
 	/**
 	 * Set original file name for rename
 	 * @param reNameFrom
@@ -284,7 +292,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public MyFtpServer getServer() 
 	{
 		return s;
-	}
+	}	
 	/**
 	 * It is used to handle time out issue
 	 * @param ctx the channel that user input command

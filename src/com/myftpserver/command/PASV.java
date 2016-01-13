@@ -64,8 +64,7 @@ public class PASV implements FtpCommandInterface
 				message=message.replaceAll("%1", localIP.replaceAll("\\.", ","));
 				message=message.replaceAll("%2", String.valueOf(port/256));
 				message=message.replaceAll("%3", String.valueOf(port % 256));
-				PassiveServer ps=new PassiveServer(fs,localIP,port);
-				fs.setPassiveServer(ps);				
+				fs.setPassivePort(port);			
 			}				
 		}
 		else

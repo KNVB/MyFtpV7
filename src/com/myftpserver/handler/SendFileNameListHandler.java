@@ -52,11 +52,11 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 	{
 		ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs));
 	}
-	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
+	/*public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{
 		if (fs.isPassiveModeTransfer)
 			ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs));
-	}
+	}*/
 	@Override
 	protected void channelRead0(ChannelHandlerContext arg0, ByteBuf arg1)
 			throws Exception {

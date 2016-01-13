@@ -60,20 +60,24 @@ public class PassiveServer
 	 * @param host Server IP address
 	 * @param port Passive port no.
 	 */
-	public PassiveServer(FtpSessionHandler fs,String host, int port)
+	public PassiveServer(FtpSessionHandler fs)
 	{
 		this.fs=fs;
-		this.port=port;
+		this.port=fs.getPassivePort();
 		this.user=fs.getUser();
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getLogger();
+	}
+	public void sendFileNameList(StringBuffer resultList,ChannelHandlerContext responseCtx) 
+	{
+		String host=((java.net.InetSocketAddress)responseCtx.channel().localAddress()).getAddress().getHostAddress();
 		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
 		try 
         {
             ServerBootstrap bootStrap = new ServerBootstrap();
             bootStrap.group(bossGroup, workerGroup);
             bootStrap.channel(NioServerSocketChannel.class);
-            bootStrap.childHandler(new PassiveChannelInitializer(fs,this));
+            bootStrap.childHandler(new PassiveChannelInitializer(fs,responseCtx,this,resultList));
             bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             bootStrap.bind(inSocketAddress);
             logger.info("Passive Server listening " +host+":" + port);
@@ -87,48 +91,54 @@ public class PassiveServer
 			stop();
 		}
 	}
-	/**
-	 * Send a file name list to client
-	 * @param fileNameList A StringBuffer object that contains file listing
-	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client 
-	 */
-	public void sendFileNameList(StringBuffer fileNameList,ChannelHandlerContext responseCtx) 
+	public void sendFile(String fileName, ChannelHandlerContext responseCtx) 
 	{
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
-		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs));
+		String host=((java.net.InetSocketAddress)responseCtx.channel().localAddress()).getAddress().getHostAddress();
+		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
+		try 
+        {
+            ServerBootstrap bootStrap = new ServerBootstrap();
+            bootStrap.group(bossGroup, workerGroup);
+            bootStrap.channel(NioServerSocketChannel.class);
+            bootStrap.childHandler(new PassiveChannelInitializer(fs,responseCtx,this,MyFtpServer.SENDFILE, fileName));
+            bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+            bootStrap.bind(inSocketAddress);
+            logger.info("Passive Server listening " +host+":" + port);
+            
+            // Wait until the server socket is closed.
+            //ch.closeFuture().sync();
+        }
+		catch (Exception eg)
+		{
+			eg.printStackTrace();
+			stop();
+		}
+		
 	}
-	/**
-	 * Send a file to client
-	 * @param serverPath A file to be sent to client 
-	 * @param responseCtx A ChannelHandlerContext for sending file transfer result to client
-	 */
-	public void sendFile(String serverPath, ChannelHandlerContext responseCtx) throws IOException 
+	public void receiveFile(String fileName, ChannelHandlerContext responseCtx) 
 	{
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
-		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
-		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs, this));
+		String host=((java.net.InetSocketAddress)responseCtx.channel().localAddress()).getAddress().getHostAddress();
+		InetSocketAddress inSocketAddress=new InetSocketAddress(host,port); 
+		try 
+        {
+            ServerBootstrap bootStrap = new ServerBootstrap();
+            bootStrap.group(bossGroup, workerGroup);
+            bootStrap.channel(NioServerSocketChannel.class);
+            bootStrap.childHandler(new PassiveChannelInitializer(fs,responseCtx,this,MyFtpServer.RECEIVEFILE, fileName));
+            bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+            bootStrap.bind(inSocketAddress);
+            logger.info("Passive Server listening " +host+":" + port);
+            
+            // Wait until the server socket is closed.
+            //ch.closeFuture().sync();
+        }
+		catch (Exception eg)
+		{
+			eg.printStackTrace();
+			stop();
+		}		
 	}
-	/**
-	 * Receive a file from client
-	 * @param serverPath the location of the file to be resided.
-	 * @param responseCtx A ChannelHandlerContext for sending file receive result to client
-	 */
-	public void receiveFile(String serverPath, ChannelHandlerContext responseCtx) 
-	{
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs,responseCtx, this));
-		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
-		ch.pipeline().addLast(new ReceiveFileHandler(fs, serverPath,responseCtx,this));
-	}
-	/**
-	 * Set a channel for passive mode
-	 * @param ch a channel for passive mode
-	 */
-	public void setChannel(Channel ch) 
-	{
-		logger.debug("Set Channel is triggered");
-		this.ch=ch;
-	}
+
 	/**
 	 * Stop the passive server and return passive port to passive port pool 
 	 */
@@ -145,5 +155,5 @@ public class PassiveServer
 	{
 		//PassiveServer m=new PassiveServer("localhost",1234,MyFtpServer.SENDFILE,"D:\\SITO3\\Documents\\Xmas-20141224-310.jpg");
 		//PassiveServer m=new PassiveServer("localhost",1234,MyFtpServer.RECEIVEFILE,"D:\\SITO3\\Desktop\\Xmas-20141224-310.jpg");
-	}*/	
+	}*/
 }

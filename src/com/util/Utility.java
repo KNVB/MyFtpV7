@@ -84,7 +84,7 @@ public class Utility
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File Listing in Passive mode");
-			PassiveServer ps=fs.getPassiveServer();
+			PassiveServer ps=new PassiveServer(fs);
 			ps.sendFileNameList(resultList, responseCtx);
 			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
@@ -110,7 +110,7 @@ public class Utility
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File in Passive mode");
-			PassiveServer ps=fs.getPassiveServer();
+			PassiveServer ps=new PassiveServer(fs);
 			ps.sendFile(fileName, responseCtx);
 			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
@@ -135,7 +135,7 @@ public class Utility
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Receive File in Passiveive mode");
-			PassiveServer ps=fs.getPassiveServer();
+			PassiveServer ps=new PassiveServer(fs);
 			ps.receiveFile(fileName, responseCtx);
 			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
