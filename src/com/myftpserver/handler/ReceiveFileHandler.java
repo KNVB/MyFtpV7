@@ -60,10 +60,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter
 	public void handlerAdded(ChannelHandlerContext ctx)throws IOException,Exception
 	{
 		if (passiveServer!=null)
-		{	
-			logger.debug("Handler Added");
 			channelActive(ctx);
-		}
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception 
