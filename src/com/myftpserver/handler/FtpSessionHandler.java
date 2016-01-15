@@ -44,7 +44,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private boolean isLogined=false;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
-	private PassiveServer passiveServer=null;
+	//private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String userName=new String(),dataType="A",currentPath=new String();
@@ -183,18 +183,18 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 * Get passive server for passive mode operation 
 	 * @return PassiveServer object
 	 */
-	public PassiveServer getPassiveServer() 
+	/*public PassiveServer getPassiveServer() 
 	{
 		return this.passiveServer;
-	}
+	}*/
 	/**
 	 * Set passive server for passive mode operation 
 	 * @param passiveServer PassiveServer object
 	 */
-	public void setPassiveServer(PassiveServer passiveServer) 
+	/*public void setPassiveServer(PassiveServer passiveServer) 
 	{
 		this.passiveServer=passiveServer;
-	}
+	}*/
 	/**
 	 * Set User object
 	 * @param user User object
