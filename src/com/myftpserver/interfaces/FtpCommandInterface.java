@@ -1,7 +1,5 @@
 package com.myftpserver.interfaces;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.myftpserver.handler.FtpSessionHandler;
 
 /*

@@ -2,8 +2,6 @@ package com.myftpserver.command;
 
 import org.apache.logging.log4j.Logger;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
@@ -57,7 +55,7 @@ public class PASS implements FtpCommandInterface
 			FileManager fm=serverConfig.getFileManager();
 			try 
 			{
-				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)"+(um==null));
+				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)?"+(um==null));
 				User user=um.login(fs, param);
 				fs.setUser(user);
 				fs.setIsLogined(true);

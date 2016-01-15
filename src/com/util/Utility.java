@@ -1,5 +1,15 @@
 package com.util;
 
+import com.myftpserver.PassiveServer;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.listener.CommandCompleteListener;
+import com.myftpserver.listener.SessionClosureListener;
+import com.myftpserver.listener.TransferExceptionListener;
+
+import io.netty.channel.Channel;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -9,16 +19,6 @@ import java.util.Enumeration;
 
 import org.apache.logging.log4j.Logger;
 
-
-
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.listener.CommandCompleteListener;
-import com.myftpserver.listener.SessionClosureListener;
-
-import io.netty.buffer.Unpooled;
-import io.netty.util.CharsetUtil;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -72,22 +72,21 @@ public class Utility
 	}
 	/**
 	 * It sends a file list to client
-	 * @param responseCtx response channel
 	 * @param fs ftp session
 	 * @param resultList File List
 	 * @throws InterruptedException
 	 */
-	public static void sendFileListToClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
+	public static void sendFileListToClient(FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
-		/*if (fs.isPassiveModeTransfer)
+		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File Listing in Passive mode");
-			PassiveServer ps=new PassiveServer(fs);
-			ps.sendFileNameList(resultList, responseCtx);
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			PassiveServer ps=fs.getPassiveServer();
+			ps.sendFileNameList(resultList);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
-		else
+	/*	else
 		{
 			logger.info("Transfer File Listing in Active mode");
 			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
@@ -95,7 +94,56 @@ public class Utility
 			activeClient.sendFileNameList(resultList);
 		}*/
 	}
-	
+	/**
+	 * It sends a file to client
+	 * @param fs ftp session
+	 * @param fileName The file name that to be send to client
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
+	public static void sendFileToClient(FtpSessionHandler fs, String fileName) throws InterruptedException, IOException 
+	{
+		Logger logger=fs.getLogger();
+		if (fs.isPassiveModeTransfer)
+		{
+			logger.info("Transfer File in Passive mode");
+			PassiveServer ps=fs.getPassiveServer();
+			ps.sendFile(fileName);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+		}
+	/*	else
+		{
+			logger.info("Transfer File in Active mode");
+			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
+			activeClient.sendFile(fileName);
+		}*/
+	}	
+	/**
+	 * It received a file to client
+	 * @param fs ftp session
+	 * @param serverPath The uploaded file 
+	 * @throws InterruptedException
+	 */
+	public static void receiveFileFromClient(FtpSessionHandler fs,String serverPath) 
+	{
+		Logger logger=fs.getLogger();
+		if (fs.isPassiveModeTransfer)
+		{
+			logger.info("Receive File in Passiveive mode");
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+		}
+		
+	}	
+	/**
+	 * It handle an transfer exception; it sends an error message and then close data transfer channel if necessary 
+	 * @param fs ftp session
+	 * @param message The error message that to be send to client
+	 */
+	public static void handleTransferException(FtpSessionHandler fs, String message) 
+	{
+		fs.getChannel().writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
+	}	
 	/**
 	 * Prepare response for system inquiry
 	 * @param logger Message logger
@@ -211,5 +259,5 @@ public class Utility
 		   result=result.substring(0,index);                 
 		} 
 		return result; 
-	}	
+	}
 }

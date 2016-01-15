@@ -2,8 +2,6 @@ package com.myftpserver.command;
 
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
-
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *

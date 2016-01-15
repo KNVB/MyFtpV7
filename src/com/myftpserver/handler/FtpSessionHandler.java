@@ -1,18 +1,15 @@
 package com.myftpserver.handler;
 
+import java.io.File;
+
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.FtpCommandExecutor;
-import com.myftpserver.MyFtpServer;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.User;
+import com.myftpserver.*;
 import com.util.MessageBundle;
 import com.util.Utility;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
@@ -20,17 +17,18 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private User user;
 	private Channel ch;
 	
-	private MyFtpServer myFtpServer;
 	private Logger logger;
-	
-	private int activeDataPortNo=-1,passiveDataPortNo=-1;
 	private boolean isLogined=false;
+	private int activeDataPortNo=-1;
+	private File uploadTempFile=null;
+		
+	private MyFtpServer myFtpServer=null;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
-	//private PassiveServer passiveServer=null;
+	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
-	private String userName=new String(),dataType="A",currentPath=new String();
+	private String userName=new String(),dataType="A",currentPath=new String(),uploadFileName=null;
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	public FtpSessionHandler(Channel ch, MyFtpServer s, String remoteIp)
 	{
@@ -45,7 +43,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		messageBundle=serverConfig.getMessageBundle();
 	}
 	@Override
-	public void handlerAdded(ChannelHandlerContext ctx)
+	public void channelActive(ChannelHandlerContext ctx)
 	{
 		Utility.sendMessageToClient(ch,logger,clientIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
 	}
@@ -217,7 +215,72 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public void reinitialize() 
 	{
 		myFtpServer.reinitializeSession(this.ch,this.clientIp);
+	}
+	/**
+	 * Set original file name for rename
+	 * @param reNameFrom
+	 */
+	public void setReNameFrom(String reNameFrom) 
+	{
+		this.reNameFrom=reNameFrom;		
+	}
+	/**
+	 * Get original file name for rename
+	 * @return original file name for rename
+	 */
+	public String getReNameFrom() 
+	{
+		return this.reNameFrom;		
+	}
+	/**
+	 * Get FTP command channel time out in second
+	 * @return FTP command channel time out in second
+	 */	
+	public int getSessionTimeOut()
+	{
+		return myFtpServer.getServerConfig().getCommandChannelConnectionTimeOut();
 	}	
+	public void setUploadFileName(String uploadFileName) 
+	{
+		this.uploadFileName=uploadFileName;
+	}
+	public String getUploadFileName() 
+	{
+		return this.uploadFileName;
+	}
+	/**
+	 * Get passive server for passive mode operation 
+	 * @return PassiveServer object
+	 */
+	public PassiveServer getPassiveServer() 
+	{
+		return this.passiveServer;
+	}
+	/**
+	 * Set passive server for passive mode operation 
+	 * @param passiveServer PassiveServer object
+	 */
+	public void setPassiveServer(PassiveServer passiveServer) 
+	{
+		this.passiveServer=passiveServer;
+	}
+	/**
+	 * 
+	 * @return Upload Temp File object
+	 */
+	public File getUploadTempFile() 
+	{
+		return this.uploadTempFile;
+	}
+	/**
+	 * 
+	 * @param uploadTempFile
+	 */
+	public void setUploadTempFile(File uploadTempFile) 
+	{
+		this.uploadTempFile=uploadTempFile;
+	}	
+
 	/**
 	 * Close the FTP session
 	 */
@@ -225,5 +288,5 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	{
 		ch.close();
 		ch=null;		
-	}
+	}	
 }
