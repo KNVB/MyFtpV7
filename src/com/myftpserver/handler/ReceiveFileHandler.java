@@ -121,13 +121,13 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 	@Override
 	public void handlerAdded(ChannelHandlerContext arg0) throws Exception 
 	{
-		logger.info("ReceiverHandler:Channel Active");
+		logger.debug("ReceiverHandler:Channel Active");
 	}
 
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception 
 	{
-		logger.info("RecevieHandler:Handler Removed");
+		logger.debug("RecevieHandler:Handler Removed");
 	}
 
 }
