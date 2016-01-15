@@ -49,13 +49,12 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 	 * Send file handler
 	 * @param fileName A file to be sent to client 
 	 * @param fs FtpSessionHandler object
-	 * @param passiveServer PassiveServer object
 	 */
-	public SendFileHandler(String fileName,FtpSessionHandler fs,PassiveServer passiveServer)
+	public SendFileHandler(String fileName,FtpSessionHandler fs)
 	{
 		this.fs=fs;
 		this.fileName=fileName;
-		this.passiveServer=passiveServer;
+		this.passiveServer=fs.getPassiveServer();
 	}
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx)throws IOException

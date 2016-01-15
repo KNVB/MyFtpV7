@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 import java.io.File;
@@ -34,13 +35,18 @@ import com.myftpserver.listener.PassiveChannelCloseListener;
  * @author SITO3
  *
  */
-public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements ChannelHandler 
+@Sharable
+public class PassiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter implements ChannelHandler 
 {
 	private Logger logger;
 	private File tempFile=null;
 	private FtpSessionHandler fs;
 	private BufferedOutputStream bos=null;
-	public ReceiveFileHandler(FtpSessionHandler fs) 
+	/**
+	 * Passive Mode Receive file handler
+	 * @param fs FtpSessionHandler object
+	 */	
+	public PassiveModeReceiveFileHandler(FtpSessionHandler fs) 
 	{
 		this.fs=fs;
 		this.logger=fs.getLogger();
@@ -59,8 +65,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 				ctx.channel().pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 				logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
 			}
-			if (fs.isPassiveModeTransfer)
-				ctx.channel().closeFuture().addListener(new PassiveChannelCloseListener(fs));
+			ctx.channel().closeFuture().addListener(new PassiveChannelCloseListener(fs));
 			tempFile=File.createTempFile("temp-file-name", ".tmp");
 			fs.setUploadTempFile(tempFile);
 			bos=new BufferedOutputStream(new FileOutputStream(tempFile));
@@ -71,7 +76,6 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 	    {
 	        while (in.isReadable()) 
 	        { 
-	           //bos.write(in.readByte());
 	        	in.readBytes(bos,in.readableBytes());
 	        }
 	        bos.flush();
@@ -111,23 +115,24 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext arg0, Throwable t)throws Exception 
 	{
-		if (tempFile!=null)
+		if ((tempFile!=null) &&(tempFile.exists()))
 		{
 			tempFile.delete();
+			tempFile=null;
 			logger.debug("temp file="+tempFile.getAbsolutePath()+" is deleted.");
 		}
-		logger.debug("RecevieHandler:"+t.getMessage());
+		logger.debug("PassiveModeReceiveFileHandler:"+t.getMessage());
 	}
 	@Override
 	public void handlerAdded(ChannelHandlerContext arg0) throws Exception 
 	{
-		logger.debug("ReceiverHandler:Channel Active");
+		logger.debug("PassiveModeReceiveFileHandler:Channel Active");
 	}
 
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception 
 	{
-		logger.debug("RecevieHandler:Handler Removed");
+		logger.debug("PassiveModeReceiveFileHandler:Handler Removed");
 	}
 
 }

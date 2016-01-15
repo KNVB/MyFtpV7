@@ -101,7 +101,7 @@ public class PassiveServer
 		}
 		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs, this));
+		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs));
 		ch.pipeline().remove("ReceiveHandler");
 	}
 	/**

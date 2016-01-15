@@ -4,12 +4,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.User;
 import com.myftpserver.MyFtpServer;
-import com.myftpserver.PassiveServer;
-import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 import com.myftpserver.listener.ActiveChannelCloseListener;
+import com.myftpserver.handler.ActiveModeReceiveFileHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -42,7 +41,6 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private String fileName;
 	private FtpSessionHandler fs;
 	private StringBuffer fileNameList;
-	private PassiveServer txServer=null;
 	/**
 	 * Initialize an active mode channel for file transmission
 	 * @param fs FtpSessionHandler object
@@ -84,10 +82,18 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 											ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 										}
 										ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-										ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs, txServer));
+										ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs));
 										break;
-		    case MyFtpServer.RECEIVEFILE:ch.pipeline().addLast(new ReceiveFileHandler(fs));
-		    							 break;
+		    case MyFtpServer.RECEIVEFILE:
+										if (user.getUploadSpeedLitmit()==0L)
+											logger.info("File upload speed is limited by connection speed");
+										else
+										{	
+											ch.pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
+										logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
+										}
+										ch.pipeline().addLast(new ActiveModeReceiveFileHandler(fs,fileName));
+										break;
 			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList, fs));
 											break;
 		}
