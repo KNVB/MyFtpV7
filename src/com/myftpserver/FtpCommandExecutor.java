@@ -93,7 +93,7 @@ public class FtpCommandExecutor
 		try
 		{
 			cmd=(FtpCommandInterface) Class.forName("com.myftpserver.command."+cmdString.toUpperCase()).newInstance();
-			cmd.execute(thisSession,ctx,parameters);
+			cmd.execute(thisSession,parameters);
 		}
 		catch (InstantiationException | IllegalAccessException| ClassNotFoundException e) 
 		{

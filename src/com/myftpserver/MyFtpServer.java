@@ -1,5 +1,6 @@
 package com.myftpserver;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.util.Utility;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -107,7 +109,7 @@ public final class MyFtpServer
 	}	
 //-------------------------------------------------------------------------------------------	
 	/**
-	 * Called by FtpSessionHandler object when a FTP session is ended.
+	 * Called by CommandChannelClosureListener object when a FTP session is ended.
 	 */
 	public synchronized void sessionClose()
 	{
@@ -187,6 +189,12 @@ public final class MyFtpServer
 			e.printStackTrace();
 			this.stop();
 		}	        
+	}
+//-------------------------------------------------------------------------------------------	
+	public void reinitializeSession(Channel ch,String remoteIp) 
+	{
+		ch.pipeline().remove("MyHandler");
+		ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,this,remoteIp));
 	}
 //-------------------------------------------------------------------------------------------	
 	/**

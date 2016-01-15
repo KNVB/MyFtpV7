@@ -42,7 +42,7 @@ public class PASS implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
@@ -64,7 +64,7 @@ public class PASS implements FtpCommandInterface
 				fs.setCurrentPath("/");
 				fm.getRealHomePath(fs);
 				message=fs.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+				Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
 			} 
 			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
 			{

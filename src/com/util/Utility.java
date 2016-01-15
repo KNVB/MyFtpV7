@@ -49,11 +49,11 @@ public class Utility
 		
 	}
 	/**
-	 * It sends a good bye message to client and then close a ftp channel
-	 * @param ch ftp channel
+	 * It sends a good bye message to client and then close a ftp command channel
+	 * @param ch ftp command channel
 	 * @param logger message logger
 	 * @param remoteIp client IP address
-	 * @param goodByeMessage Good bye message
+	 * @param goodByeMessage Goodbye message
 	 */
 	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
 	{

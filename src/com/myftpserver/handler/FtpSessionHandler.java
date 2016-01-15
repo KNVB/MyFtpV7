@@ -1,43 +1,26 @@
 package com.myftpserver.handler;
-import com.myftpserver.*;
-import com.util.MessageBundle;
 
 import org.apache.logging.log4j.Logger;
 
+import com.myftpserver.FtpCommandExecutor;
+import com.myftpserver.MyFtpServer;
+import com.myftpserver.ServerConfig;
+import com.myftpserver.User;
+import com.util.MessageBundle;
+import com.util.Utility;
+
 import io.netty.channel.Channel;
-import io.netty.handler.timeout.IdleState;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-/*
- * Copyright 2004-2005 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * FTP session handler: It manage an ftp session
- * @author SITO3
- *
- */
-@Sharable
 public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 {
 	private User user;
 	private Channel ch;
 	
-	private MyFtpServer s;
+	private MyFtpServer myFtpServer;
 	private Logger logger;
 	
 	private int activeDataPortNo=-1,passiveDataPortNo=-1;
@@ -49,16 +32,9 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private String userName=new String(),dataType="A",currentPath=new String();
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
-	/**
-	 * FTP Session Handler
-	 * @param ch a channel for user interaction
-	 * @param s MyFtpServer object
-	 * @param remoteIp remote IP address
-	 */
-	public FtpSessionHandler(Channel ch, MyFtpServer s, String remoteIp) 
+	public FtpSessionHandler(Channel ch, MyFtpServer s, String remoteIp)
 	{
-		super();
-		this.s=s;
+		this.myFtpServer=s;
 		this.ch=ch;
 		this.currentPath="/";
 		this.clientIp=remoteIp;
@@ -68,17 +44,34 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.ftpCommandHandler=new FtpCommandExecutor(this);
 		messageBundle=serverConfig.getMessageBundle();
 	}
+	@Override
+	public void handlerAdded(ChannelHandlerContext ctx)
+	{
+		Utility.sendMessageToClient(ch,logger,clientIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
+	}
 	/**
 	 * User input command event handler
 	 * @param ctx the channel that user input command
 	 * @param msg the command that user inputted
 	 */
-	public void channelRead0(ChannelHandlerContext ctx, String msg) 
-	{
+	@Override
+	public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception 
+	{ 
 		commandString=msg.trim();
 		logger.info("Command:"+commandString+" received from "+this.clientIp);
 		ftpCommandHandler.doCommand(ctx,commandString, logger);
 	}
+	/**
+	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
+	 * @param ctx the channel that user input command
+	 * @param cause the exception cause  
+	 */
+	public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) 
+    {
+		myFtpServer.getLogger().debug(FtpSessionHandler.class.getName()+" exception occur:");
+		myFtpServer.getLogger().debug(cause.getMessage());
+        //cause.printStackTrace();
+    }
 	/**
 	 * Get message logger
 	 * @return message logger 
@@ -88,25 +81,6 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return logger;
 	}
 	/**
-	 * Get user interaction channel
-	 * @return io.netty.channel.Channel object
-	 */
-	public Channel getChannel() 
-	{
-		return ch;
-	}
-	/**
-	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
-	 * @param ctx the channel that user input command
-	 * @param cause the exception cause  
-	 */
-	public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) 
-    {
-        s.getLogger().debug(FtpSessionHandler.class.getName()+" exception occur:");
-        s.getLogger().debug(cause.getMessage());
-        //cause.printStackTrace();
-    }
-	/**
 	 * Get client IP address
 	 * @return client IP address
 	 */
@@ -115,12 +89,38 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
     	return clientIp;
     }
     /**
-     * Check login status
-     * @return true if a user already login.
-     */
-	public boolean isLogined() 
+	 * Set FTP message bundle
+	 * @param messageBundle
+	 */
+	public void setMessageBundle(MessageBundle messageBundle) 
 	{
-		return isLogined;
+		this.messageBundle=messageBundle;
+		logger.debug("locale for this session ="+messageBundle.getLocale());
+	}
+	/**
+	 * Get message text from a key
+	 * @param key the message key
+	 * @return value the corresponding message text
+	 */
+	public String getFtpMessage(String key) 
+	{
+		return messageBundle.getMessage(key);
+	}
+	/**
+     * Get Server Configuration object
+     * @return ServerConfig object
+     */
+	public ServerConfig getServerConfig() 
+	{
+		return serverConfig;
+	}
+	/**
+	 * Get user interaction channel
+	 * @return io.netty.channel.Channel object
+	 */
+	public Channel getChannel() 
+	{
+		return ch;
 	}
 	/**
 	 * Set User login name
@@ -180,21 +180,13 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		dataType=type;
 	}
 	/**
-	 * Get passive server for passive mode operation 
-	 * @return PassiveServer object
-	 */
-	/*public PassiveServer getPassiveServer() 
+     * Check login status
+     * @return true if a user already login.
+     */
+	public boolean isLogined() 
 	{
-		return this.passiveServer;
-	}*/
-	/**
-	 * Set passive server for passive mode operation 
-	 * @param passiveServer PassiveServer object
-	 */
-	/*public void setPassiveServer(PassiveServer passiveServer) 
-	{
-		this.passiveServer=passiveServer;
-	}*/
+		return isLogined;
+	}
 	/**
 	 * Set User object
 	 * @param user User object
@@ -212,108 +204,20 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return this.user;
 	}
 	/**
-	 * Set client data port no. (valid in active mode operation) 
-	 * @param portNo client data port no.
-	 */
-	public void setClientDataPortNo(int portNo) 
-	{
-		activeDataPortNo=portNo;
-	}
-	/**
-	 * Get client data port no. (valid in active mode operation) 
-	 * @return client data port no.
-	 */
-	public int getClientDataPortNo()
-	{
-		return activeDataPortNo;
-	}
-	public void setPassivePort(int port) 
-	{
-		this.passiveDataPortNo=port;
-	}
-	public int getPassivePort() 
-	{
-		return this.passiveDataPortNo;
-	}	
-	/**
-	 * Set original file name for rename
-	 * @param reNameFrom
-	 */
-	public void setReNameFrom(String reNameFrom) 
-	{
-		this.reNameFrom=reNameFrom;		
-	}
-	/**
-	 * Get original file name for rename
-	 * @return original file name for rename
-	 */
-	public String getReNameFrom() 
-	{
-		return this.reNameFrom;		
-	}
-	/**
-     * Get Server Configuration object
-     * @return ServerConfig object
-     */
-	public ServerConfig getServerConfig() 
-	{
-		return serverConfig;
-	}
-	/**
-	 * Set FTP message bundle
-	 * @param messageBundle
-	 */
-	public void setMessageBundle(MessageBundle messageBundle) 
-	{
-		this.messageBundle=messageBundle;
-		logger.debug("locale for this session ="+messageBundle.getLocale());
-	}
-	/**
-	 * Get message text from a key
-	 * @param key the message key
-	 * @return value the corresponding message text
-	 */
-	public String getFtpMessage(String key) 
-	{
-		return messageBundle.getMessage(key);
-	}
-	/**
-	 * Get FTP command channel time out in second
-	 * @return FTP command channel time out in second
-	 */	
-	public int getSessionTimeOut()
-	{
-		return s.getServerConfig().getCommandChannelConnectionTimeOut();
-	}	
-	/**
 	 * Get server object
 	 * @return MyFtpServer object
 	 */
 	public MyFtpServer getServer() 
 	{
-		return s;
-	}	
+		return myFtpServer;
+	}
 	/**
-	 * It is used to handle time out issue
-	 * @param ctx the channel that user input command
-	 * @param evt the event object
+	 * Reinitialize Command Session
 	 */
-	@Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception 
+	public void reinitialize() 
 	{
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent e = (IdleStateEvent) evt;
-            if (e.state() == IdleState.READER_IDLE) 
-            {
-                //String goodByeMessage=s.getConfig().getFtpMessage("421_Idle_Timeout");
-                //goodByeMessage=goodByeMessage.replaceAll("%1",String.valueOf(s.getConfig().getCommandChannelConnectionTimeOut()));
-            	//ctx.writeAndFlush(Unpooled.copiedBuffer(goodByeMessage+"\r\n",CharsetUtil.UTF_8));
-            	close();
-            } else if (e.state() == IdleState.WRITER_IDLE) {
-               // ctx.writeAndFlush(new PingMessage());
-            }
-        }
-    }
+		myFtpServer.reinitializeSession(this.ch,this.clientIp);
+	}	
 	/**
 	 * Close the FTP session
 	 */

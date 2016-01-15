@@ -3,8 +3,6 @@ package com.myftpserver.command;
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -29,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 {
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		String message=new String();
 		Logger logger=fs.getLogger();
@@ -43,7 +41,7 @@ public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 			message=message.replaceAll("%1", param);
 			fs.setUserName(param);
 		}
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
 	}
 	@Override
 	public String helpMessage(com.myftpserver.handler.FtpSessionHandler fs) 

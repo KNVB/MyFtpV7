@@ -39,7 +39,7 @@ import io.netty.handler.codec.string.StringDecoder;
 public class CommandChannelInitializer extends ChannelInitializer<Channel>
 {
 	private Logger logger;
-	private MyFtpServer s;
+	private MyFtpServer myFtpServer;
 	/**
 	 * Initialize a command channel for user interaction
 	 * @param t MyFtpServer object
@@ -47,28 +47,26 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 	 */
 	public CommandChannelInitializer(MyFtpServer t, Logger logger)
 	{
-		s=t;
+		myFtpServer=t;
 		this.logger=logger;
 	}
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
-		if (s.isOverConnectionLimit())
+		if (myFtpServer.isOverConnectionLimit())
 		{
-			String msg=s.getServerConfig().getFtpMessage("330_Connection_Full");
+			String msg=myFtpServer.getServerConfig().getFtpMessage("330_Connection_Full");
 			Utility.disconnectFromClient(ch,logger,remoteIp,msg);
 		}
 		else
 		{
-			ServerConfig serverConfig=s.getServerConfig();
-			ch.closeFuture().addListener(new CommandChannelClosureListener(s,remoteIp));
-			Utility.sendMessageToClient(ch,logger,remoteIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
-			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(s.getServerConfig().getCommandChannelConnectionTimeOut(), 30, 0));
-
+			ServerConfig serverConfig=myFtpServer.getServerConfig();
+			ch.closeFuture().addListener(new CommandChannelClosureListener(myFtpServer,remoteIp));
+			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(serverConfig.getCommandChannelConnectionTimeOut(), 30, 0));
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
 			ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
-			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,s,remoteIp));
+			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,myFtpServer,remoteIp));
 		}
 	}
 

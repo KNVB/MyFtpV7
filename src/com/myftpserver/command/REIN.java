@@ -1,8 +1,13 @@
-package com.myftpserver.interfaces;
+package com.myftpserver.command;
+
+import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import com.myftpserver.MyFtpServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FtpCommandInterface;
+import com.util.Utility;
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -20,22 +25,30 @@ import com.myftpserver.handler.FtpSessionHandler;
  * limitations under the License.
  */
 /**
- * FTP command interface
+ * 
  * @author SITO3
  *
  */
-public interface FtpCommandInterface 
+public class REIN implements FtpCommandInterface
 {
- 	/**
- 	 * Display help message
- 	 * @param fs FtpSessionHandler
- 	 * @return Help message
- 	 */
-	public String helpMessage(FtpSessionHandler fs);
-	/**
-	 * Perform raw ftp command action
-	 * @param fs FtpSessionHandler
-	 * @param param Parameter for the raw FTP command 
-	 */
-	public void execute (FtpSessionHandler fs,String param); 
+
+	@Override
+	public String helpMessage(FtpSessionHandler fs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void execute(FtpSessionHandler fs, String param) 
+	{
+		String message=new String();
+		Logger logger=fs.getLogger();
+		message=fs.getFtpMessage("220_Reinitialize");
+		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
+		fs.reinitialize();
+		
+		//MyFtpServer myFtpServer=fs.getServer();
+		//myFtpServer.	Reinitialize
+	}
+
 }
