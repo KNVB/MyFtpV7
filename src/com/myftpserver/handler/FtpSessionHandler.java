@@ -56,6 +56,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception 
 	{ 
 		commandString=msg.trim();
+		this.ch=ctx.channel();
 		logger.info("Command:"+commandString+" received from "+this.clientIp);
 		ftpCommandHandler.doCommand(ctx,commandString, logger);
 	}
@@ -280,7 +281,22 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	{
 		this.uploadTempFile=uploadTempFile;
 	}	
-
+	/**
+	 * Get active data port no. (valid in active mode operation) 
+	 * @return client data port no.
+	 */
+	public int getActiveDataPortNo()
+	{
+		return activeDataPortNo;
+	}
+	/**
+	 * Set active data port no. (valid in active mode operation) 
+	 * @param portNo client data port no.
+	 */
+	public void setActiveDataPortNo(int portNo) 
+	{
+		activeDataPortNo=portNo;
+	}
 	/**
 	 * Close the FTP session
 	 */

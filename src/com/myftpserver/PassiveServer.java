@@ -16,12 +16,11 @@ import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import com.myftpserver.User;
-import com.myftpserver.channelinitializer.PassiveChannelInitializer;
-import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.SendFileHandler;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 import com.myftpserver.listener.PassiveChannelCloseListener;
-
+import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -93,8 +92,14 @@ public class PassiveServer
 	 */
 	public void sendFile(String serverPath) throws IOException 
 	{
+		if (user.getDownloadSpeedLitmit()==0L)
+			logger.info("File download speed is limited by connection speed");
+		else
+		{
+			logger.info("File download speed limit:"+user.getDownloadSpeedLitmit()+" kB/s");
+			ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
+		}
 		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
-		ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
 		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs, this));
 		ch.pipeline().remove("ReceiveHandler");

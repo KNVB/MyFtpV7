@@ -52,12 +52,15 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 		if (bos==null)
 		{
 			User user=fs.getUser();
-			ctx.channel().closeFuture().addListener(new PassiveChannelCloseListener(fs));
-			ctx.channel().pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 			if (user.getUploadSpeedLitmit()==0L)
 				logger.info("File upload speed is limited by connection speed");
 			else
+			{	
+				ctx.channel().pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 				logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
+			}
+			if (fs.isPassiveModeTransfer)
+				ctx.channel().closeFuture().addListener(new PassiveChannelCloseListener(fs));
 			tempFile=File.createTempFile("temp-file-name", ".tmp");
 			fs.setUploadTempFile(tempFile);
 			bos=new BufferedOutputStream(new FileOutputStream(tempFile));

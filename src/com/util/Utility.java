@@ -1,6 +1,6 @@
 package com.util;
 
-import com.myftpserver.PassiveServer;
+import com.myftpserver.*;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.SessionClosureListener;
@@ -86,13 +86,13 @@ public class Utility
 			ps.sendFileNameList(resultList);
 			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
-	/*	else
+		else
 		{
 			logger.info("Transfer File Listing in Active mode");
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs);
 			activeClient.sendFileNameList(resultList);
-		}*/
+		}
 	}
 	/**
 	 * It sends a file to client
@@ -111,13 +111,13 @@ public class Utility
 			ps.sendFile(fileName);
 			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
-	/*	else
+		else
 		{
 			logger.info("Transfer File in Active mode");
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs);
 			activeClient.sendFile(fileName);
-		}*/
+		}
 	}	
 	/**
 	 * It received a file to client
@@ -125,13 +125,20 @@ public class Utility
 	 * @param serverPath The uploaded file 
 	 * @throws InterruptedException
 	 */
-	public static void receiveFileFromClient(FtpSessionHandler fs,String serverPath) 
+	public static void receiveFileFromClient(FtpSessionHandler fs,String serverPath) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Receive File in Passiveive mode");
 			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+		}
+		else
+		{
+			logger.info("Receive File in Active mode");
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs);
+			activeClient.receiveFile(serverPath);
 		}
 		
 	}	

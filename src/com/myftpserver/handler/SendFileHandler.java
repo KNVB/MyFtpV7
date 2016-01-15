@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.PassiveServer;
-import com.myftpserver.User;
 import com.myftpserver.listener.SendFileCompleteListener;
 
 import io.netty.buffer.ByteBuf;
@@ -95,13 +94,9 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 	}
 	private void sendFile(ChannelHandlerContext ctx) throws Exception
 	{
-		User user=fs.getUser();
 		Logger logger=fs.getLogger();
 		logger.debug("Data type="+fs.getDataType()+"|");
-		if (user.getDownloadSpeedLitmit()==0L)
-			logger.info("File download speed is limited by connection speed");
-		else
-			logger.info("File download speed limit:"+user.getDownloadSpeedLitmit()+" kB/s");
+		
 		if (fs.getDataType().equals("A"))
 		{
 			String line;
