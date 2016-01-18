@@ -1,7 +1,10 @@
 package com.myftpserver.command;
 
+import org.apache.logging.log4j.Logger;
+
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
+import com.util.Utility;
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -23,8 +26,9 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  * @author SITO3
  *
  */
-public class XMKD extends MKD implements FtpCommandInterface  
+public class REIN implements FtpCommandInterface
 {
+
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
@@ -32,8 +36,16 @@ public class XMKD extends MKD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
-		super.execute(fs, param);
+		String message=new String();
+		Logger logger=fs.getLogger();
+		message=fs.getFtpMessage("220_Reinitialize");
+		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
+		fs.reinitialize();
+		
+		//MyFtpServer myFtpServer=fs.getServer();
+		//myFtpServer.	Reinitialize
 	}
+
 }

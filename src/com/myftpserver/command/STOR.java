@@ -4,8 +4,6 @@ import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.util.Utility;
 import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
@@ -45,7 +43,7 @@ public class STOR implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		String serverPath=new String(),fileName;
@@ -59,17 +57,18 @@ public class STOR implements FtpCommandInterface
 			if (fileName.indexOf("/")==-1)
 				fileName=fs.getCurrentPath()+"/"+fileName;
 			serverPath=fm.putFile(fs,fileName);
+			fs.setUploadFileName(serverPath);
 			logger.debug("serverPath="+serverPath+",fileName="+fileName);
-			Utility.receiveFileFromClient(ctx,fs,serverPath);
+			Utility.receiveFileFromClient(fs,serverPath);
 		} 
 		catch (InterruptedException|QuotaExceedException|AccessDeniedException err) 
 		{
-			Utility.handleTransferException(ctx,fs,err.getMessage());
+			Utility.handleTransferException(fs,err.getMessage());
 		}
 		
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 	}
 }

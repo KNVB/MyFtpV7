@@ -6,11 +6,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Logger;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
@@ -40,14 +39,13 @@ public class ActiveClient
 {
 	private Logger logger;
 	private FtpSessionHandler fs;
-	private ChannelHandlerContext responseCtx;
-	/** 
-	* This is an active mode client for file transfer and file listing transfer	
-	**/	
-	public ActiveClient(FtpSessionHandler fs, ChannelHandlerContext responseCtx) 
+	/**
+	 * This is an active mode client for file transfer and file listing transfer	
+	 * @param fs FtpSessionHandler Object
+	 */
+	public ActiveClient(FtpSessionHandler fs) 
 	{
 		this.fs=fs;
-		this.responseCtx=responseCtx;
 		this.logger=fs.getLogger();
 	}
 	/**
@@ -62,8 +60,8 @@ public class ActiveClient
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
             b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-            b.handler(new ActiveChannelInitializer(fs,responseCtx,fileNameList));
-            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getClientDataPortNo()));
+            b.handler(new ActiveChannelInitializer(fs,fileNameList));
+            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }
@@ -75,6 +73,7 @@ public class ActiveClient
         finally 
         {
         	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
+        	group=null;
         	logger.debug("Active Mode client is shutdown gracefully.");
         }
 	}
@@ -89,8 +88,8 @@ public class ActiveClient
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
-            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getClientDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,responseCtx,MyFtpServer.SENDFILE,fileName));
+            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
+            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.SENDFILE,fileName));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }
@@ -116,8 +115,8 @@ public class ActiveClient
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
-            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getClientDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,responseCtx,MyFtpServer.RECEIVEFILE,fileName));
+            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
+            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.RECEIVEFILE,fileName));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }

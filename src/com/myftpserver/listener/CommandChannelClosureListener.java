@@ -28,7 +28,7 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class CommandChannelClosureListener implements ChannelFutureListener
 {
-	private MyFtpServer s;
+	private MyFtpServer myFtpServer;
 	private Logger logger; 
 	private String remoteIp=null;
 	/**
@@ -38,13 +38,13 @@ public class CommandChannelClosureListener implements ChannelFutureListener
 	 */
 	public CommandChannelClosureListener(MyFtpServer t,String remoteIp)
 	{
-		s=t;
+		myFtpServer=t;
 		this.remoteIp=remoteIp;
-		this.logger=s.getLogger();
+		this.logger=myFtpServer.getLogger();
 	}
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		logger.info("Command Channel (Remote IP:"+remoteIp+") is closed.");
-		s.sessionClose();
+		myFtpServer.sessionClose();
 	}
 }

@@ -3,8 +3,6 @@ package com.myftpserver.command;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import io.netty.channel.ChannelHandlerContext;
-
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -36,8 +34,8 @@ public class CDUP extends CWD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param)
+	public void execute(FtpSessionHandler fs,String param)
 	{
-		super.execute(fs, ctx, "..");
+		super.execute(fs,"..");
 	}
 }

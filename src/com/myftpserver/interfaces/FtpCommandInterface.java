@@ -1,7 +1,5 @@
 package com.myftpserver.interfaces;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.myftpserver.handler.FtpSessionHandler;
 
 /*
@@ -35,8 +33,7 @@ public interface FtpCommandInterface
 	/**
 	 * Perform raw ftp command action
 	 * @param fs FtpSessionHandler
-	 * @param ctx  A ChannelHandlerContext for sending execution result to client
 	 * @param param Parameter for the raw FTP command 
 	 */
-	public void execute (FtpSessionHandler fs,ChannelHandlerContext ctx,String param); 
+	public void execute (FtpSessionHandler fs,String param); 
 }

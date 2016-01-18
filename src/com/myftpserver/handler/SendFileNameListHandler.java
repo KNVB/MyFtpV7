@@ -40,17 +40,17 @@ public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf
 	/**
 	 * Send file name list handler
 	 * @param fileNameList  A StringBuffer object that contains file listing
-	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client
 	 * @param fs  FtpSessionHandler object 
 	 */
-	public SendFileNameListHandler(StringBuffer fileNameList,ChannelHandlerContext responseCtx, FtpSessionHandler fs) 
+	public SendFileNameListHandler(StringBuffer fileNameList,FtpSessionHandler fs) 
 	{
 		this.fs=fs;
 		this.fileNameList=fileNameList;
 	}
 	public void channelActive(ChannelHandlerContext ctx) throws IOException 
 	{
-		ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs));
+		if (!fs.isPassiveModeTransfer)
+			ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList.toString(),CharsetUtil.UTF_8)).addListener(new SendFileNameListCompleteListener(fs));
 	}
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception
 	{

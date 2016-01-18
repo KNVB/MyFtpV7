@@ -4,7 +4,6 @@ import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,9 +33,9 @@ public class NOOP implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs,String param) 
 	{
-		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Ok"));
+		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Ok"));
 	}
 
 }

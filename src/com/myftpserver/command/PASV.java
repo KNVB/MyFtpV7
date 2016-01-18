@@ -1,15 +1,13 @@
 package com.myftpserver.command;
 
-import java.net.InetSocketAddress;
-
-import org.apache.logging.log4j.Logger;
-
-import io.netty.channel.ChannelHandlerContext;
-
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
 import com.myftpserver.interfaces.FtpCommandInterface;
+
+import java.net.InetSocketAddress;
+
+import org.apache.logging.log4j.Logger;
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -42,13 +40,13 @@ public class PASV implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		int port;
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
 		MyFtpServer server=fs.getServer();
-		String message=new String(),localIP=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
+		String message=new String(),localIP=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
 		if (serverConfig.isSupportPassiveMode())
 		{
 			port=server.getNextPassivePort();
@@ -73,6 +71,6 @@ public class PASV implements FtpCommandInterface
 			fs.isPassiveModeTransfer=false;
 			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
 	}
 }

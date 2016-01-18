@@ -6,8 +6,6 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -40,7 +38,7 @@ public class CWD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param)
+	public void execute(FtpSessionHandler fs,String param)
 	{
 		Logger logger=fs.getLogger();
 		FileManager fm=fs.getServerConfig().getFileManager();
@@ -49,11 +47,11 @@ public class CWD implements FtpCommandInterface
 		try 
 		{
 			fm.changeDirectory(fs,param);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("200_Ok"));
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("200_Ok"));
 		} 
 		catch (AccessDeniedException | PathNotFoundException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
 		}
 	}
 }

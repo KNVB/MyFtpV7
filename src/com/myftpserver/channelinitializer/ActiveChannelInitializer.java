@@ -1,17 +1,17 @@
 package com.myftpserver.channelinitializer;
 
+import org.apache.logging.log4j.Logger;
+
 import com.myftpserver.User;
 import com.myftpserver.MyFtpServer;
-import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 import com.myftpserver.listener.ActiveChannelCloseListener;
+import com.myftpserver.handler.ActiveModeReceiveFileHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 /*
@@ -41,51 +41,60 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private String fileName;
 	private FtpSessionHandler fs;
 	private StringBuffer fileNameList;
-	private PassiveServer txServer=null;
-	private ChannelHandlerContext responseCtx;
 	/**
 	 * Initialize an active mode channel for file transmission
 	 * @param fs FtpSessionHandler object
-	 * @param responseCtx A ChannelHandlerContext for sending file transfer result to client
 	 * @param mode Transfer mode
 	 * @param fileName The file to be sent to client
 	 */
-	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, int mode,String fileName) 
+	public ActiveChannelInitializer(FtpSessionHandler fs,int mode,String fileName) 
 	{
 		this.fs=fs;
 		this.user=fs.getUser();
 		this.mode=mode;
 		this.fileName=fileName;
-		this.responseCtx=responseCtx;
 	}
 	/**
 	 * Initialize an active mode channel for file name list transmission
 	 * @param fs FtpSessionHandler object
-	 * @param responseCtx A ChannelHandlerContext for sending file name list transfer result to client
 	 * @param fileNameList A StringBuffer object that contains file listing
 	 */
-	public ActiveChannelInitializer(FtpSessionHandler fs,ChannelHandlerContext responseCtx, StringBuffer fileNameList) 
+	public ActiveChannelInitializer(FtpSessionHandler fs, StringBuffer fileNameList) 
 	{
 		this.fs=fs;
 		this.user=fs.getUser();
 		this.mode=MyFtpServer.SENDDIRLIST;
-		this.responseCtx=responseCtx;
 		this.fileNameList=fileNameList;
 	}
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
-		ch.closeFuture().addListener(new ActiveChannelCloseListener(fs,this.responseCtx));
+		Logger logger=fs.getLogger();
+		ch.closeFuture().addListener(new ActiveChannelCloseListener(fs));
 		switch (mode)
 		{
-			case MyFtpServer.SENDFILE:ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
-									  ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-									  ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs, txServer));
-									  break;
-		    case MyFtpServer.RECEIVEFILE:ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));  
-										 ch.pipeline().addLast(new ReceiveFileHandler(fs, this.fileName,responseCtx,null));
-											break;
-			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList,responseCtx, fs));
+			case MyFtpServer.SENDFILE:
+										if (user.getDownloadSpeedLitmit()==0L)
+											logger.info("File download speed is limited by connection speed");
+										else
+										{
+											logger.info("File download speed limit:"+user.getDownloadSpeedLitmit()+" kB/s");
+											ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
+										}
+										ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
+										ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs));
+										break;
+		    case MyFtpServer.RECEIVEFILE:
+										if (user.getUploadSpeedLitmit()==0L)
+											logger.info("File upload speed is limited by connection speed");
+										else
+										{	
+											ch.pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
+										logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
+										}
+										ch.pipeline().addLast(new ActiveModeReceiveFileHandler(fs,fileName));
+										break;
+			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList, fs));
 											break;
 		}
 	}

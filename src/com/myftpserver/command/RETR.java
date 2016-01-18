@@ -3,18 +3,17 @@ package com.myftpserver.command;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
-import com.util.Utility;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.interfaces.FileManager;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FtpCommandInterface;
-import com.myftpserver.exception.AccessDeniedException;
-import com.myftpserver.exception.NotAFileException;
-import com.myftpserver.exception.PathNotFoundException;
-
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.logging.log4j.Logger;
+
+import com.myftpserver.ServerConfig;
+import com.myftpserver.exception.NotAFileException;
+import com.myftpserver.exception.AccessDeniedException;
+import com.myftpserver.exception.PathNotFoundException;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.FtpCommandInterface;
+import com.util.Utility;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -35,7 +34,8 @@ import org.apache.logging.log4j.Logger;
  * @author SITO3
  *
  */
-public class RETR implements FtpCommandInterface {
+public class RETR implements FtpCommandInterface
+{
 
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
@@ -44,7 +44,7 @@ public class RETR implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,ChannelHandlerContext ctx, String param)
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
@@ -53,15 +53,17 @@ public class RETR implements FtpCommandInterface {
 		try 
 		{
 			String serverPath=fm.getFile(fs,param);
-			Utility.sendFileToClient(ctx,fs,serverPath);
+			Utility.sendFileToClient(fs,serverPath);
 		}
 		catch (InterruptedException|NotAFileException |AccessDeniedException |IOException err) 
 		{
-			Utility.handleTransferException(ctx,fs,err.getMessage());
+			Utility.handleTransferException(fs,err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
-	}	
+		
+	}
+
 }

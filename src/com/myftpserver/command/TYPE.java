@@ -4,7 +4,6 @@ import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,7 +33,7 @@ public class TYPE implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		String type,formSet="",message=fs.getFtpMessage("200_Transfer_Set");
 		if (fs.isLogined())
@@ -56,10 +55,10 @@ public class TYPE implements FtpCommandInterface
 			{
 				case "I":message=message.substring(0,message.indexOf(";"));
 				case "A":fs.setDataType(type);
-						 Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), message);
+						 Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(), message);
 						 break;
 				default:
-					Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("504_Command_Not_Support_This_Parameter"));
+					Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("504_Command_Not_Support_This_Parameter"));
 					break;
 			}
 		}

@@ -6,8 +6,6 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
@@ -47,7 +45,7 @@ public class RNTO implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) 
+	public void execute(FtpSessionHandler fs,String inPath) 
 	{
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
@@ -64,16 +62,16 @@ public class RNTO implements FtpCommandInterface {
 			renameFrom=Paths.get(fs.getReNameFrom());
 			renameTo=Paths.get(destPath);
 			Files.move(renameFrom, renameTo);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Rename_Ok"));
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Rename_Ok"));
 		}
 		catch (InterruptedException|AccessDeniedException|QuotaExceedException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		
 		catch (PathNotFoundException|InvalidPathException|IOException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
 		}
 	}
 

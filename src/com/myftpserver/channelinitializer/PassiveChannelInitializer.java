@@ -1,6 +1,8 @@
 package com.myftpserver.channelinitializer;
-import com.myftpserver.handler.*;
-import com.myftpserver.PassiveServer;
+
+import com.myftpserver.*;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.handler.PassiveModeReceiveFileHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -24,21 +26,26 @@ import io.netty.channel.ChannelInitializer;
  * @author SITO3
  *
  */
-public class PassiveChannelInitializer extends ChannelInitializer<Channel>
+public class PassiveChannelInitializer extends ChannelInitializer<Channel> 
 {
+	private FtpSessionHandler fs;
 	private PassiveServer passiveServer;
 	/**
 	 * Initialize a passive server for passive mode operation
 	 * @param fs FtpSessionHandler object
-	 * @param passiveServer PassiveServer object
 	 */
-	public PassiveChannelInitializer(FtpSessionHandler fs,PassiveServer passiveServer)
+	public PassiveChannelInitializer(FtpSessionHandler fs) 
 	{
-		this.passiveServer=passiveServer;
+		super();
+		this.fs=fs;
+		this.passiveServer=fs.getPassiveServer();
 	}
+
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		passiveServer.setChannel(ch);
+		ch.pipeline().addLast("ReceiveHandler",new PassiveModeReceiveFileHandler(fs));
 	}
+
 }

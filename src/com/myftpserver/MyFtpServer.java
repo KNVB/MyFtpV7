@@ -1,5 +1,6 @@
 package com.myftpserver;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
@@ -9,8 +10,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.File;
 import java.util.Stack;
-import java.util.ArrayList;
-import java.net.UnknownHostException;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
-import com.util.Utility;
+import com.myftpserver.handler.FtpSessionHandler;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -107,7 +107,7 @@ public final class MyFtpServer
 	}	
 //-------------------------------------------------------------------------------------------	
 	/**
-	 * Called by FtpSessionHandler object when a FTP session is ended.
+	 * Called by CommandChannelClosureListener object when a FTP session is ended.
 	 */
 	public synchronized void sessionClose()
 	{
@@ -189,6 +189,12 @@ public final class MyFtpServer
 		}	        
 	}
 //-------------------------------------------------------------------------------------------	
+	public void reinitializeSession(Channel ch,String remoteIp) 
+	{
+		ch.pipeline().remove("MyHandler");
+		ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,this,remoteIp));
+	}
+//-------------------------------------------------------------------------------------------	
 	/**
 	*  stop FTP server
 	*/
@@ -217,7 +223,6 @@ public final class MyFtpServer
 		} 
 		catch (UnknownHostException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
 	}

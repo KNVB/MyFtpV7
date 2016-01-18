@@ -2,8 +2,6 @@ package com.myftpserver.command;
 
 import java.net.InetSocketAddress;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.MyFtpServer;
@@ -42,7 +40,7 @@ public class EPSV implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		int port;
 		Logger logger=fs.getLogger();
@@ -58,7 +56,7 @@ public class EPSV implements FtpCommandInterface
 			{	
 				message=fs.getFtpMessage("229_EPSV_Ok");
 				message=message.replaceAll("%1", String.valueOf(port));
-				localIp=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
+				localIp=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
 				fs.isPassiveModeTransfer=true;						
 				PassiveServer passiveServer=new PassiveServer(fs,localIp,port);
 				fs.setPassiveServer(passiveServer);
@@ -68,7 +66,7 @@ public class EPSV implements FtpCommandInterface
 		{
 			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
-		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);	
+		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);	
 		
 	}
 

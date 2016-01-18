@@ -1,7 +1,5 @@
 package com.myftpserver.command;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.myftpserver.User;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -36,7 +34,7 @@ public class STAT implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		User user=fs.getUser();
 		String bandWidthInfo=new String();
@@ -66,6 +64,6 @@ public class STAT implements FtpCommandInterface
 			bandWidthInfo=bandWidthInfo.replaceAll("%1",String.valueOf(user.getUploadSpeedLitmit()));
 		}
 		message=message.replaceAll("%5",bandWidthInfo);
-		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),message);
+		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(),message);
 	}
 }

@@ -2,8 +2,6 @@ package com.myftpserver.command;
 
 import org.apache.logging.log4j.Logger;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
@@ -42,7 +40,7 @@ public class PASS implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx, String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
@@ -57,14 +55,14 @@ public class PASS implements FtpCommandInterface
 			FileManager fm=serverConfig.getFileManager();
 			try 
 			{
-				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)"+(um==null));
+				logger.debug("User name=" +fs.getUserName()+",param="+param+",(um==null)?"+(um==null));
 				User user=um.login(fs, param);
 				fs.setUser(user);
 				fs.setIsLogined(true);
 				fs.setCurrentPath("/");
 				fm.getRealHomePath(fs);
 				message=fs.getFtpMessage("230_Login_Ok").replaceAll("%1", fs.getUserName());
-				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+				Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
 			} 
 			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
 			{

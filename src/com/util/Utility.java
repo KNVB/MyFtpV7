@@ -1,5 +1,15 @@
 package com.util;
 
+import com.myftpserver.*;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.listener.CommandCompleteListener;
+import com.myftpserver.listener.SessionClosureListener;
+import com.myftpserver.listener.TransferExceptionListener;
+
+import io.netty.channel.Channel;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -9,17 +19,6 @@ import java.util.Enumeration;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.ActiveClient;
-import com.myftpserver.PassiveServer;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.listener.TransferExceptionListener;
-import com.myftpserver.listener.SessionClosureListener;
-import com.myftpserver.listener.CommandCompleteListener;
-
-import io.netty.buffer.Unpooled;
-import io.netty.util.CharsetUtil;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -50,11 +49,11 @@ public class Utility
 		
 	}
 	/**
-	 * It sends a good bye message to client and then close a ftp channel
-	 * @param ch ftp channel
+	 * It sends a good bye message to client and then close a ftp command channel
+	 * @param ch ftp command channel
 	 * @param logger message logger
 	 * @param remoteIp client IP address
-	 * @param goodByeMessage Good bye message
+	 * @param goodByeMessage Goodbye message
 	 */
 	public static void disconnectFromClient(Channel ch, Logger logger,String remoteIp,String goodByeMessage)
 	{
@@ -73,90 +72,85 @@ public class Utility
 	}
 	/**
 	 * It sends a file list to client
-	 * @param responseCtx response channel
 	 * @param fs ftp session
 	 * @param resultList File List
 	 * @throws InterruptedException
 	 */
-	public static void sendFileListToClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
+	public static void sendFileListToClient(FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File in Passive mode");
 			PassiveServer ps=fs.getPassiveServer();
-			ps.sendFileNameList(resultList, responseCtx);
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ps.sendFileNameList(resultList);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
-			logger.info("Transfer File in Active mode");
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
+
+			logger.info("Transfer File Listing in Active mode");
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs);
 			activeClient.sendFileNameList(resultList);
 		}
 	}
 	/**
 	 * It sends a file to client
-	 * @param responseCtx response channel
 	 * @param fs ftp session
 	 * @param fileName The file name that to be send to client
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static void sendFileToClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String fileName) throws InterruptedException, IOException 
+	public static void sendFileToClient(FtpSessionHandler fs, String fileName) throws InterruptedException, IOException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File in Passive mode");
 			PassiveServer ps=fs.getPassiveServer();
-			ps.sendFile(fileName, responseCtx);
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ps.sendFile(fileName);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
 			logger.info("Transfer File in Active mode");
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs);
 			activeClient.sendFile(fileName);
 		}
-	}
+	}	
 	/**
 	 * It received a file to client
-	 * @param responseCtx response channel
 	 * @param fs ftp session
-	 * @param fileName The file name that to be uploaded by client
+	 * @param serverPath The uploaded file 
 	 * @throws InterruptedException
 	 */
-	public static void receiveFileFromClient(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String fileName) throws InterruptedException 
+	public static void receiveFileFromClient(FtpSessionHandler fs,String serverPath) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Receive File in Passiveive mode");
-			PassiveServer ps=fs.getPassiveServer();
-			ps.receiveFile(fileName, responseCtx);
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
 			logger.info("Receive File in Active mode");
-			sendMessageToClient(responseCtx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs,responseCtx);
-			activeClient.receiveFile(fileName);
-		}		
+			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(fs);
+			activeClient.receiveFile(serverPath);
+		}
 		
-	}
+	}	
 	/**
 	 * It handle an transfer exception; it sends an error message and then close data transfer channel if necessary 
-	 * @param responseCtx response channel
 	 * @param fs ftp session
 	 * @param message The error message that to be send to client
 	 */
-	public static void handleTransferException(ChannelHandlerContext responseCtx,FtpSessionHandler fs, String message) 
+	public static void handleTransferException(FtpSessionHandler fs, String message) 
 	{
-		responseCtx.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
+		fs.getChannel().writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
 	}	
 	/**
 	 * Prepare response for system inquiry
@@ -273,5 +267,5 @@ public class Utility
 		   result=result.substring(0,index);                 
 		} 
 		return result; 
-	}	
+	}
 }

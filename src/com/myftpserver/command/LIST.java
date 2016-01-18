@@ -12,7 +12,6 @@ import com.myftpserver.exception.PathNotFoundException;
 
 import org.apache.logging.log4j.Logger;
 
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -44,7 +43,7 @@ public class LIST implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		String p[]=param.split(" ");
@@ -78,17 +77,17 @@ public class LIST implements FtpCommandInterface
 		try
 		{
 			resultList=fm.getFullDirList(fs,clientPath);
-			Utility.sendFileListToClient(ctx,fs,resultList);
+			Utility.sendFileListToClient(fs,resultList);
 		}
 		catch (InterruptedException |AccessDeniedException|NotADirectoryException err)
 		{
 			//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-			Utility.handleTransferException(ctx,fs,err.getMessage());
+			Utility.handleTransferException(fs,err.getMessage());
 		} 
 		catch (PathNotFoundException |InvalidPathException err)
 		{
 			//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
-			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}	
 	}	
 }

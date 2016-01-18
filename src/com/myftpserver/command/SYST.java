@@ -2,8 +2,6 @@ package com.myftpserver.command;
 
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
-
-import io.netty.channel.ChannelHandlerContext;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -33,8 +31,8 @@ public class SYST implements com.myftpserver.interfaces.FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
-		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("215_System_Type")+" "+ Utility.getSystemType(fs.getLogger()));
+		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("215_System_Type")+" "+ Utility.getSystemType(fs.getLogger()));
 	}
 }

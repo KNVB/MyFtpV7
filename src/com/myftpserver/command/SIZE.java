@@ -9,8 +9,6 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -40,7 +38,7 @@ public class SIZE implements FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String param) 
+	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		ServerConfig serverConfig=fs.getServerConfig();
@@ -51,11 +49,11 @@ public class SIZE implements FtpCommandInterface
 			long size=fm.getPathSize(fs, param);
 			message=fs.getFtpMessage("213_File_Size");
 			message=message.replaceAll("%1", String.valueOf(size));
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
 		} 
 		catch (PathNotFoundException|InvalidPathException |AccessDeniedException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 	}
 }

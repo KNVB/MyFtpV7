@@ -7,8 +7,6 @@ import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import com.util.Utility;
 import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
@@ -48,7 +46,7 @@ public class MKD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, ChannelHandlerContext ctx,String inPath) 
+	public void execute(FtpSessionHandler fs,String inPath) 
 	{
 		String serverPath=new String(),newPathName,message;
 		Logger logger=fs.getLogger();
@@ -66,17 +64,17 @@ public class MKD implements FtpCommandInterface
 			Files.createDirectories(Paths.get(serverPath));
 			message=fs.getFtpMessage("257_MKD");
 			message=message.replaceAll("%1", inPath);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
 		} 
 		catch (InterruptedException|QuotaExceedException|AccessDeniedException err) 
 		{
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException|IOException err) 
 		{
 			message=fs.getFtpMessage("550_MKD_Failure");
 			message=message.replaceAll("%1", inPath);
-			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
 	}
 }

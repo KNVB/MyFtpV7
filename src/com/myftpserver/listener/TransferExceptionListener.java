@@ -32,7 +32,7 @@ public class TransferExceptionListener  implements ChannelFutureListener
 	private String message;
 	private Logger logger=null;
 	private FtpSessionHandler fs;
-	private PassiveServer passiveServer;
+	
 	/**
 	 * It is used to handle transfer exception 
 	 * @param fs FTP session
@@ -43,18 +43,25 @@ public class TransferExceptionListener  implements ChannelFutureListener
 		this.fs=fs;
 		this.message=message;
 		this.logger=fs.getLogger();
-		this.passiveServer=fs.getPassiveServer();
 	}
 	@Override
-	public void operationComplete(ChannelFuture arg0) throws Exception 
+	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		logger.info("Message:"+message+" sent to "+fs.getClientIp());
 		if (fs.isPassiveModeTransfer)
 		{
-			passiveServer.stop();
-			passiveServer=null;
-			fs.setPassiveServer(passiveServer);
+			PassiveServer passiveServer=fs.getPassiveServer();
+			if (passiveServer!=null)
+			{
+				passiveServer.stop();
+				passiveServer=null;
+				fs.setPassiveServer(passiveServer);
+			}
+			if ((fs.getUploadTempFile()!=null) &&(fs.getUploadTempFile().exists()))
+			{
+				fs.getUploadTempFile().delete();
+				logger.debug("Temp file "+fs.getUploadTempFile().getAbsolutePath()+" is deleted.");
+			}
 		}
 	}
-
 }
