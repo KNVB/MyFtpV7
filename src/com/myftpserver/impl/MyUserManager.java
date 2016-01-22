@@ -1,8 +1,8 @@
 package com.myftpserver.impl;
 
+import java.util.Vector;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.apache.logging.log4j.Logger;
 
@@ -81,9 +81,9 @@ public class MyUserManager extends UserManager
 	}
 
 	@Override
-	public int setPassword(User u) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int upDateUserInfo(User u)  
+	{
+		return dbo.upDateUserInfo(u);
 	}
 
 	@Override

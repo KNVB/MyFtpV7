@@ -157,6 +157,39 @@ public class DbOp
 			releaseResource(rs, stmt);
 		}
 	}
+	public int upDateUserInfo(User user) 
+	{
+		int result=-1;
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		String sql="update user set password=?,";
+		sql+="quota=?,diskSpaceUsed=?,";
+		sql+="userLocale=?,downloadSpeedLimit=?,";
+		sql+="uploadSpeedLimit=? where user_name=?";
+		
+		try 
+		{
+			stmt=dbConn.prepareStatement(sql);
+			stmt.setString(1, user.getPassword());
+			stmt.setDouble(2, user.getQuota());
+			stmt.setDouble(3, user.getDiskSpaceUsed());
+			stmt.setString(4,user.getUserLocale());
+			stmt.setDouble(5, user.getDownloadSpeedLitmit());
+			stmt.setDouble(6, user.getUploadSpeedLitmit());
+			stmt.setString(7, user.getName());
+			result=stmt.executeUpdate();
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally
+		{
+			releaseResource(rs, stmt);
+		}
+		return result;
+	}
 	/**
 	 * Close db connection
 	 * @throws Exception
