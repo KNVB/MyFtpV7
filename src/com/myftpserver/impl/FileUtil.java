@@ -4,7 +4,9 @@ import java.util.Stack;
 import java.util.Locale;
 import java.util.Calendar;
 import java.util.TreeMap;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.User;
 import com.myftpserver.exception.*;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -252,5 +255,56 @@ public class FileUtil
 	      }
 	    }
 	    return(path.delete());
+	}
+	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
+	{
+		try
+		{
+			getServerPath(fs,"/",FileManager.READ_PERMISSION);
+		}
+		catch (AccessDeniedException err)
+		{
+			throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
+		}
+		catch (PathNotFoundException err)
+		{
+			throw new InvalidHomeDirectoryException(fs.getFtpMessage("530_Home_Dir_Not_Found"));
+		}
+	}
+	public static final String getServerPath(FtpSessionHandler fs,String inPath, String requiredPermission)throws AccessDeniedException,PathNotFoundException
+	{
+		Logger logger=fs.getLogger();
+		String serverPath=new String(),serverPathPerm=null,virtualPathPerm=null,finalPerm=null;
+		String clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
+		String serverPathAndPerm=FileUtil.getServerPathAndPermFromVirDir(fs,clientPath);
+		if (serverPathAndPerm.isEmpty())
+		{
+			throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
+		}
+		else
+		{
+			serverPath=serverPathAndPerm.split("\t")[0];
+			virtualPathPerm=serverPathAndPerm.split("\t")[1];
+			serverPathPerm=FileUtil.getServerPathPerm(logger,fs.getUser().getServerPathACL(),Paths.get(serverPath));
+			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm);
+			if (virtualPathPerm!=null)
+				finalPerm=virtualPathPerm;
+			if (serverPathPerm!=null)
+				finalPerm+=serverPathPerm;
+			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm+",finalPerm="+finalPerm);
+			
+			if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
+			{
+				throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
+			}
+			else
+			{
+				if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
+				{
+					throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
+				}
+			}
+		}
+		return serverPath;
 	}
 }
