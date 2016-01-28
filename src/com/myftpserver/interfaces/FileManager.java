@@ -120,7 +120,7 @@ public abstract class FileManager
 	 * @throws NotAFileException
 	 * @throws PathNotFoundException
 	 */
-	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException;
+	public abstract String getDownloadFileServerPath(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException;
 	/**
 	 * Generate a server path for file upload 
 	 * @param fs FtpSessionHandler

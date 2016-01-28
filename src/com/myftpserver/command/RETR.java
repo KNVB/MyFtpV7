@@ -52,7 +52,7 @@ public class RETR implements FtpCommandInterface
 		logger.debug("param="+param+"|");
 		try 
 		{
-			String serverPath=fm.getFile(fs,param);
+			String serverPath=fm.getDownloadFileServerPath(fs,param);
 			Utility.sendFileToClient(fs,serverPath);
 		}
 		catch (InterruptedException|NotAFileException |AccessDeniedException |IOException err) 

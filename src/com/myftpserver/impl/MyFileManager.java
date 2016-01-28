@@ -284,7 +284,7 @@ public class MyFileManager extends FileManager
 		return fileNameList;
 	}
 	@Override
-	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException 
+	public String getDownloadFileServerPath(FtpSessionHandler fs, String inPath)throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException 
 	{
 		String message=fs.getFtpMessage("550_Not_A_File");
 		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
