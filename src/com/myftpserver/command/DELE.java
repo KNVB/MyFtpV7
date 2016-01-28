@@ -56,7 +56,7 @@ public class DELE implements FtpCommandInterface {
 			if (Files.isDirectory(Paths.get(serverPath)))
 			{
 				String message=fs.getFtpMessage("550_Not_A_File");
-				message=message.replaceAll("%1", inPath);
+				message=message.replace("%1", inPath);
 				throw new NotAFileException(message);
 			}
 			else	

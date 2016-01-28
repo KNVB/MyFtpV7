@@ -158,7 +158,7 @@ public class MyFileManager extends FileManager
 					{
 						serverPath=getServerPath(fs,virPath,FileManager.READ_PERMISSION);
 						logger.debug("0 virPath="+virPath);
-						virPath=virPath.replaceAll(currentPath, "");
+						virPath=virPath.replace(currentPath, "");
 						logger.debug("1 virPath="+virPath);
 						index=virPath.indexOf("/");
 						if (index==0)
@@ -185,7 +185,7 @@ public class MyFileManager extends FileManager
 		catch (NotDirectoryException err)
 		{
 			String message=fs.getFtpMessage("550_Not_A_Directory");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			throw new NotADirectoryException(message);
 		}
 		catch (NoSuchFileException ex)
@@ -243,7 +243,7 @@ public class MyFileManager extends FileManager
 					{
 						getServerPath(fs,virPath,FileManager.READ_PERMISSION);
 						logger.debug("0 virPath="+virPath);
-						virPath=virPath.replaceAll(currentPath, "");
+						virPath=virPath.replace(currentPath, "");
 						logger.debug("1 virPath="+virPath);
 						index=virPath.indexOf("/");
 						if (index==0)
@@ -270,7 +270,7 @@ public class MyFileManager extends FileManager
 		catch (NotDirectoryException err)
 		{
 			String message=fs.getFtpMessage("550_Not_A_Directory");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			throw new NotADirectoryException(message);
 		}
 		catch (NoSuchFileException ex)
@@ -290,7 +290,7 @@ public class MyFileManager extends FileManager
 		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		if (Files.isDirectory(Paths.get(serverPath)))
 		{
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			throw new NotAFileException(message);
 		}
 		return serverPath;
@@ -301,10 +301,10 @@ public class MyFileManager extends FileManager
 		int index;
 		User user;
 		String fileName;
-		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
-		index=clientPath.lastIndexOf("/");
-		fileName=clientPath.substring(index+1);
-		clientPath=clientPath.substring(0,index);
+		String serverPath=new String(),clientPath;
+		index=inPath.lastIndexOf("/");
+		fileName=inPath.substring(index+1);
+		clientPath=inPath.substring(0,index);
 		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
 		user=fs.getUser();
 		if (user.getQuota()>-1.0)
@@ -312,8 +312,8 @@ public class MyFileManager extends FileManager
 			if (user.getDiskSpaceUsed()>=user.getQuota())
 			{
 				String message=fs.getFtpMessage("550_Quota_Exceed");
-				message=message.replaceAll("%1", String.valueOf(user.getQuota()));
-				message=message.replaceAll("%2", String.valueOf(user.getDiskSpaceUsed()));
+				message=message.replace("%1", String.valueOf(user.getQuota()));
+				message=message.replace("%2", String.valueOf(user.getDiskSpaceUsed()));
 				throw new QuotaExceedException(message); 
 			}
 		}

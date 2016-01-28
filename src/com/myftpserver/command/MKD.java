@@ -63,7 +63,7 @@ public class MKD implements FtpCommandInterface
 			logger.debug("serverPath="+serverPath+",newPathName="+newPathName);
 			Files.createDirectories(Paths.get(serverPath));
 			message=fs.getFtpMessage("257_MKD");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
 		} 
 		catch (InterruptedException|QuotaExceedException|AccessDeniedException err) 
@@ -73,7 +73,7 @@ public class MKD implements FtpCommandInterface
 		catch (PathNotFoundException|InvalidPathException|IOException err) 
 		{
 			message=fs.getFtpMessage("550_MKD_Failure");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
 	}

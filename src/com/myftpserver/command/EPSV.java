@@ -55,7 +55,7 @@ public class EPSV implements FtpCommandInterface
 			else
 			{	
 				message=fs.getFtpMessage("229_EPSV_Ok");
-				message=message.replaceAll("%1", String.valueOf(port));
+				message=message.replace("%1", String.valueOf(port));
 				localIp=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
 				fs.isPassiveModeTransfer=true;						
 				PassiveServer passiveServer=new PassiveServer(fs,localIp,port);

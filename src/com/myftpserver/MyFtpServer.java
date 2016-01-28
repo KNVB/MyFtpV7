@@ -179,7 +179,7 @@ public final class MyFtpServer
             
             // Wait until the server socket is closed.
             bootStrap.bind();
-            message=message.replaceAll("%1",String.valueOf(serverConfig.getServerPort())); 
+            message=message.replace("%1",String.valueOf(serverConfig.getServerPort())); 
             logger.info(message);
         } 
         catch (Exception e) 

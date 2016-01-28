@@ -69,7 +69,7 @@ public class RMD implements FtpCommandInterface
 				if (result)
 				{
 					message=fs.getFtpMessage("250_RMD");
-					message=message.replaceAll("%1", inPath);
+					message=message.replace("%1", inPath);
 					Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
 				}
 				else
@@ -78,7 +78,7 @@ public class RMD implements FtpCommandInterface
 			else
 			{	
 				message=fs.getFtpMessage("550_Not_A_Directory");
-				message=message.replaceAll("%1", inPath);
+				message=message.replace("%1", inPath);
 				throw new NotADirectoryException(message);
 			}
 		} 
@@ -90,7 +90,7 @@ public class RMD implements FtpCommandInterface
 		{
 			//err.printStackTrace();
 			message=fs.getFtpMessage("550_RMD_Failure");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
 	}

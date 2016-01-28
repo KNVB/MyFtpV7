@@ -54,7 +54,7 @@ public class RNFR implements FtpCommandInterface {
 			String serverPath=fm.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
 			if (Files.isDirectory(Paths.get(serverPath)))
 			{
-				message=message.replaceAll("%1", inPath);
+				message=message.replace("%1", inPath);
 				throw new NotAFileException(message);
 			}
 			else

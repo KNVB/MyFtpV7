@@ -74,7 +74,7 @@ public class FileUtil
 		path=inPath.toString();
 		if (rootPath.endsWith("\\"))
 		{
-			path=path.replaceAll(rootPath+File.separator, "");
+			path=path.replace(rootPath+File.separator, "");
 			paths=path.split(File.separator+File.separator);
 		}
 		else
