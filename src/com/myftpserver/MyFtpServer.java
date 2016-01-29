@@ -87,7 +87,7 @@ public final class MyFtpServer
 		else
 			logger.debug("Server Configuration cannot be loaded");
 	}
-	//-------------------------------------------------------------------------------------------	
+//-------------------------------------------------------------------------------------------	
     /**
 	 * Get message logger
 	 * @return message logger 

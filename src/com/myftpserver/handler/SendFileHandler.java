@@ -1,5 +1,5 @@
 package com.myftpserver.handler; 
-import java.io.File;
+
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -42,18 +42,15 @@ import io.netty.channel.SimpleChannelInboundHandler;
 @Sharable
 public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelHandler 
 {
-	private String fileName;
 	private FtpSessionHandler fs;
 	private PassiveServer passiveServer=null;
 	/**
 	 * Send file handler
-	 * @param fileName A file to be sent to client 
 	 * @param fs FtpSessionHandler object
 	 */
-	public SendFileHandler(String fileName,FtpSessionHandler fs)
+	public SendFileHandler(FtpSessionHandler fs)
 	{
 		this.fs=fs;
-		this.fileName=fileName;
 		this.passiveServer=fs.getPassiveServer();
 	}
 	@Override
@@ -99,18 +96,18 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 		{
 			String line;
 			ChannelFuture cf=null;
-			BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(this.fileName),"ISO-8859-1"));
+			BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(fs.getDownloadFile()),"ISO-8859-1"));
 			
 			while ((line = br.readLine()) != null) 
 			{
 				cf=ctx.writeAndFlush(Unpooled.copiedBuffer(line+"\r\n",CharsetUtil.ISO_8859_1));
 			}
 			br.close();
-			SendFileCompleteListener qq=new SendFileCompleteListener(this.fileName,this.fs);
+			SendFileCompleteListener qq=new SendFileCompleteListener(this.fs);
 			qq.operationComplete(cf);
 		}
 		else
-			ctx.writeAndFlush(new ChunkedFile(new File(this.fileName))).addListener(new SendFileCompleteListener(this.fileName,this.fs));
+			ctx.writeAndFlush(new ChunkedFile(fs.getDownloadFile())).addListener(new SendFileCompleteListener(this.fs));
 	}
 
 }

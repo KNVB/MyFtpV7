@@ -79,17 +79,16 @@ public class ActiveClient
 	}
 	/**
 	 * Send a file to client
-	 * @param fileName the file name to be sent to client 
 	 * @throws InterruptedException
 	 */
-	public void sendFile(String fileName) throws InterruptedException   
+	public void sendFile() throws InterruptedException   
     {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
             b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.SENDFILE,fileName));
+            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.SENDFILE));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }
@@ -109,14 +108,14 @@ public class ActiveClient
 	 * @param fileName the location of the file to be resided.
 	 * @throws InterruptedException
 	 */
-	public void receiveFile(String fileName) throws InterruptedException 
+	public void receiveFile() throws InterruptedException 
 	{
 		EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
             b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.RECEIVEFILE,fileName));
+            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.RECEIVEFILE));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }

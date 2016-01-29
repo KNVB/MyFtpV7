@@ -307,4 +307,25 @@ public class FileUtil
 		}
 		return serverPath;
 	}
+	public static final String getParentDirectory(String inPath)
+	{
+		String parentDir;
+		int index=inPath.lastIndexOf("/");
+		parentDir=inPath.substring(0,index);
+		return parentDir;
+	}
+	public static final String getFutureServerPath(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException
+	{
+		Logger logger=fs.getLogger();
+		String parentDir=FileUtil.getParentDirectory(inPath);
+		String futureServerPath=FileUtil.getServerPath(fs,parentDir,FileManager.WRITE_PERMISSION);
+		String newDirName=inPath.replace(parentDir,"");
+		logger.debug(futureServerPath.endsWith(File.separator));
+		if (futureServerPath.endsWith(File.separator))
+			futureServerPath=futureServerPath.substring(0, futureServerPath.length()-1);
+		if (newDirName.startsWith("/"))
+			newDirName=newDirName.substring(1);
+		futureServerPath+=File.separator+newDirName;
+		return futureServerPath;
+	}
 }

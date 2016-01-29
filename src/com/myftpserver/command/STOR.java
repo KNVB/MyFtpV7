@@ -1,5 +1,6 @@
 package com.myftpserver.command;
 
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
@@ -9,6 +10,7 @@ import com.myftpserver.ServerConfig;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
+import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -41,8 +43,33 @@ public class STOR implements FtpCommandInterface
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
+	public void execute(FtpSessionHandler fs, String param) 
+	{
+		String fileName;
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		logger.debug("param="+param+"|");
+		try 
+		{
+			fileName=param;
+			if (fileName.indexOf("/")==-1)
+				fileName=fs.getCurrentPath()+"/"+fileName;
+			fs.setUploadFile(fm.getUploadFileObject(fs, fileName));
+			Utility.receiveFileFromClient(fs);
+		}
+		catch (NotAFileException | IOException|InterruptedException|QuotaExceedException|AccessDeniedException err) 
+		{
+			Utility.handleTransferException(fs,err.getMessage());
+		}
+		
+		catch (PathNotFoundException|InvalidPathException err) 
+		{
+			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		}
+	}
+	/*@Override
 	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
@@ -70,5 +97,5 @@ public class STOR implements FtpCommandInterface
 		{
 			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
-	}
+	}*/
 }

@@ -1,9 +1,7 @@
 package com.myftpserver.command;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 
 import com.util.Utility;
 import com.myftpserver.ServerConfig;
@@ -42,8 +40,28 @@ public class DELE implements FtpCommandInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
+	public void execute(FtpSessionHandler fs, String inPath)
+	{
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		logger.debug("param="+inPath+"|");
+		try
+		{
+			fm.deleteFile(fs, inPath);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
+		}
+		catch (IOException|AccessDeniedException|NotAFileException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+		}
+		catch (PathNotFoundException|InvalidPathException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
+		}
+	}
+	/*@Override
 	public void execute(FtpSessionHandler fs, String inPath)
 	{
 		Logger logger=fs.getLogger();
@@ -71,5 +89,5 @@ public class DELE implements FtpCommandInterface {
 		{
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
 		}
-	}	
+	}*/	
 }

@@ -90,7 +90,7 @@ public class PassiveServer
 	 * Send a file to client
 	 * @param serverPath A file to be sent to client 
 	 */
-	public void sendFile(String serverPath) throws IOException 
+	public void sendFile() throws IOException 
 	{
 		if (user.getDownloadSpeedLitmit()==0L)
 			logger.info("File download speed is limited by connection speed");
@@ -101,7 +101,7 @@ public class PassiveServer
 		}
 		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs));
+		ch.pipeline().addLast("handler",new SendFileHandler(fs));
 		ch.pipeline().remove("ReceiveHandler");
 	}
 	/**

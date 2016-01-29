@@ -38,21 +38,18 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 {
 	private int mode;
 	private User user;
-	private String fileName;
 	private FtpSessionHandler fs;
 	private StringBuffer fileNameList;
 	/**
 	 * Initialize an active mode channel for file transmission
 	 * @param fs FtpSessionHandler object
 	 * @param mode Transfer mode
-	 * @param fileName The file to be sent to client
 	 */
-	public ActiveChannelInitializer(FtpSessionHandler fs,int mode,String fileName) 
+	public ActiveChannelInitializer(FtpSessionHandler fs,int mode) 
 	{
 		this.fs=fs;
 		this.user=fs.getUser();
 		this.mode=mode;
-		this.fileName=fileName;
 	}
 	/**
 	 * Initialize an active mode channel for file name list transmission
@@ -82,7 +79,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 											ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 										}
 										ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-										ch.pipeline().addLast("handler",new SendFileHandler(fileName,fs));
+										ch.pipeline().addLast("handler",new SendFileHandler(fs));
 										break;
 		    case MyFtpServer.RECEIVEFILE:
 										if (user.getUploadSpeedLitmit()==0L)
@@ -92,7 +89,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 											ch.pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 										logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
 										}
-										ch.pipeline().addLast(new ActiveModeReceiveFileHandler(fs,fileName));
+										ch.pipeline().addLast(new ActiveModeReceiveFileHandler(fs));
 										break;
 			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList, fs));
 											break;

@@ -33,18 +33,15 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class ActiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter
 {
 	private Logger logger;
-	private String fileName;
 	private FtpSessionHandler fs;
 	private BufferedOutputStream bos=null;
 	/**
 	 * Active Mode Receive file handler
 	 * @param fs FtpSessionHandler object
-	 * @param fileName the location of the file to be resided.
 	 */
-	public ActiveModeReceiveFileHandler(FtpSessionHandler fs,String fileName)
+	public ActiveModeReceiveFileHandler(FtpSessionHandler fs)
 	{
 		this.fs=fs;
-		this.fileName=fileName;
 		this.logger=fs.getLogger();
 	}
 	@Override
@@ -53,7 +50,7 @@ public class ActiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter
 		logger.debug("ActiveModeReceiveFileHandler channel active");
 		try
 		{
-			bos=new BufferedOutputStream(new FileOutputStream(new File(fileName)));
+			bos=new BufferedOutputStream(new FileOutputStream(fs.getUploadFile()));
 		}
 		catch (FileNotFoundException err)
 		{
@@ -89,6 +86,7 @@ public class ActiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter
 				bos.flush();
 				bos.close();
 				bos=null;
+				fs.setUploadFile(null);
 				logger.debug("ReceiveFileHandler channel inactive");
 			}
 			catch (Exception err)

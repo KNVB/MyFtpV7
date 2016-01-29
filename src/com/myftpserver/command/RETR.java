@@ -42,8 +42,28 @@ public class RETR implements FtpCommandInterface
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
+	public void execute(FtpSessionHandler fs, String inPath) 
+	{
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		logger.debug("inPath="+inPath+"|");
+		try 
+		{
+			fs.setDownloadFile(fm.getDownloadFileObject(fs, inPath));
+			Utility.sendFileToClient(fs);
+		} 
+		catch (InterruptedException|NotAFileException |AccessDeniedException |IOException err) 
+		{
+			Utility.handleTransferException(fs,err.getMessage());
+		}
+		catch (PathNotFoundException|InvalidPathException err) 
+		{
+			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		}
+	}
+	/*@Override
 	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
@@ -63,7 +83,6 @@ public class RETR implements FtpCommandInterface
 		{
 			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
-		
-	}
+	}*/
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
@@ -68,16 +69,37 @@ public class MyFileManager extends FileManager
 	}
 
 	@Override
-	public void createDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException, IOException 
+	public void makeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException, IOException 
 	{
-		// TODO Auto-generated method stub
+		String serverPath=FileUtil.getFutureServerPath(fs, inPath);
+		logger.debug("Server path="+serverPath);
+		Files.createDirectories(Paths.get(serverPath));
 	}
 
 	@Override
-	public void deleteDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException, IOException 
+	public void deleteDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException, IOException,NotADirectoryException,InvalidPathException 
 	{
-		// TODO Auto-generated method stub
-
+		boolean result;
+		File serverFolder;
+		String serverPath=new String(),newPathName,message,clientPath;
+		newPathName=inPath;
+		if (newPathName.indexOf("/")==-1)
+			newPathName=fs.getCurrentPath()+"/"+newPathName;
+		clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(),newPathName);
+		serverPath=FileUtil.getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
+		serverFolder=new File(serverPath);
+		if (serverFolder.isDirectory())
+		{	
+			result=FileUtil.deleteDirectory(serverFolder);
+			if (!result)
+				throw new PathNotFoundException("");
+		}
+		else
+		{	
+			message=fs.getFtpMessage("550_Not_A_Directory");
+			message=message.replace("%1", inPath);
+			throw new NotADirectoryException(message);
+		}		
 	}
 
 	@Override
@@ -249,31 +271,67 @@ public class MyFileManager extends FileManager
     	}
 		return fileNameList;
 	}
-	@Override
-	public void downloadFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException 
+	public File getDownloadFileObject(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException,IOException  
 	{
-		// TODO Auto-generated method stub
-
+		String message=fs.getFtpMessage("550_Not_A_File");
+		String serverPath=FileUtil.getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			message=message.replace("%1", inPath);
+			throw new NotAFileException(message);
+		}
+		return new File(serverPath);
 	}
 
 	@Override
-	public void uploadFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException, QuotaExceedException 
+	public File getUploadFileObject(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException, QuotaExceedException,IOException  
 	{
-		// TODO Auto-generated method stub
-
+		String message=fs.getFtpMessage("550_Not_A_File");
+		String serverPath=FileUtil.getFutureServerPath(fs, inPath);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			message=message.replace("%1", inPath);
+			throw new NotAFileException(message);
+		}
+		return new File(serverPath);
 	}
 
 	@Override
 	public void deleteFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, NotAFileException,PathNotFoundException, IOException 
 	{
-		// TODO Auto-generated method stub
+		String serverPath=FileUtil.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			String message=fs.getFtpMessage("550_Not_A_File");
+			message=message.replace("%1", inPath);
+			throw new NotAFileException(message);
+		}
+		else	
+			Files.delete(Paths.get(serverPath));
 
 	}
 	@Override
-	public void renameFile(FtpSessionHandler fs, String oldFileName,String newFileName) throws AccessDeniedException,NotAFileException, PathNotFoundException, IOException 
+	public void renameFrom(FtpSessionHandler fs, String oldFileName) throws AccessDeniedException,NotAFileException, PathNotFoundException, IOException 
 	{
-		// TODO Auto-generated method stub
-		
+		String message=fs.getFtpMessage("550_Not_A_File"); 
+		String serverPath=FileUtil.getServerPath(fs, oldFileName, FileManager.WRITE_PERMISSION);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			message=message.replace("%1", oldFileName);
+			throw new NotAFileException(message);
+		}
+		else
+		{
+			fs.setReNameFrom(serverPath);
+		}
+	}
+	@Override
+	public void renameTo(FtpSessionHandler fs, String newFileName) throws AccessDeniedException, NotAFileException, PathNotFoundException, IOException
+	{
+		String destPath=FileUtil.getFutureServerPath(fs, newFileName);
+		Path renameFrom=Paths.get(fs.getReNameFrom());
+		Path renameTo=Paths.get(destPath);
+		Files.move(renameFrom, renameTo);
 	}
 	@Override
 	public void close() 

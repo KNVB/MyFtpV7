@@ -97,13 +97,14 @@ public class PassiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter 
 				
 				if (fs.getUploadFileName()!=null)
 				{
-					tempFile.renameTo(new File(fs.getUploadFileName()));
+					tempFile.renameTo(fs.getUploadFile());
 					logger.info("File "+fs.getUploadFileName()+" uploaded successfully");
 				}
 				fs.setUploadTempFile(tempFile);
 				tempFile.delete();
 				logger.debug("temp File "+tempFile.getAbsolutePath()+" is deleted.");
 				tempFile=null;
+				fs.setUploadFile(null);
 			}
 			catch (Exception err)
 			{

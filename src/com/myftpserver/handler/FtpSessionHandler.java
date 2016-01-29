@@ -20,14 +20,13 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private Logger logger;
 	private boolean isLogined=false;
 	private int activeDataPortNo=-1;
-	private File uploadTempFile=null;
-		
 	private MyFtpServer myFtpServer=null;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
+	private File downloadFile=null,uploadTempFile=null, uploadFile=null;
 	private String userName=new String(),dataType="A",currentPath=new String(),uploadFileName=null;
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	public FtpSessionHandler(Channel ch, MyFtpServer s, String remoteIp)
@@ -298,11 +297,42 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		activeDataPortNo=portNo;
 	}
 	/**
+	 * Set the download file object
+	 * @param downloadFile
+	 */
+	public void setDownloadFile(File downloadFile) 
+	{
+		this.downloadFile=downloadFile;
+	}
+	/**
+	 * Get the download file object
+	 * @return the download file object
+	 */
+	public File getDownloadFile() 
+	{
+		return this.downloadFile;		
+	}	
+	/**
+	 * Set the upload file object
+	 * @param uploadFile
+	 */
+	public void setUploadFile(File uploadFile) 
+	{
+		this.uploadFile = uploadFile;
+	}
+	/**
+	 * Get the upload file object
+	 * @return the upload file object
+	 */
+	public File getUploadFile() 
+	{
+		return uploadFile;
+	}
+	/**
 	 * Close the FTP session
 	 */
 	public void close()
 	{
 		ch.close();
 		ch=null;		
-	}	
-}
+	}}

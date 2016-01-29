@@ -29,25 +29,21 @@ import io.netty.channel.ChannelFutureListener;
 public class SendFileCompleteListener implements ChannelFutureListener
 {
 	private Logger logger;
-	private String fileName;
-	@SuppressWarnings("unused")
 	private FtpSessionHandler fs;
 	/**
 	 * It is triggered when a file is downloaded by client successfully
-	 * @param fileName FTP session
-	 * @param fs The full path name for the file that was downloaded
+	 * @param fs FTP session
 	 */
-	public SendFileCompleteListener(String fileName,FtpSessionHandler fs)
+	public SendFileCompleteListener(FtpSessionHandler fs)
 	{
 		this.fs=fs;
-		this.fileName=fileName;
 		this.logger=fs.getLogger();
 	}
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		cf.channel().close();
-		logger.info("File "+fileName+" download completed.");	
+		logger.info("File "+fs.getDownloadFile().getName()+" download completed.");	
 	}
 
 }
