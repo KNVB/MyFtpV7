@@ -50,8 +50,7 @@ public class PassiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter 
 	{
 		this.fs=fs;
 		this.logger=fs.getLogger();
-	}
-
+	}	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception 
 	{
