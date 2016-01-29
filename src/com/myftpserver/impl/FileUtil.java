@@ -271,6 +271,15 @@ public class FileUtil
 			throw new InvalidHomeDirectoryException(fs.getFtpMessage("530_Home_Dir_Not_Found"));
 		}
 	}
+	/**
+	 * Get server path mapping for virtual path
+	 * @param fs FtpSessionHandler
+	 * @param inPath virtual path
+	 * @param requiredPermission Required Permission
+	 * @return the server path 
+	 * @throws AccessDeniedException
+	 * @throws PathNotFoundException
+	 */
 	public static final String getServerPath(FtpSessionHandler fs,String inPath, String requiredPermission)throws AccessDeniedException,PathNotFoundException
 	{
 		Logger logger=fs.getLogger();
@@ -307,6 +316,11 @@ public class FileUtil
 		}
 		return serverPath;
 	}
+	/**
+	 * Get Parent Directory of given directory
+	 * @param inPath directory
+	 * @return the parent directory
+	 */
 	public static final String getParentDirectory(String inPath)
 	{
 		String parentDir;
@@ -314,6 +328,14 @@ public class FileUtil
 		parentDir=inPath.substring(0,index);
 		return parentDir;
 	}
+	/**
+	 * Generate an future server path from a virtual path
+	 * @param fs FtpSessionHandler
+	 * @param inPath virtual path
+	 * @return an future server path
+	 * @throws AccessDeniedException
+	 * @throws PathNotFoundException
+	 */
 	public static final String getFutureServerPath(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException
 	{
 		String parentDir=FileUtil.getParentDirectory(inPath);

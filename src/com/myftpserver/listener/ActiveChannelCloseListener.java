@@ -1,7 +1,13 @@
 package com.myftpserver.listener;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import com.util.Utility;
+import com.myftpserver.User;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.UserManager;
 
 import org.apache.logging.log4j.Logger;
 
@@ -30,6 +36,7 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class ActiveChannelCloseListener  implements ChannelFutureListener 
 {
+	private User user;
 	private Logger logger;
 	private String remoteIp;
 	private FtpSessionHandler fs;
@@ -40,6 +47,7 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 	public ActiveChannelCloseListener(FtpSessionHandler fs) 
 	{
 		this.fs=fs;
+		this.user=fs.getUser();
 		this.logger=fs.getLogger();
 		this.remoteIp=fs.getClientIp();
 	}
@@ -47,12 +55,32 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
+		File uploadedFile=null;
+		String message=fs.getFtpMessage("226_Transfer_Ok");
 		logger.debug("Active Mode Transfer channel is closed");
 		if ((fs.getUploadFile()!=null) &&(fs.getUploadFile().exists()))
 		{	
 			logger.debug("Uploaded file ="+fs.getUploadFile().getName()+",size="+fs.getUploadFile().length());
+			if (user.getQuota()>-1.0)
+			{
+				double quota=user.getQuota()*1024.0,diskSpaceUsed=user.getDiskSpaceUsed()*1024;
+				diskSpaceUsed+=fs.getUploadFile().length();
+				if (diskSpaceUsed<=quota)
+				{
+					UserManager um=fs.getServerConfig().getUserManager();
+					user.setDiskSpaceUsed(diskSpaceUsed/1024.0);
+					um.upDateUserInfo(user);
+				}
+				else
+				{
+					logger.debug("File name="+fs.getUploadFile().getAbsolutePath());
+					message=fs.getFtpMessage("550_Quota_Exceed");
+					message=message.replace("%1",String.valueOf(quota/1024.0));
+					message=message.replace("%2",String.valueOf(diskSpaceUsed/1024.0));
+				}
+			}
 			fs.setUploadFile(null);
 		}
-		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok"));
+		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
 	}
 }
