@@ -48,6 +48,11 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		logger.debug("Active Mode Transfer channel is closed");
+		if ((fs.getUploadFile()!=null) &&(fs.getUploadFile().exists()))
+		{	
+			logger.debug("Uploaded file ="+fs.getUploadFile().getName()+",size="+fs.getUploadFile().length());
+			fs.setUploadFile(null);
+		}
 		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok"));
 	}
 }

@@ -59,9 +59,9 @@ public class PASV implements FtpCommandInterface
 				logger.debug("Port "+port+" is assigned.");
 				fs.isPassiveModeTransfer=true;
 				message=fs.getFtpMessage("227_Enter_Passive_Mode");
-				message=message.replace("%1", localIP.replace(".", ","));
-				message=message.replace("%2", String.valueOf(port/256));
-				message=message.replace("%3", String.valueOf(port % 256));
+				message=message.replaceAll("%1", localIP.replaceAll("\\.", ","));
+				message=message.replaceAll("%2", String.valueOf(port/256));
+				message=message.replaceAll("%3", String.valueOf(port % 256));
 				PassiveServer ps=new PassiveServer(fs,localIP,port);
 				fs.setPassiveServer(ps);				
 			}				

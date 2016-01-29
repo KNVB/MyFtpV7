@@ -55,6 +55,11 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 			passiveServer=null;
 			fs.setPassiveServer(passiveServer);
 		}
+		if ((fs.getUploadFile()!=null) && (fs.getUploadFile().exists()))
+		{
+			logger.debug("Uploaded file ="+fs.getUploadFile().getName()+",size="+fs.getUploadFile().length());
+			fs.setUploadFile(null);
+		}
 		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok"));
 	}
 }

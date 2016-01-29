@@ -88,7 +88,6 @@ public class PassiveServer
 	}
 	/**
 	 * Send a file to client
-	 * @param serverPath A file to be sent to client 
 	 */
 	public void sendFile() throws IOException 
 	{

@@ -94,16 +94,15 @@ public class PassiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter 
 				bos=null;
 				logger.debug("RecevieHandler channel inactive");
 				
-				if (fs.getUploadFileName()!=null)
+				if (fs.getUploadFile()!=null)
 				{
 					tempFile.renameTo(fs.getUploadFile());
-					logger.info("File "+fs.getUploadFileName()+" uploaded successfully");
+					logger.info("File "+fs.getUploadFile().getName()+" uploaded successfully");
 				}
-				fs.setUploadTempFile(tempFile);
 				tempFile.delete();
 				logger.debug("temp File "+tempFile.getAbsolutePath()+" is deleted.");
 				tempFile=null;
-				fs.setUploadFile(null);
+				fs.setUploadTempFile(tempFile);
 			}
 			catch (Exception err)
 			{
@@ -126,7 +125,7 @@ public class PassiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter 
 	@Override
 	public void handlerAdded(ChannelHandlerContext arg0) throws Exception 
 	{
-		logger.debug("PassiveModeReceiveFileHandler:Channel Active");
+		logger.debug("PassiveModeReceiveFileHandler:Handler Added");
 	}
 
 	@Override

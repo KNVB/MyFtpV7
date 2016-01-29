@@ -86,8 +86,8 @@ public class ActiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter
 				bos.flush();
 				bos.close();
 				bos=null;
-				fs.setUploadFile(null);
-				logger.debug("ReceiveFileHandler channel inactive");
+				//fs.setUploadFile(null);
+				logger.debug("ActiveModeReceiveFileHandler channel inactive");
 			}
 			catch (Exception err)
 			{

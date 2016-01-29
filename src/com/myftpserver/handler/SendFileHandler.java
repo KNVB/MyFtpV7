@@ -105,6 +105,7 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 			br.close();
 			SendFileCompleteListener qq=new SendFileCompleteListener(this.fs);
 			qq.operationComplete(cf);
+			
 		}
 		else
 			ctx.writeAndFlush(new ChunkedFile(fs.getDownloadFile())).addListener(new SendFileCompleteListener(this.fs));

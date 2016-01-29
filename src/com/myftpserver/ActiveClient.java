@@ -105,7 +105,6 @@ public class ActiveClient
     }
 	/**
 	 * Receive a file from client
-	 * @param fileName the location of the file to be resided.
 	 * @throws InterruptedException
 	 */
 	public void receiveFile() throws InterruptedException 
