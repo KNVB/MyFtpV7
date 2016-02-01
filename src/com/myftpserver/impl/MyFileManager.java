@@ -27,6 +27,7 @@ import com.myftpserver.exception.PathNotFoundException;
 import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.UserManager;
 
 public class MyFileManager extends FileManager 
 {
@@ -287,13 +288,24 @@ public class MyFileManager extends FileManager
 	public File getUploadFileObject(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException, QuotaExceedException,IOException  
 	{
 		String message=fs.getFtpMessage("550_Not_A_File");
-		String serverPath=FileUtil.getFutureServerPath(fs, inPath);
-		if (Files.isDirectory(Paths.get(serverPath)))
+		User user=fs.getUser();
+		if ((user.getQuota()>-1.0) && (user.getDiskSpaceUsed()>=user.getQuota()))
 		{
-			message=message.replace("%1", inPath);
-			throw new NotAFileException(message);
+			message=fs.getFtpMessage("550_Quota_Exceed");
+			message=message.replace("%1",String.valueOf(user.getQuota()));
+			message=message.replace("%2",String.valueOf(user.getDiskSpaceUsed()));
+			throw new QuotaExceedException(message);
 		}
-		return new File(serverPath);
+		else
+		{
+			String serverPath=FileUtil.getFutureServerPath(fs, inPath);
+			if (Files.isDirectory(Paths.get(serverPath)))
+			{
+				message=message.replace("%1", inPath);
+				throw new NotAFileException(message);
+			}
+			return new File(serverPath);
+		}
 	}
 
 	@Override
@@ -307,7 +319,22 @@ public class MyFileManager extends FileManager
 			throw new NotAFileException(message);
 		}
 		else	
+		{	
 			Files.delete(Paths.get(serverPath));
+			User user=fs.getUser();
+			if (user.getQuota()>-1.0)
+			{
+				double diskSpaceUsed=user.getDiskSpaceUsed()*1024.0;
+				diskSpaceUsed=diskSpaceUsed-(new Long(Files.size(Paths.get(serverPath)))).doubleValue();
+				if (diskSpaceUsed<0)
+				{
+					diskSpaceUsed=0.0;
+				}
+				user.setDiskSpaceUsed(diskSpaceUsed/1024.0);
+				UserManager um=fs.getServerConfig().getUserManager();
+				um.upDateUserInfo(user);
+			}
+		}
 
 	}
 	@Override
