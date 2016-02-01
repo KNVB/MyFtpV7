@@ -1,9 +1,5 @@
 package com.myftpserver.listener;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import com.util.Utility;
 import com.myftpserver.User;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -55,7 +51,6 @@ public class ActiveChannelCloseListener  implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		File uploadedFile=null;
 		String message=fs.getFtpMessage("226_Transfer_Ok");
 		logger.debug("Active Mode Transfer channel is closed");
 		if ((fs.getUploadFile()!=null) &&(fs.getUploadFile().exists()))

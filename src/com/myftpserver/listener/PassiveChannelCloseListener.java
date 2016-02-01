@@ -1,7 +1,9 @@
 package com.myftpserver.listener;
 
 import com.myftpserver.PassiveServer;
+import com.myftpserver.User;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.UserManager;
 import com.util.Utility;
 
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,8 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture arg0) throws Exception 
 	{
+		String message=fs.getFtpMessage("226_Transfer_Ok");
+		logger.debug("Active Mode Transfer channel is closed");
 		PassiveServer passiveServer=fs.getPassiveServer();
 		if (passiveServer!=null)
 		{
@@ -55,11 +59,30 @@ public class PassiveChannelCloseListener implements ChannelFutureListener
 			passiveServer=null;
 			fs.setPassiveServer(passiveServer);
 		}
-		if ((fs.getUploadFile()!=null) && (fs.getUploadFile().exists()))
-		{
+		User user=fs.getUser();
+		if ((fs.getUploadFile()!=null) &&(fs.getUploadFile().exists()))
+		{	
 			logger.debug("Uploaded file ="+fs.getUploadFile().getName()+",size="+fs.getUploadFile().length());
+			if (user.getQuota()>-1.0)
+			{
+				double quota=user.getQuota()*1024.0,diskSpaceUsed=user.getDiskSpaceUsed()*1024;
+				diskSpaceUsed+=fs.getUploadFile().length();
+				if (diskSpaceUsed<=quota)
+				{
+					UserManager um=fs.getServerConfig().getUserManager();
+					user.setDiskSpaceUsed(diskSpaceUsed/1024.0);
+					um.upDateUserInfo(user);
+				}
+				else
+				{
+					logger.debug("File name="+fs.getUploadFile().getAbsolutePath());
+					message=fs.getFtpMessage("550_Quota_Exceed");
+					message=message.replace("%1",String.valueOf(quota/1024.0));
+					message=message.replace("%2",String.valueOf(diskSpaceUsed/1024.0));
+				}
+			}
 			fs.setUploadFile(null);
 		}
-		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp, fs.getFtpMessage("226_Transfer_Ok"));
+		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
 	}
 }
