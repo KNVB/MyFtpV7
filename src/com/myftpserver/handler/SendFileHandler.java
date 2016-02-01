@@ -7,13 +7,14 @@ import java.io.InputStreamReader;
 
 import org.apache.logging.log4j.Logger;
 
+import com.util.Utility;
 import com.myftpserver.PassiveServer;
-import com.myftpserver.listener.SendFileCompleteListener;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,17 +41,22 @@ import io.netty.channel.SimpleChannelInboundHandler;
  *
  */
 @Sharable
-public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelHandler 
+public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelHandler,ChannelFutureListener 
 {
+	private Logger logger;
+	private String remoteIp;
 	private FtpSessionHandler fs;
 	private PassiveServer passiveServer=null;
 	/**
 	 * Send file handler
+	 * It also handle send file completed and channel close event.
 	 * @param fs FtpSessionHandler object
 	 */
 	public SendFileHandler(FtpSessionHandler fs)
 	{
 		this.fs=fs;
+		this.logger=fs.getLogger();
+		this.remoteIp=fs.getClientIp();
 		this.passiveServer=fs.getPassiveServer();
 	}
 	@Override
@@ -103,12 +109,31 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 				cf=ctx.writeAndFlush(Unpooled.copiedBuffer(line+"\r\n",CharsetUtil.ISO_8859_1));
 			}
 			br.close();
-			SendFileCompleteListener qq=new SendFileCompleteListener(this.fs);
-			qq.operationComplete(cf);
-			
+			/*SendFileCompleteListener qq=new SendFileCompleteListener(this.fs);
+			qq.operationComplete(cf);*/
+			operationComplete(cf);
 		}
 		else
-			ctx.writeAndFlush(new ChunkedFile(fs.getDownloadFile())).addListener(new SendFileCompleteListener(this.fs));
+			ctx.writeAndFlush(new ChunkedFile(fs.getDownloadFile())).addListener(this);
 	}
-
+	@Override
+	public void operationComplete(ChannelFuture cf) throws Exception 
+	{
+		if (cf.channel().isOpen())  //it handle file sent complete event
+		{	
+			if (fs.isPassiveModeTransfer)
+			{
+				passiveServer.stop();
+				passiveServer=null;
+				fs.setPassiveServer(passiveServer);
+			}
+			else
+				cf.channel().close();
+		}
+		else
+		{	//it handle channel close event
+			String message=fs.getFtpMessage("226_Transfer_Ok");
+			Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
+		}
+	}
 }

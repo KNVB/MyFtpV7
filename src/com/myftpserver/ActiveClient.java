@@ -98,7 +98,7 @@ public class ActiveClient
 		}
         finally 
         {
-        	group.shutdownGracefully().sync();
+        	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
         	logger.info("Active Mode client is shutdown gracefully.");
         	group = null;
         }
@@ -124,7 +124,7 @@ public class ActiveClient
 		}
         finally 
         {
-        	group.shutdownGracefully().sync();
+        	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
         	logger.debug("Active Mode client is shutdown gracefully.");
         }		
 	}	

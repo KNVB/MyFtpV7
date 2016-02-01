@@ -19,7 +19,7 @@ import com.myftpserver.User;
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
-import com.myftpserver.listener.PassiveChannelCloseListener;
+//import com.myftpserver.listener.PassiveChannelCloseListener;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -98,9 +98,11 @@ public class PassiveServer
 			logger.info("File download speed limit:"+user.getDownloadSpeedLitmit()+" kB/s");
 			ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		}
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
+	//	ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
+		SendFileHandler sendFileHandler=new SendFileHandler(fs);
+		ch.closeFuture().addListener(sendFileHandler);
 		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(fs));
+		ch.pipeline().addLast("handler",sendFileHandler);
 		ch.pipeline().remove("ReceiveHandler");
 	}
 	/**
@@ -109,9 +111,10 @@ public class PassiveServer
 	 */
 	public void sendFileNameList(StringBuffer fileNameList) 
 	{
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
-		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList, fs));
 		ch.pipeline().remove("ReceiveHandler");
+		SendFileNameListHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+		ch.closeFuture().addListener(sendFileNameListHandler);
+		ch.pipeline().addLast(sendFileNameListHandler);		
 	}
 	/**
 	 * Set a channel for passive mode

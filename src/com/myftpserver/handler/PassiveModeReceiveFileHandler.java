@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.User;
-import com.myftpserver.listener.PassiveChannelCloseListener;
+//import com.myftpserver.listener.PassiveChannelCloseListener;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -64,7 +64,7 @@ public class PassiveModeReceiveFileHandler extends ChannelInboundHandlerAdapter 
 				ctx.channel().pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
 				logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
 			}
-			ctx.channel().closeFuture().addListener(new PassiveChannelCloseListener(fs));
+	//		ctx.channel().closeFuture().addListener(new PassiveChannelCloseListener(fs));
 			tempFile=File.createTempFile("temp-file-name", ".tmp");
 			fs.setUploadTempFile(tempFile);
 			bos=new BufferedOutputStream(new FileOutputStream(tempFile));

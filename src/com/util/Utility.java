@@ -82,14 +82,13 @@ public class Utility
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
-			logger.info("Transfer File in Passive mode");
+			logger.info("Transfer File Listing in Passive mode");
 			PassiveServer ps=fs.getPassiveServer();
 			ps.sendFileNameList(resultList);
 			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
-
 			logger.info("Transfer File Listing in Active mode");
 			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 			ActiveClient activeClient=new ActiveClient(fs);

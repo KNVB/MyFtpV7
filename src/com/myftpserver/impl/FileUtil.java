@@ -226,7 +226,6 @@ public class FileUtil
                                                 pathStack.push(temp);
                                         }
                 }
-                logger.debug("currentPath="+currentPath+",inPath="+inPath);
         }
         for (Enumeration<String> e=pathStack.elements();e.hasMoreElements();)
         {
@@ -295,7 +294,7 @@ public class FileUtil
 			serverPath=serverPathAndPerm.split("\t")[0];
 			virtualPathPerm=serverPathAndPerm.split("\t")[1];
 			serverPathPerm=FileUtil.getServerPathPerm(logger,fs.getUser().getServerPathACL(),Paths.get(serverPath));
-			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm);
+			//logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm);
 			if (virtualPathPerm!=null)
 				finalPerm=virtualPathPerm;
 			if (serverPathPerm!=null)

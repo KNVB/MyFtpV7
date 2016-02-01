@@ -4,11 +4,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.User;
 import com.myftpserver.MyFtpServer;
+import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendFileHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
-import com.myftpserver.listener.ActiveChannelCloseListener;
-import com.myftpserver.handler.ActiveModeReceiveFileHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -67,7 +66,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		Logger logger=fs.getLogger();
-		ch.closeFuture().addListener(new ActiveChannelCloseListener(fs));
+		//ch.closeFuture().addListener(new ActiveChannelCloseListener(fs));
 		switch (mode)
 		{
 			case MyFtpServer.SENDFILE:
@@ -78,20 +77,18 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 											logger.info("File download speed limit:"+user.getDownloadSpeedLitmit()+" kB/s");
 											ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 										}
+										SendFileHandler sendFileHandler=new SendFileHandler(fs);
+										ch.closeFuture().addListener(sendFileHandler);
 										ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-										ch.pipeline().addLast("handler",new SendFileHandler(fs));
+										ch.pipeline().addLast("handler",sendFileHandler);
 										break;
-		    case MyFtpServer.RECEIVEFILE:
-										if (user.getUploadSpeedLitmit()==0L)
-											logger.info("File upload speed is limited by connection speed");
-										else
-										{	
-											ch.pipeline().addFirst("TrafficShapingHandler",new ChannelTrafficShapingHandler(0L,user.getUploadSpeedLitmit()*1024));
-										logger.info("File upload speed limit:"+user.getUploadSpeedLitmit()+" kB/s");
-										}
-										ch.pipeline().addLast(new ActiveModeReceiveFileHandler(fs));
-										break;
-			case MyFtpServer.SENDDIRLIST:ch.pipeline().addLast(new SendFileNameListHandler(fileNameList, fs));
+													
+		    case MyFtpServer.RECEIVEFILE:ReceiveFileHandler receiveFileHandler=new ReceiveFileHandler(fs);
+										 ch.pipeline().addLast(receiveFileHandler);
+										 break;
+			case MyFtpServer.SENDDIRLIST:SendFileNameListHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+										 ch.closeFuture().addListener(sendFileNameListHandler);
+										 ch.pipeline().addLast(sendFileNameListHandler);
 											break;
 		}
 	}
