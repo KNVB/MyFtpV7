@@ -12,7 +12,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -38,7 +37,7 @@ import io.netty.util.CharsetUtil;
  *
  */
 @Sharable
-public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelHandler,ChannelFutureListener 
+public class SendFileNameListHandler extends SimpleChannelInboundHandler<ByteBuf> implements ChannelFutureListener 
 {
 	private Logger logger;
 	private String remoteIp;
