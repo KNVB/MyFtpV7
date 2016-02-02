@@ -14,11 +14,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
+
 import io.netty.channel.SimpleChannelInboundHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -110,8 +110,6 @@ public class SendFileHandler extends SimpleChannelInboundHandler<ByteBuf> implem
 				cf=ctx.writeAndFlush(Unpooled.copiedBuffer(line+"\r\n",CharsetUtil.ISO_8859_1));
 			}
 			br.close();
-			/*SendFileCompleteListener qq=new SendFileCompleteListener(this.fs);
-			qq.operationComplete(cf);*/
 			operationComplete(cf);
 		}
 		else

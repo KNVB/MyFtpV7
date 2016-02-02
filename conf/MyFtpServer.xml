@@ -17,8 +17,8 @@
                         ]]>
                     </Script>
                     <PatternMatch key="DEBUG" pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %l - %msg%n"/>
-                    <PatternMatch key="INFO" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n"/>
-                    <!-- PatternMatch key="INFO" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %l - %msg%n"/-->
+                    <!--PatternMatch key="INFO" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n"/-->
+                    <PatternMatch key="INFO" pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %l - %msg%n"/>
                 </ScriptPatternSelector>
             </PatternLayout>
         </Console> 
