@@ -320,7 +320,6 @@ public class MyFileManager extends FileManager
 		}
 		else	
 		{	
-			Files.delete(Paths.get(serverPath));
 			User user=fs.getUser();
 			if (user.getQuota()>-1.0)
 			{
@@ -334,6 +333,7 @@ public class MyFileManager extends FileManager
 				UserManager um=fs.getServerConfig().getUserManager();
 				um.upDateUserInfo(user);
 			}
+			Files.delete(Paths.get(serverPath));
 		}
 
 	}
