@@ -11,9 +11,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 import com.myftpserver.User;
 import com.myftpserver.interfaces.SendHandler;

@@ -128,7 +128,6 @@ public class Utility
 	 * @param fs ftp session
 	 * @throws InterruptedException
 	 */
-	/*
 	public static void receiveFileFromClient(FtpSessionHandler fs) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
@@ -145,7 +144,7 @@ public class Utility
 			activeClient.receiveFile();
 		}
 		
-	}*/	
+	}
 	/**
 	 * It handle an transfer exception; it sends an error message and then close data transfer channel if necessary 
 	 * @param fs ftp session

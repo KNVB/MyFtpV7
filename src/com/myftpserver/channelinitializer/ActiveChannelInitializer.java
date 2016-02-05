@@ -6,14 +6,12 @@ import com.myftpserver.User;
 import com.myftpserver.MyFtpServer;
 import com.myftpserver.interfaces.SendHandler;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.handler.ReceiveFileHandler;
 import com.myftpserver.handler.SendTextFileHandler;
 import com.myftpserver.handler.SendBinaryFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
 
-
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 /*
@@ -92,6 +90,10 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 										 ch.closeFuture().addListener(sendFileNameListHandler);
 										 ch.pipeline().addLast(sendFileNameListHandler);
 										 break;
+			case MyFtpServer.RECEIVEFILE:ReceiveFileHandler receiveFileHandler=new ReceiveFileHandler(fs);
+										 ch.closeFuture().addListener(receiveFileHandler);
+										 ch.pipeline().addLast(receiveFileHandler);
+										 break;										 
 		}		
 	}
 }
