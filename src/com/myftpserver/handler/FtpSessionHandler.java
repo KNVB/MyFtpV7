@@ -23,7 +23,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private MyFtpServer myFtpServer=null;
 	private ServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
-//	private PassiveServer passiveServer=null;
+	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private File downloadFile=null,uploadTempFile=null, uploadFile=null;
@@ -244,20 +244,18 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 * Get passive server for passive mode operation 
 	 * @return PassiveServer object
 	 */
-	/*
 	public PassiveServer getPassiveServer() 
 	{
 		return this.passiveServer;
-	}*/
+	}
 	/**
 	 * Set passive server for passive mode operation 
 	 * @param passiveServer PassiveServer object
 	 */
-	/*
 	public void setPassiveServer(PassiveServer passiveServer) 
 	{
 		this.passiveServer=passiveServer;
-	}*/
+	}
 	/**
 	 * 
 	 * @return Upload Temp File object

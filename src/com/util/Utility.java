@@ -6,9 +6,13 @@ import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.SessionClosureListener;
 //import com.myftpserver.listener.TransferExceptionListener;
 
+import com.myftpserver.listener.TransferExceptionListener;
+
 import io.netty.channel.Channel;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
+
+
 
 
 import java.io.IOException;
@@ -77,7 +81,7 @@ public class Utility
 	 * @param resultList File List
 	 * @throws InterruptedException
 	 */
-	/*public static void sendFileListToClient(FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
+	public static void sendFileListToClient(FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
@@ -94,14 +98,14 @@ public class Utility
 			ActiveClient activeClient=new ActiveClient(fs);
 			activeClient.sendFileNameList(resultList);
 		}
-	}*/
+	}
 	/**
 	 * It sends a file to client
 	 * @param fs ftp session
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	/*public static void sendFileToClient(FtpSessionHandler fs) throws InterruptedException, IOException 
+	public static void sendFileToClient(FtpSessionHandler fs) throws InterruptedException, IOException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
@@ -118,7 +122,7 @@ public class Utility
 			ActiveClient activeClient=new ActiveClient(fs);
 			activeClient.sendFile();
 		}
-	}*/	
+	}
 	/**
 	 * It received a file from client
 	 * @param fs ftp session
@@ -147,11 +151,10 @@ public class Utility
 	 * @param fs ftp session
 	 * @param message The error message that to be send to client
 	 */
-	/*
 	public static void handleTransferException(FtpSessionHandler fs, String message) 
 	{
 		fs.getChannel().writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
-	}*/	
+	}	
 	/**
 	 * Prepare response for system inquiry
 	 * @param logger Message logger
