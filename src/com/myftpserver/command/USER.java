@@ -38,7 +38,7 @@ public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 		else
 		{
 			message=fs.getFtpMessage("331_Password_Required");
-			message=message.replaceAll("%1", param);
+			message=message.replace("%1", param);
 			fs.setUserName(param);
 		}
 		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);

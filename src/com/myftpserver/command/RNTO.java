@@ -1,21 +1,18 @@
 package com.myftpserver.command;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.ServerConfig;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.exception.NotAFileException;
+import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
-import com.myftpserver.exception.QuotaExceedException;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
-import com.myftpserver.interfaces.FtpCommandInterface;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -43,8 +40,33 @@ public class RNTO implements FtpCommandInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
+	public void execute(FtpSessionHandler fs,String inPath) 
+	{
+		String newFileName;
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		logger.debug("inPath="+inPath+"|");
+		newFileName=inPath;
+		if (newFileName.indexOf("/")==-1)
+			newFileName=fs.getCurrentPath()+"/"+newFileName;
+		try
+		{
+			fm.renameTo(fs, newFileName);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Rename_Ok"));
+		}
+		catch (AccessDeniedException|NotAFileException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+		}
+		
+		catch (PathNotFoundException|InvalidPathException|IOException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
+		} 
+	}
+	/*@Override
 	public void execute(FtpSessionHandler fs,String inPath) 
 	{
 		Logger logger=fs.getLogger();
@@ -73,6 +95,6 @@ public class RNTO implements FtpCommandInterface {
 		{
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
 		}
-	}
+	}*/
 
 }

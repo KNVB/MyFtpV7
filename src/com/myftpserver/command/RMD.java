@@ -1,13 +1,12 @@
 package com.myftpserver.command;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.ServerConfig;
-import com.myftpserver.impl.FileUtil;
 import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -44,8 +43,34 @@ public class RMD implements FtpCommandInterface
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
+	public void execute(FtpSessionHandler fs, String inPath) 
+	{
+		String message;
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		logger.debug("inPath="+inPath+"|");
+		try
+		{
+			fm.deleteDirectory(fs, inPath);
+			message=fs.getFtpMessage("250_RMD");
+			message=message.replace("%1", inPath);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
+		}
+		catch (AccessDeniedException|NotADirectoryException|PathNotFoundException|IOException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+		}
+		catch (InvalidPathException err) 
+		{
+			//err.printStackTrace();
+			message=fs.getFtpMessage("550_RMD_Failure");
+			message=message.replace("%1", inPath);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message+":"+err.getMessage());
+		} 
+	}
+	/*@Override
 	public void execute(FtpSessionHandler fs, String inPath) 
 	{
 		boolean result;
@@ -69,7 +94,7 @@ public class RMD implements FtpCommandInterface
 				if (result)
 				{
 					message=fs.getFtpMessage("250_RMD");
-					message=message.replaceAll("%1", inPath);
+					message=message.replace("%1", inPath);
 					Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
 				}
 				else
@@ -78,7 +103,7 @@ public class RMD implements FtpCommandInterface
 			else
 			{	
 				message=fs.getFtpMessage("550_Not_A_Directory");
-				message=message.replaceAll("%1", inPath);
+				message=message.replace("%1", inPath);
 				throw new NotADirectoryException(message);
 			}
 		} 
@@ -90,8 +115,8 @@ public class RMD implements FtpCommandInterface
 		{
 			//err.printStackTrace();
 			message=fs.getFtpMessage("550_RMD_Failure");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		}
-	}
+	}*/
 }

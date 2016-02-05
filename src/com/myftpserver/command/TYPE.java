@@ -49,8 +49,8 @@ public class TYPE implements FtpCommandInterface
 				type=param;
 				formSet="N";
 			}
-			message=message.replaceAll("%1", type);
-			message=message.replaceAll("%2", formSet);
+			message=message.replace("%1", type);
+			message=message.replace("%2", formSet);
 			switch (type)
 			{
 				case "I":message=message.substring(0,message.indexOf(";"));

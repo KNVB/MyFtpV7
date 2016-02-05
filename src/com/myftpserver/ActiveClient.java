@@ -1,40 +1,20 @@
 package com.myftpserver;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.channelinitializer.ActiveChannelInitializer;
-/*
- * Copyright 2004-2005 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-/**
- * 
- * @author SITO3
- */
 public class ActiveClient 
 {
 	private Logger logger;
@@ -48,48 +28,53 @@ public class ActiveClient
 		this.fs=fs;
 		this.logger=fs.getLogger();
 	}
-	/**
-	 * Send file listing to client
-	 * @param fileNameList A StringBuffer object that contains file listing
-	 * @throws InterruptedException
-	 */
-	public void sendFileNameList(StringBuffer fileNameList) throws InterruptedException
+	public void sendFileNameList(StringBuffer resultList) 
 	{
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(group).channel(NioSocketChannel.class);
-            b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-            b.handler(new ActiveChannelInitializer(fs,fileNameList));
-            b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
-            ChannelFuture f = b.connect().sync();
-            f.channel().closeFuture().sync();
-        }
-        catch (Exception eg)
+		EventLoopGroup group = new NioEventLoopGroup();
+		try 
 		{
-			eg.printStackTrace();
-        	//logger.debug(eg.getMessage());
+			Bootstrap b = new Bootstrap(); 
+			b.group(group);
+			b.channel(NioSocketChannel.class);
+			b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
+			b.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
+	        b.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1);
+	        b.handler(new ActiveChannelInitializer(fs,resultList));
+	        b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+	        ChannelFuture f = b.connect().sync();
+			f.channel().closeFuture().sync();
 		}
-        finally 
-        {
-        	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
-        	group=null;
-        	logger.debug("Active Mode client is shutdown gracefully.");
-        }
+		catch (InterruptedException e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			try 
+			{
+				group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
+	        	logger.debug("Active Mode client is shutdown gracefully.");
+			} 
+			catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	/**
 	 * Send a file to client
-	 * @param fileName the file name to be sent to client 
 	 * @throws InterruptedException
 	 */
-	public void sendFile(String fileName) throws InterruptedException   
+	public void sendFile() throws InterruptedException   
     {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
             b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.SENDFILE,fileName));
+            b.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
+	        b.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1);
+            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.SENDFILE));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }
@@ -99,24 +84,23 @@ public class ActiveClient
 		}
         finally 
         {
-        	group.shutdownGracefully().sync();
+        	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
         	logger.info("Active Mode client is shutdown gracefully.");
         	group = null;
         }
     }
 	/**
 	 * Receive a file from client
-	 * @param fileName the location of the file to be resided.
 	 * @throws InterruptedException
 	 */
-	public void receiveFile(String fileName) throws InterruptedException 
+	public void receiveFile() throws InterruptedException 
 	{
 		EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
             b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.RECEIVEFILE,fileName));
+            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.RECEIVEFILE));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }
@@ -126,7 +110,7 @@ public class ActiveClient
 		}
         finally 
         {
-        	group.shutdownGracefully().sync();
+        	group.shutdownGracefully(0,0,TimeUnit.MILLISECONDS).sync();
         	logger.debug("Active Mode client is shutdown gracefully.");
         }		
 	}	

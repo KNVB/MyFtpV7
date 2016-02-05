@@ -1,61 +1,57 @@
 package com.myftpserver.impl;
 
-import com.myftpserver.User;
-import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.FileManager;
-import com.myftpserver.handler.FtpSessionHandler;
-
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.ArrayList;
 import java.util.Map.Entry;
-import java.util.Collections;
-import java.nio.file.DirectoryStream;
-import java.nio.file.NoSuchFileException;
 
 import org.apache.logging.log4j.Logger;
-/*
- * Copyright 2004-2005 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * 
- * @author SITO3
- *
- */
+
+import com.myftpserver.User;
+import com.myftpserver.exception.AccessDeniedException;
+import com.myftpserver.exception.InvalidHomeDirectoryException;
+import com.myftpserver.exception.NotADirectoryException;
+import com.myftpserver.exception.NotAFileException;
+import com.myftpserver.exception.PathNotFoundException;
+import com.myftpserver.exception.QuotaExceedException;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.interfaces.UserManager;
+
 public class MyFileManager extends FileManager 
 {
 	/**
-	 * An User Manager implementation
+	 * An File Manager implementation
 	 * @param logger Message logger
 	 */
 	public MyFileManager(Logger logger) 
 	{
 		super(logger);
 	}
+
+	@Override
+	public long getPathSize(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
+	{
+		String serverPath=FileUtil.getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		long pathSize=new File(serverPath).length();
+		return pathSize;	
+	}
 	public void getRealHomePath(FtpSessionHandler fs)throws AccessDeniedException,InvalidHomeDirectoryException 
 	{
 		try
 		{
-			getServerPath(fs,"/",FileManager.READ_PERMISSION);
+			FileUtil.getServerPath(fs,"/",FileManager.READ_PERMISSION);
 		}
 		catch (AccessDeniedException err)
 		{
@@ -66,56 +62,49 @@ public class MyFileManager extends FileManager
 			throw new InvalidHomeDirectoryException(fs.getFtpMessage("530_Home_Dir_Not_Found"));
 		}
 	}
-	public String getServerPath(FtpSessionHandler fs,String inPath, String requiredPermission)throws AccessDeniedException,PathNotFoundException
-	{
-		String serverPath=new String(),serverPathPerm=null,virtualPathPerm=null,finalPerm=null;
-		String clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
-		String serverPathAndPerm=FileUtil.getServerPathAndPermFromVirDir(fs,clientPath);
-		if (serverPathAndPerm.isEmpty())
-		{
-			throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
-		}
-		else
-		{
-			serverPath=serverPathAndPerm.split("\t")[0];
-			virtualPathPerm=serverPathAndPerm.split("\t")[1];
-			serverPathPerm=FileUtil.getServerPathPerm(logger,fs.getUser().getServerPathACL(),Paths.get(serverPath));
-			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm);
-			if (virtualPathPerm!=null)
-				finalPerm=virtualPathPerm;
-			if (serverPathPerm!=null)
-				finalPerm+=serverPathPerm;
-			logger.debug("virtualPath="+clientPath+",virtualPathPerm="+virtualPathPerm+",serverPath="+serverPath+",serverPathPerm="+serverPathPerm+",finalPerm="+finalPerm);
-			
-			if (!Files.exists(Paths.get(serverPath),new LinkOption[]{ LinkOption.NOFOLLOW_LINKS}))
-			{
-				throw new PathNotFoundException(fs.getFtpMessage("450_Directory_Not_Found"));
-			}
-			else
-			{
-				if ((finalPerm==null) || finalPerm.indexOf(FileManager.NO_ACCESS)>-1||finalPerm.indexOf(requiredPermission)==-1)
-				{
-					throw new AccessDeniedException(fs.getFtpMessage("550_Permission_Denied"));
-				}
-			}
-		}
-		return serverPath;
-	}
-	@Override
-	public long getPathSize(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
-	{
-		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
-		long pathSize=new File(serverPath).length();
-		return pathSize;
-	}
 	@Override
 	public void changeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException 
 	{
-		getServerPath(fs,inPath,FileManager.EXECUTE_PERMISSION);
+		FileUtil.getServerPath(fs,inPath,FileManager.EXECUTE_PERMISSION);
 		fs.setCurrentPath(FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath));
 	}
+
 	@Override
-	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)	throws AccessDeniedException,NotADirectoryException,PathNotFoundException,InterruptedException 
+	public void makeDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException, IOException 
+	{
+		String serverPath=FileUtil.getFutureServerPath(fs, inPath);
+		logger.debug("Server path="+serverPath);
+		Files.createDirectories(Paths.get(serverPath));
+	}
+
+	@Override
+	public void deleteDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException, IOException,NotADirectoryException,InvalidPathException 
+	{
+		boolean result;
+		File serverFolder;
+		String serverPath=new String(),newPathName,message,clientPath;
+		newPathName=inPath;
+		if (newPathName.indexOf("/")==-1)
+			newPathName=fs.getCurrentPath()+"/"+newPathName;
+		clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(),newPathName);
+		serverPath=FileUtil.getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
+		serverFolder=new File(serverPath);
+		if (serverFolder.isDirectory())
+		{	
+			result=FileUtil.deleteDirectory(serverFolder);
+			if (!result)
+				throw new PathNotFoundException("");
+		}
+		else
+		{	
+			message=fs.getFtpMessage("550_Not_A_Directory");
+			message=message.replace("%1", inPath);
+			throw new NotADirectoryException(message);
+		}		
+	}
+
+	@Override
+	public StringBuffer getFullDirList(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, NotADirectoryException,PathNotFoundException, InterruptedException 
 	{
 		int index;
 		User user=fs.getUser();
@@ -124,7 +113,7 @@ public class MyFileManager extends FileManager
 		String virPath=new String(),parentDir;
 		StringBuffer fileNameList=new StringBuffer();
 		TreeMap<String, String> clientPathACL=user.getClientPathACL();
-		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		String serverPath=FileUtil.getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		String currentPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
 		if (File.separator.equals("\\"))
 			result=new TreeMap<String,String>(String.CASE_INSENSITIVE_ORDER);
@@ -137,9 +126,9 @@ public class MyFileManager extends FileManager
 				try
 				{
 					if (currentPath.endsWith("/"))
-						getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
+						FileUtil.getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
 					else
-						getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
+						FileUtil.getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
 					result.put(path.getFileName().toString(),FileUtil.formatPathName(path));
 				}
 				catch (AccessDeniedException | PathNotFoundException err)
@@ -156,9 +145,9 @@ public class MyFileManager extends FileManager
 				{
 					try
 					{
-						serverPath=getServerPath(fs,virPath,FileManager.READ_PERMISSION);
+						serverPath=FileUtil.getServerPath(fs,virPath,FileManager.READ_PERMISSION);
 						logger.debug("0 virPath="+virPath);
-						virPath=virPath.replaceAll(currentPath, "");
+						virPath=virPath.replace(currentPath, "");
 						logger.debug("1 virPath="+virPath);
 						index=virPath.indexOf("/");
 						if (index==0)
@@ -185,7 +174,7 @@ public class MyFileManager extends FileManager
 		catch (NotDirectoryException err)
 		{
 			String message=fs.getFtpMessage("550_Not_A_Directory");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			throw new NotADirectoryException(message);
 		}
 		catch (NoSuchFileException ex)
@@ -199,7 +188,7 @@ public class MyFileManager extends FileManager
 		return fileNameList;
 	}
 	@Override
-	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotADirectoryException, PathNotFoundException,InterruptedException 
+	public StringBuffer getFileNameList(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotADirectoryException,PathNotFoundException, InterruptedException 
 	{
 		int index;
 		User user=fs.getUser();
@@ -208,7 +197,7 @@ public class MyFileManager extends FileManager
 		String virPath=new String(),parentDir;
 		StringBuffer fileNameList=new StringBuffer();
 		TreeMap<String, String> clientPathACL=user.getClientPathACL();
-		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		String serverPath=FileUtil.getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		String currentPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
 		if (File.separator.equals("\\"))
 			result=new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
@@ -221,9 +210,9 @@ public class MyFileManager extends FileManager
 				try
 				{
 					if (currentPath.endsWith("/"))
-						getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
+						FileUtil.getServerPath(fs,currentPath+path.getFileName(),FileManager.READ_PERMISSION);
 					else
-						getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
+						FileUtil.getServerPath(fs,currentPath+"/"+path.getFileName(),FileManager.READ_PERMISSION);
 					result.add(path.getFileName().toString());
 				}
 				catch (AccessDeniedException | PathNotFoundException err)
@@ -241,9 +230,9 @@ public class MyFileManager extends FileManager
 				{
 					try
 					{
-						getServerPath(fs,virPath,FileManager.READ_PERMISSION);
+						FileUtil.getServerPath(fs,virPath,FileManager.READ_PERMISSION);
 						logger.debug("0 virPath="+virPath);
-						virPath=virPath.replaceAll(currentPath, "");
+						virPath=virPath.replace(currentPath, "");
 						logger.debug("1 virPath="+virPath);
 						index=virPath.indexOf("/");
 						if (index==0)
@@ -270,7 +259,7 @@ public class MyFileManager extends FileManager
 		catch (NotDirectoryException err)
 		{
 			String message=fs.getFtpMessage("550_Not_A_Directory");
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			throw new NotADirectoryException(message);
 		}
 		catch (NoSuchFileException ex)
@@ -283,52 +272,96 @@ public class MyFileManager extends FileManager
     	}
 		return fileNameList;
 	}
-	@Override
-	public String getFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException 
+	public File getDownloadFileObject(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException,IOException  
 	{
 		String message=fs.getFtpMessage("550_Not_A_File");
-		String serverPath=getServerPath(fs,inPath,FileManager.READ_PERMISSION);
+		String serverPath=FileUtil.getServerPath(fs,inPath,FileManager.READ_PERMISSION);
 		if (Files.isDirectory(Paths.get(serverPath)))
 		{
-			message=message.replaceAll("%1", inPath);
+			message=message.replace("%1", inPath);
 			throw new NotAFileException(message);
 		}
-		return serverPath;
+		return new File(serverPath);
 	}
+
 	@Override
-	public String putFile(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException 
+	public File getUploadFileObject(FtpSessionHandler fs, String inPath)throws AccessDeniedException, NotAFileException,PathNotFoundException, InterruptedException, QuotaExceedException,IOException  
 	{
-		int index;
-		User user;
-		String fileName;
-		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
-		index=clientPath.lastIndexOf("/");
-		fileName=clientPath.substring(index+1);
-		clientPath=clientPath.substring(0,index);
-		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
-		user=fs.getUser();
-		if (user.getQuota()>-1.0)
+		String message=fs.getFtpMessage("550_Not_A_File");
+		User user=fs.getUser();
+		if ((user.getQuota()>-1.0) && (user.getDiskSpaceUsed()>=user.getQuota()))
 		{
-			if (user.getDiskSpaceUsed()>=user.getQuota())
-			{
-				String message=fs.getFtpMessage("550_Quota_Exceed");
-				message=message.replaceAll("%1", String.valueOf(user.getQuota()));
-				message=message.replaceAll("%2", String.valueOf(user.getDiskSpaceUsed()));
-				throw new QuotaExceedException(message); 
-			}
+			message=fs.getFtpMessage("550_Quota_Exceed");
+			message=message.replace("%1",String.valueOf(user.getQuota()));
+			message=message.replace("%2",String.valueOf(user.getDiskSpaceUsed()));
+			throw new QuotaExceedException(message);
 		}
-		serverPath+=File.separator+fileName;
-		return serverPath;
+		else
+		{
+			String serverPath=FileUtil.getFutureServerPath(fs, inPath);
+			if (Files.isDirectory(Paths.get(serverPath)))
+			{
+				message=message.replace("%1", inPath);
+				throw new NotAFileException(message);
+			}
+			return new File(serverPath);
+		}
+	}
+
+	@Override
+	public void deleteFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, NotAFileException,PathNotFoundException, IOException 
+	{
+		String serverPath=FileUtil.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			String message=fs.getFtpMessage("550_Not_A_File");
+			message=message.replace("%1", inPath);
+			throw new NotAFileException(message);
+		}
+		else	
+		{	
+			User user=fs.getUser();
+			if (user.getQuota()>-1.0)
+			{
+				double diskSpaceUsed=user.getDiskSpaceUsed()*1024.0;
+				diskSpaceUsed=diskSpaceUsed-(new Long(Files.size(Paths.get(serverPath)))).doubleValue();
+				if (diskSpaceUsed<0)
+				{
+					diskSpaceUsed=0.0;
+				}
+				user.setDiskSpaceUsed(diskSpaceUsed/1024.0);
+				UserManager um=fs.getServerConfig().getUserManager();
+				um.upDateUserInfo(user);
+			}
+			Files.delete(Paths.get(serverPath));
+		}
+
 	}
 	@Override
-	public String deleteDirectory(FtpSessionHandler fs, String inPath)throws AccessDeniedException, PathNotFoundException
+	public void renameFrom(FtpSessionHandler fs, String oldFileName) throws AccessDeniedException,NotAFileException, PathNotFoundException, IOException 
 	{
-		String serverPath=new String(),clientPath=FileUtil.normalizeClientPath(logger, fs.getCurrentPath(), inPath);
-		serverPath=getServerPath(fs,clientPath,FileManager.WRITE_PERMISSION);
-		return serverPath;
+		String message=fs.getFtpMessage("550_Not_A_File"); 
+		String serverPath=FileUtil.getServerPath(fs, oldFileName, FileManager.WRITE_PERMISSION);
+		if (Files.isDirectory(Paths.get(serverPath)))
+		{
+			message=message.replace("%1", oldFileName);
+			throw new NotAFileException(message);
+		}
+		else
+		{
+			fs.setReNameFrom(serverPath);
+		}
 	}
+	@Override
+	public void renameTo(FtpSessionHandler fs, String newFileName) throws AccessDeniedException, NotAFileException, PathNotFoundException, IOException
+	{
+		String destPath=FileUtil.getFutureServerPath(fs, newFileName);
+		Path renameFrom=Paths.get(fs.getReNameFrom());
+		Path renameTo=Paths.get(destPath);
+		Files.move(renameFrom, renameTo);
+	}
+	@Override
 	public void close() 
 	{
-		
 	}	
 }

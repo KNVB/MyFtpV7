@@ -1,4 +1,7 @@
 package com.myftpserver.interfaces;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
@@ -64,6 +67,13 @@ public abstract class FileManager
 	 */
 	public abstract long getPathSize(FtpSessionHandler fs, String clientPath)throws AccessDeniedException, PathNotFoundException;
 	/**
+	 * Get server path for virtual root path
+	 * @param fs FtpSessionHandler
+	 * @throws AccessDeniedException
+	 * @throws InvalidHomeDirectoryException
+	 */
+	public abstract void getRealHomePath(FtpSessionHandler fs) throws AccessDeniedException,InvalidHomeDirectoryException;
+	/**
 	 * Change current directory
 	 * @param fs FtpSessionHandler
 	 * @param inPath Destination directory
@@ -72,22 +82,22 @@ public abstract class FileManager
 	 */
 	public abstract void changeDirectory(FtpSessionHandler fs,String inPath) throws AccessDeniedException, PathNotFoundException;
 	/**
-	 * Get server path for virtual root path
-	 * @param fs FtpSessionHandler
-	 * @throws AccessDeniedException
-	 * @throws InvalidHomeDirectoryException
-	 */
-	public abstract void getRealHomePath(FtpSessionHandler fs) throws AccessDeniedException,InvalidHomeDirectoryException;
-	/**
-	 * Get server path for specified virtual root path 
-	 * @param fs FtpSessionHandler
-	 * @param inPath virtual path 
-	 * @param requiredPermission Permission require for the next operation
-	 * @return Server path
+	 * Make a virtual directory 
+	 * @param fs  FtpSessionHandler
+	 * @param inPath a virtual path that to be created
 	 * @throws AccessDeniedException
 	 * @throws PathNotFoundException
 	 */
-	public abstract String getServerPath(FtpSessionHandler fs, String inPath,String requiredPermission) throws AccessDeniedException,PathNotFoundException;
+	public abstract void makeDirectory(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,IOException;
+	/**
+	 * Delete a virtual directory 
+	 * @param fs FtpSessionHandler
+	 * @param inPath a virtual path that to be deleted
+	 * @throws AccessDeniedException
+	 * @throws PathNotFoundException
+	 * @throws IOException
+	 */
+	public abstract void deleteDirectory(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,IOException,NotADirectoryException,InvalidPathException;
 	/**
 	 * Generate a directory full listing for a virtual path
 	 * @param fs FtpSessionHandler
@@ -111,35 +121,55 @@ public abstract class FileManager
 	 */
 	public abstract StringBuffer getFileNameList(FtpSessionHandler fs, String inPath) throws AccessDeniedException, NotADirectoryException, PathNotFoundException, InterruptedException;
 	/**
-	 * Get server path for specified virtual path for sending file to client 
+	 * Return a file object that to be downloaded
 	 * @param fs FtpSessionHandler
-	 * @param inPath virtual path 
-	 * @return server path
+	 * @param inPath a virtual path of a file that to be downloaded
 	 * @throws AccessDeniedException
-	 * @throws InterruptedException
 	 * @throws NotAFileException
 	 * @throws PathNotFoundException
-	 */
-	public abstract String getFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException,NotAFileException,PathNotFoundException,InterruptedException;
-	/**
-	 * Generate a server path for file upload 
-	 * @param fs FtpSessionHandler
-	 * @param inPath a virtual path that the file to be uploaded 
-	 * @return server path
-	 * @throws AccessDeniedException
 	 * @throws InterruptedException
+	 */
+	public abstract File getDownloadFileObject(FtpSessionHandler fs, String inPath) throws AccessDeniedException, NotAFileException, PathNotFoundException, InterruptedException,IOException ;
+	/**
+	 * Return a file object that to be upload 
+	 * @param fs
+	 * @param inPath a virtual path of a file that to be resided
+	 * @throws AccessDeniedException
+	 * @throws NotAFileException
 	 * @throws PathNotFoundException
+	 * @throws InterruptedException
 	 * @throws QuotaExceedException
 	 */
-	public abstract String putFile(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException,InterruptedException, QuotaExceedException;
+	public abstract File getUploadFileObject(FtpSessionHandler fs, String inPath) throws AccessDeniedException, NotAFileException, PathNotFoundException, InterruptedException,QuotaExceedException,IOException ;
 	/**
-	 * Generate a server path for delete directory 
-	 * @param fs  FtpSessionHandler
-	 * @param inPath  a virtual path that the path to be uploaded 
-	 * @return server path
+	 * It causes the file specified in the pathname to be deleted at the server side.
+	 * @param fs FtpSessionHandler
+	 * @param inPath a virtual path of a file that to be deleted
 	 * @throws AccessDeniedException
+	 * @throws NotAFileException
 	 * @throws PathNotFoundException
+	 * @throws IOException
 	 */
-	public abstract String deleteDirectory(FtpSessionHandler fs, String inPath)	throws AccessDeniedException, PathNotFoundException;
-	public abstract void close();
+	public abstract void deleteFile(FtpSessionHandler fs, String inPath) throws AccessDeniedException, NotAFileException, PathNotFoundException, IOException;
+	/**
+	 * It specifies the old pathname of the file which is to be renamed
+	 * @param fs FtpSessionHandler
+	 * @param oldFileName old virtual path name
+	 * @throws AccessDeniedException
+	 * @throws NotAFileException
+	 * @throws PathNotFoundException
+	 * @throws IOException
+	 */
+	public abstract void renameFrom(FtpSessionHandler fs, String oldFileName) throws AccessDeniedException, NotAFileException, PathNotFoundException, IOException;
+	/**
+	 * It specifies specifies the new pathname of the file specified in the immediately preceding "rename from" command.
+	 * @param fs FtpSessionHandler
+	 * @param newFileName new virtual path name
+	 * @throws AccessDeniedException
+	 * @throws NotAFileException
+	 * @throws PathNotFoundException
+	 * @throws IOException
+	 */
+	public abstract void renameTo(FtpSessionHandler fs, String newFileName) throws AccessDeniedException, NotAFileException, PathNotFoundException, IOException;
+	public abstract void close();		
 }

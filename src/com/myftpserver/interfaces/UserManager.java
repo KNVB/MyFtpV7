@@ -69,11 +69,11 @@ public abstract class UserManager
 	 */
 	public abstract int deleteUser(String uN);
 	/**
-	 * Set password to an user
+	 * Update an user information
 	 * @param u user object
-	 * @return set password result
+	 * @return Update an user information result
 	 */
-	public abstract int setPassword(User u);
+	public abstract int upDateUserInfo(User u);
 	/**
 	 * Add an user group object
 	 * @param userGroup user group object

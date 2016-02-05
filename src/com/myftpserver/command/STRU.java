@@ -46,7 +46,7 @@ public class STRU implements com.myftpserver.interfaces.FtpCommandInterface
 			if (param.equalsIgnoreCase("F"))
 			{
 				message=fs.getFtpMessage("200_Structure_set_to");
-				message=message.replaceAll("%1", param);
+				message=message.replace("%1", param);
 			}
 			else
 				message=fs.getFtpMessage("504_Command_Not_Support_This_Parameter");

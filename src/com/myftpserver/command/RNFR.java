@@ -1,8 +1,7 @@
 package com.myftpserver.command;
 
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 
 import org.apache.logging.log4j.Logger;
 
@@ -41,8 +40,28 @@ public class RNFR implements FtpCommandInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
+	public void execute(FtpSessionHandler fs, String oldFileName) 
+	{
+		Logger logger=fs.getLogger();
+		ServerConfig serverConfig=fs.getServerConfig();
+		FileManager fm=serverConfig.getFileManager();
+		
+		try
+		{
+			fm.renameFrom(fs, oldFileName);
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("350_Ready_For_RNTO"));
+		}
+		catch (IOException|NotAFileException |AccessDeniedException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+		}
+		catch (PathNotFoundException|InvalidPathException err) 
+		{
+			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+		} 
+	}
+	/*@Override
 	public void execute(FtpSessionHandler fs, String inPath) 
 	{
 		Logger logger=fs.getLogger();
@@ -54,7 +73,7 @@ public class RNFR implements FtpCommandInterface {
 			String serverPath=fm.getServerPath(fs, inPath, FileManager.WRITE_PERMISSION);
 			if (Files.isDirectory(Paths.get(serverPath)))
 			{
-				message=message.replaceAll("%1", inPath);
+				message=message.replace("%1", inPath);
 				throw new NotAFileException(message);
 			}
 			else
@@ -71,6 +90,6 @@ public class RNFR implements FtpCommandInterface {
 		{
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
-	}
+	}*/
 
 }

@@ -11,15 +11,15 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 import com.myftpserver.User;
-import com.myftpserver.handler.SendFileHandler;
+import com.myftpserver.interfaces.SendHandler;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.handler.SendBinaryFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
-import com.myftpserver.listener.PassiveChannelCloseListener;
+import com.myftpserver.handler.SendTextFileHandler;
 import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -72,6 +72,8 @@ public class PassiveServer
             ServerBootstrap bootStrap = new ServerBootstrap();
             bootStrap.group(bossGroup, workerGroup);
             bootStrap.channel(NioServerSocketChannel.class);
+            bootStrap.childOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
+            bootStrap.childOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1);
             bootStrap.childHandler(new PassiveChannelInitializer(fs));
             bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             bootStrap.bind(inSocketAddress);
@@ -88,9 +90,8 @@ public class PassiveServer
 	}
 	/**
 	 * Send a file to client
-	 * @param serverPath A file to be sent to client 
 	 */
-	public void sendFile(String serverPath) throws IOException 
+	public void sendFile() throws IOException 
 	{
 		if (user.getDownloadSpeedLitmit()==0L)
 			logger.info("File download speed is limited by connection speed");
@@ -99,10 +100,13 @@ public class PassiveServer
 			logger.info("File download speed limit:"+user.getDownloadSpeedLitmit()+" kB/s");
 			ch.pipeline().addLast("TrafficShapingHandler",new ChannelTrafficShapingHandler(user.getDownloadSpeedLitmit()*1024,0L));
 		}
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
-		ch.pipeline().addLast("streamer", new ChunkedWriteHandler());
-		ch.pipeline().addLast("handler",new SendFileHandler(serverPath,fs));
-		ch.pipeline().remove("ReceiveHandler");
+		SendHandler sendFileHandler;
+		if (fs.getDataType().equals("I"))
+			sendFileHandler=new SendBinaryFileHandler(fs);
+		else
+			sendFileHandler=new SendTextFileHandler(fs);
+		ch.closeFuture().addListener(sendFileHandler);
+		ch.pipeline().addLast(sendFileHandler);
 	}
 	/**
 	 * Send a file name list to client
@@ -110,9 +114,10 @@ public class PassiveServer
 	 */
 	public void sendFileNameList(StringBuffer fileNameList) 
 	{
-		ch.closeFuture().addListener(new PassiveChannelCloseListener(fs));
-		ch.pipeline().addLast(new SendFileNameListHandler(fileNameList, fs));
 		ch.pipeline().remove("ReceiveHandler");
+		SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+		ch.closeFuture().addListener(sendFileNameListHandler);
+		ch.pipeline().addLast(sendFileNameListHandler);		
 	}
 	/**
 	 * Set a channel for passive mode

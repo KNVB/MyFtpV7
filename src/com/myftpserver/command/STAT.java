@@ -39,31 +39,31 @@ public class STAT implements FtpCommandInterface
 		User user=fs.getUser();
 		String bandWidthInfo=new String();
 		String message=fs.getFtpMessage("211_Server_Stat");
-		message=message.replaceAll("%1", fs.getClientIp());
-		message=message.replaceAll("%2", fs.getUserName());
+		message=message.replace("%1", fs.getClientIp());
+		message=message.replace("%2", fs.getUserName());
 		switch(fs.getDataType())
 		{
-			case "A":message=message.replaceAll("%3", "ASCII");
+			case "A":message=message.replace("%3", "ASCII");
 					 break;
-			case "I":message=message.replaceAll("%3", "Binary");
+			case "I":message=message.replace("%3", "Binary");
 			 break;
 		}
-		message=message.replaceAll("%4",String.valueOf(fs.getSessionTimeOut()));
+		message=message.replace("%4",String.valueOf(fs.getSessionTimeOut()));
 		if (user.getDownloadSpeedLitmit()==0)
 			bandWidthInfo=fs.getFtpMessage("No_Download_BW_Limit");
 		else
 		{	
 			bandWidthInfo=fs.getFtpMessage("Download_BW_Limit");
-			bandWidthInfo=bandWidthInfo.replaceAll("%1",String.valueOf(user.getDownloadSpeedLitmit()));
+			bandWidthInfo=bandWidthInfo.replace("%1",String.valueOf(user.getDownloadSpeedLitmit()));
 		}
 		if (user.getUploadSpeedLitmit()==0)
 			bandWidthInfo+=" "+fs.getFtpMessage("No_Upload_BW_Limit");
 		else
 		{
 			bandWidthInfo+=" "+fs.getFtpMessage("Upload_BW_Limit");
-			bandWidthInfo=bandWidthInfo.replaceAll("%1",String.valueOf(user.getUploadSpeedLitmit()));
+			bandWidthInfo=bandWidthInfo.replace("%1",String.valueOf(user.getUploadSpeedLitmit()));
 		}
-		message=message.replaceAll("%5",bandWidthInfo);
+		message=message.replace("%5",bandWidthInfo);
 		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(),message);
 	}
 }
