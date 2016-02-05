@@ -4,14 +4,33 @@ import java.io.File;
 
 import org.apache.logging.log4j.Logger;
 
+import com.util.Utility;
 import com.myftpserver.*;
 import com.util.MessageBundle;
-import com.util.Utility;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
+/*
+ * Copyright 2004-2005 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 
+ * @author SITO3
+ *
+ */
 public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 {
 	private User user;
@@ -29,15 +48,23 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private File downloadFile=null,uploadTempFile=null, uploadFile=null;
 	private String userName=new String(),dataType="A",currentPath=new String();
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
-	public FtpSessionHandler(Channel ch, MyFtpServer s, String remoteIp)
+	/**
+	 * FTP session handler
+	 * @param ch {@link io.netty.channel.Channel}
+	 * @param myFtpServer {@link MyFtpServer}
+	 * @param remoteIp {@link String} Client IP address
+	 */
+	public FtpSessionHandler(Channel ch, MyFtpServer myFtpServer, String remoteIp)
 	{
-		this.myFtpServer=s;
 		this.ch=ch;
 		this.currentPath="/";
 		this.clientIp=remoteIp;
-		this.logger=s.getLogger();
+		
+		this.myFtpServer=myFtpServer;
 		this.isPassiveModeTransfer=false;
-		this.serverConfig=s.getServerConfig();
+		this.logger=myFtpServer.getLogger();
+
+		this.serverConfig=myFtpServer.getServerConfig();
 		this.ftpCommandHandler=new FtpCommandExecutor(this);
 		messageBundle=serverConfig.getMessageBundle();
 	}
@@ -72,7 +99,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
     }
 	/**
 	 * Get message logger
-	 * @return message logger 
+	 * @return {@link Logger} message logger 
 	 */	
 	public Logger getLogger()
 	{
@@ -87,7 +114,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
     	return clientIp;
     }
     /**
-	 * Set FTP message bundle
+	 * Register FTP message bundle object to FTP session for properly message return to user. 
 	 * @param messageBundle
 	 */
 	public void setMessageBundle(MessageBundle messageBundle) 
@@ -96,7 +123,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		logger.debug("locale for this session ="+messageBundle.getLocale());
 	}
 	/**
-	 * Get message text from a key
+	 * Get properly message text from return code 
 	 * @param key the message key
 	 * @return value the corresponding message text
 	 */
@@ -105,7 +132,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return messageBundle.getMessage(key);
 	}
 	/**
-     * Get Server Configuration object
+     * Get Server Configuration object for retrieving server configuration setting
      * @return ServerConfig object
      */
 	public ServerConfig getServerConfig() 
@@ -121,7 +148,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return ch;
 	}
 	/**
-	 * Set User login name
+	 * Set User login name for current ftp session
 	 * @param userName User login name
 	 */
 	public void setUserName(String userName) 
@@ -129,7 +156,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.userName=userName;
 	}
 	/**
-	 * Set Login status
+	 * Register Login status for this FTP session
 	 * @param l Login status
 	 */
 	public void setIsLogined(boolean l)
@@ -137,7 +164,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		isLogined=l;
 	}
 	/**
-	 * Get User login name
+	 * Get User login name this FTP session
 	 * @return User login name
 	 */
 	public String getUserName()
@@ -145,7 +172,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return this.userName;
 	}
 	/**
-	 * Set user current path
+	 * Set user current path for this FTP session
 	 * @param cp current path
 	 */
 	public void setCurrentPath(String cp)
@@ -153,7 +180,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		currentPath=cp;
 	}
 	/**
-	 * Get user current path
+	 * Get user current path for this FTP session
 	 * @return the user current path
 	 */
 	public String getCurrentPath()
@@ -161,7 +188,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return currentPath;
 	}
 	/**
-	 * Get data type (e.g ASCII,bin)
+	 * Get data type (e.g ASCII,bin) for this FTP session
 	 * According to RFC959, default data type is 'A'
 	 * @return data type (i.e. A,I) 
 	 */
@@ -170,7 +197,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return dataType;
 	}
 	/**
-	 * Set data type (e.g ASCII,bin)
+	 * Set data type (e.g ASCII,bin) for this FTP session
 	 * @param type data type (i.e. A,I)
 	 */
 	public void setDataType(String type) 
@@ -178,7 +205,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		dataType=type;
 	}
 	/**
-     * Check login status
+     * Check login status for this FTP session
      * @return true if a user already login.
      */
 	public boolean isLogined() 
@@ -186,7 +213,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return isLogined;
 	}
 	/**
-	 * Set User object
+	 * Set User object for this FTP session
 	 * @param user User object
 	 */
 	public void setUser(User user) 
@@ -194,7 +221,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.user=user;
 	}
 	/**
-	 * Get User object
+	 * Get User object for this FTP session
 	 * @return User object
 	 */
 	public User getUser() 
@@ -202,7 +229,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return this.user;
 	}
 	/**
-	 * Get server object
+	 * Get server object for this FTP session
 	 * @return MyFtpServer object
 	 */
 	public MyFtpServer getServer() 
@@ -257,7 +284,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.passiveServer=passiveServer;
 	}
 	/**
-	 * 
+	 * Get temporary upload file object
 	 * @return Upload Temp File object
 	 */
 	public File getUploadTempFile() 
@@ -265,7 +292,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		return this.uploadTempFile;
 	}
 	/**
-	 * 
+	 * Set temporary upload file object
 	 * @param uploadTempFile
 	 */
 	public void setUploadTempFile(File uploadTempFile) 
@@ -327,4 +354,5 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	{
 		ch.close();
 		ch=null;		
-	}}
+	}
+}

@@ -26,13 +26,13 @@ public interface FtpCommandInterface
 {
  	/**
  	 * Display help message
- 	 * @param fs FtpSessionHandler
+ 	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
  	 * @return Help message
  	 */
 	public String helpMessage(FtpSessionHandler fs);
 	/**
 	 * Perform raw ftp command action
-	 * @param fs FtpSessionHandler
+	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
 	 * @param param Parameter for the raw FTP command 
 	 */
 	public void execute (FtpSessionHandler fs,String param); 

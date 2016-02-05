@@ -154,7 +154,7 @@ public class ServerConfig
 		return serverPort;
 	}
 	/**
-	 * Get FTP server encoding 
+	 * Get Default FTP server encoding setting 
 	 * @return FTP server encoding
 	 */	
 	public String getEncoding()
@@ -162,7 +162,7 @@ public class ServerConfig
 		return encoding;
 	}
 	/**
-	 * Get message text from a key
+	 *Get properly message text from return code 
 	 * @param key the message key
 	 * @return value the corresponding message text
 	 */
@@ -210,6 +210,10 @@ public class ServerConfig
 	{
 		return serverLocale;
 	}
+	/**
+	 * Get FTP message bundle object to FTP session for properly message return to user. 
+	 * @return MessageBundle object
+	 */
 	public MessageBundle getMessageBundle()
 	{
 		return this.messageBundle;

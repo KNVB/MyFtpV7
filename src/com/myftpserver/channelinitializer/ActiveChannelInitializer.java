@@ -43,7 +43,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private StringBuffer fileNameList;
 	/**
 	 * Initialize an active mode channel for file transmission
-	 * @param fs FtpSessionHandler object
+	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
 	 * @param mode Transfer mode
 	 */
 	public ActiveChannelInitializer(FtpSessionHandler fs,int mode) 
@@ -54,9 +54,9 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 		this.logger=fs.getLogger();
 	}
 	/**
-	 * Initialize an active mode channel for file transmission
-	 * @param fs FtpSessionHandler object
-	 * @param mode Transfer mode
+	 * Initialize an active mode channel for directory listing transmission
+	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
+	 * @param fileNameList  {@link StringBuffer}  A StringBuffer object that contain directory listing 
 	 */
 	public ActiveChannelInitializer(FtpSessionHandler fs,StringBuffer fileNameList) 
 	{

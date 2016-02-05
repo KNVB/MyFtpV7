@@ -47,8 +47,7 @@ public class SendTextFileHandler extends SendHandler
 	/**
 	 * Send binary file handler
 	 * It send file listing to client and then close the channel.
-	 * @param fileNameList  A StringBuffer object that contains file listing
-	 * @param fs  FtpSessionHandler object 
+	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object 
 	 */
 	public SendTextFileHandler(FtpSessionHandler fs) 
 	{
