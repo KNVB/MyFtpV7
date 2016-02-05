@@ -181,7 +181,6 @@ public class DbOp
 		} 
 		catch (SQLException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally
