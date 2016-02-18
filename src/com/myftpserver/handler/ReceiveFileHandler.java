@@ -121,7 +121,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 						if (fs.getUploadFile().exists())
 							diskSpaceUsed=diskSpaceUsed-(new Long(fs.getUploadFile().length())).doubleValue();
 						diskSpaceUsed=diskSpaceUsed+(new Long(tempFile.length())).doubleValue();
-						
+						logger.debug("Disk Space used="+diskSpaceUsed+",Quota="+quota);
 						if  (diskSpaceUsed>quota)
 						{
 							isUploadSuccess=false;
@@ -132,6 +132,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 						else
 						{	
 							UserManager um=fs.getServerConfig().getUserManager();
+							logger.debug("new Disk Space Used="+ (diskSpaceUsed/1024.0));
 							user.setDiskSpaceUsed(diskSpaceUsed/1024.0);
 							um.upDateUserInfo(user);
 						}
