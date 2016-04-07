@@ -35,11 +35,24 @@ import org.apache.logging.log4j.Logger;
  */
 public class DELE implements FtpCommandInterface {
 
+	/**
+	 * This command causes the file specified in the pathname to be deleted at the server site.<br>
+	 * For detail information about DELE command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>  
+	 */
+	public DELE()
+	{
+		
+	}
 	@Override
-	public String helpMessage(FtpSessionHandler fs) {
+	public String helpMessage(FtpSessionHandler fs) 
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * It perform both security test and file existence test;<br>
+	 * if one of these tests fail, it will return error message.  
+	 */
 	@Override
 	public void execute(FtpSessionHandler fs, String inPath)
 	{

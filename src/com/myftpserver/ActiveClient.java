@@ -28,6 +28,10 @@ public class ActiveClient
 		this.fs=fs;
 		this.logger=fs.getLogger();
 	}
+	/**
+	 * Send a file listing to client
+	 * @throws InterruptedException
+	 */
 	public void sendFileNameList(StringBuffer resultList) 
 	{
 		EventLoopGroup group = new NioEventLoopGroup();

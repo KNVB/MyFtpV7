@@ -53,7 +53,7 @@ public class PassiveServer
 	private EventLoopGroup bossGroup = new NioEventLoopGroup();
     private EventLoopGroup workerGroup = new NioEventLoopGroup();
 	/**
-	 * This is passive mode server
+	 * This is passive mode server object for provide passive mode transfer
 	 * @param fs FTP Session Handler
 	 * @param localIP Server IP address
 	 * @param port Passive port no.

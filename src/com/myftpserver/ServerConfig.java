@@ -44,7 +44,7 @@ public class ServerConfig
 	private int serverPort,maxConnection=0,commandChannelConnectionTimeOut=30000;
 	private boolean supportPassiveMode=false,havePassivePortSpecified=false;
 	/**
-	 * This object contains all server configuration setting  
+	 * This object contains all default server configuration setting  
 	 * @param logger Logger for message logging
 	 */	
 	public ServerConfig(Logger logger) 
@@ -162,7 +162,7 @@ public class ServerConfig
 		return encoding;
 	}
 	/**
-	 *Get properly message text from return code 
+	 *Get properly message text for specified return code 
 	 * @param key the message key
 	 * @return value the corresponding message text
 	 */

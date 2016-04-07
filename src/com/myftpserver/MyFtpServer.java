@@ -108,6 +108,7 @@ public final class MyFtpServer
 //-------------------------------------------------------------------------------------------	
 	/**
 	 * Called by CommandChannelClosureListener object when a FTP session is ended.
+	 * It reduce the concurrent connection count by 1.
 	 */
 	public synchronized void sessionClose()
 	{
@@ -150,7 +151,7 @@ public final class MyFtpServer
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
-	 * Return port no. to passive port pool
+	 * Return port no.&nbsp;to passive port pool
 	 * @param port the return passive port 
 	 */
 	public void returnPassivePort(int port) 
@@ -189,6 +190,13 @@ public final class MyFtpServer
 		}	        
 	}
 //-------------------------------------------------------------------------------------------	
+	/**
+	 * It is an API support raw ftp command REIN.<br>
+	 * For detail information about REIN command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 *  
+	 * @param ch The user channel
+	 * @param remoteIp The remote user IP address. 
+	 */
 	public void reinitializeSession(Channel ch,String remoteIp) 
 	{
 		ch.pipeline().remove("MyHandler");

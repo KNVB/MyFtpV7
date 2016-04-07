@@ -25,14 +25,24 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class CDUP extends CWD implements FtpCommandInterface 
 {
-
+	/**
+	 * This command is used change working directory to parent directory.<br>
+	 * It call raw command CWD to perform the operation. <br>
+	 * For detail information about CDUP command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>  
+	 */
+	public CDUP()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/**
+	 * It call raw command CWD to perform the operation. 
+	 */
 	@Override
 	public void execute(FtpSessionHandler fs,String param)
 	{

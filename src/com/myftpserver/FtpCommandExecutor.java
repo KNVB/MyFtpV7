@@ -41,7 +41,10 @@ public class FtpCommandExecutor
 		this.logger=fs.getLogger();	 
 	}
 	/**
-	 * Execute a raw ftp command
+	 * Pre process the incoming raw ftp command before execute it.<br>
+	 * Some of raw commands will be executed (such as USER,PASS,QUIT) even the user haven't login,<br>
+	 * another commands will be executed when the user already login only,<br>
+	 * if user not login, server will disconnect the user connection. 
 	 * @param ctx A ChannelHandlerContext for sending command execution result to client
 	 * @param inString incoming raw FTP command 
 	 * @param logger message logger 

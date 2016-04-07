@@ -29,14 +29,24 @@ import org.apache.logging.log4j.Logger;
  */
 public class CWD implements FtpCommandInterface 
 {
-
+	/**
+	 * This command is used change working directory to the specified directory.<br>
+	 * For detail information about CWD command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>  
+	 */
+	public CWD()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/**
+	 * It perform both security test and directory existence test;<br>
+	 * if one of these tests fail, it will return error message.  
+	 */
 	@Override
 	public void execute(FtpSessionHandler fs,String param)
 	{

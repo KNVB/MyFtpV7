@@ -32,13 +32,24 @@ import com.util.Utility;
  */
 public class EPSV implements FtpCommandInterface 
 {
-
+	/**
+	 * It is specified a port in server side for passive mode operation.<br>
+	 * It supports both IPV6 and IPV4.<br>
+	 * For detail information about EPSV command,please refer <a href="https://tools.ietf.org/html/rfc2428">RFC 2428</a>   
+	 */
+	public EPSV()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/**
+	 * It start a passive server which listen on a data port and wait for a connection.<br>
+	 * And then return the data port no. &nbsp; to ftp client for passive mode operation. 
+	 */
 	@Override
 	public void execute(FtpSessionHandler fs, String param) 
 	{

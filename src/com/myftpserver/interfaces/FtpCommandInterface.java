@@ -25,15 +25,10 @@ import com.myftpserver.handler.FtpSessionHandler;
 public interface FtpCommandInterface 
 {
  	/**
- 	 * Display help message
+ 	 * Display help message about the usage of the command.
  	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
  	 * @return Help message
  	 */
 	public String helpMessage(FtpSessionHandler fs);
-	/**
-	 * Perform raw ftp command action
-	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
-	 * @param param Parameter for the raw FTP command 
-	 */
 	public void execute (FtpSessionHandler fs,String param); 
 }

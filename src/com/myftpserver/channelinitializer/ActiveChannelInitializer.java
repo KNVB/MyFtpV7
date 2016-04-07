@@ -44,7 +44,7 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	/**
 	 * Initialize an active mode channel for file transmission
 	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
-	 * @param mode Transfer mode
+	 * @param mode Transfer mode (Please refer {@link MyFtpServer#SENDFILE},{@link MyFtpServer#RECEIVEFILE},{@link MyFtpServer#SENDDIRLIST})
 	 */
 	public ActiveChannelInitializer(FtpSessionHandler fs,int mode) 
 	{

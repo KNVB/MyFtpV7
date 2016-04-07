@@ -28,13 +28,23 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class EPRT implements FtpCommandInterface 
 {
-
+	/**
+	 * It is specified a port in client side for active mode operation.<br>
+	 * It support both IPV6 and IPV4.<br>
+	 * For detail information about EPRT command,please refer <a href="https://tools.ietf.org/html/rfc2428">RFC 2428</a>   
+	 */
+	public EPRT()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/**
+	 * It gets port no.&nbsp; from ftp client response for active mode operation. 
+	 */
 	@Override
 	public void execute(FtpSessionHandler fs, String param) 
 	{
