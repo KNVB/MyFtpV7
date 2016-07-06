@@ -27,8 +27,8 @@ import com.myftpserver.interfaces.FtpCommandInterface;
 public class QUIT implements FtpCommandInterface
 {
 	/**
-	 * This command cause the current user logout from the ftp server.
-	 * For detail information about QUIT command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 *This command cause the current user logout from the ftp server.
+	 *For detail information about QUIT command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
 	 */
 	public QUIT()
 	{

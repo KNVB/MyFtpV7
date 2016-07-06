@@ -28,7 +28,15 @@ import com.util.Utility;
  */
 public class REIN implements FtpCommandInterface
 {
-
+	/**
+	 *This command terminates a USER, flushing all I/O and account
+     *information, except to allow any transfer in progress to be completed.<br>
+     *For detail information about REIN command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+     */
+	public REIN()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

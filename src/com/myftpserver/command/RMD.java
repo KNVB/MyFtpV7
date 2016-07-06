@@ -36,7 +36,16 @@ import com.myftpserver.exception.NotADirectoryException;
  */
 public class RMD implements FtpCommandInterface
 {
-
+	/**
+	 *This command causes the directory specified in the pathname<br>
+     *to be removed as a directory (if the pathname is absolute)<br>
+     *or as a subdirectory of the current working directory (if the pathname is relative)<br> 
+     *For detail information about RMD command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public RMD()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{

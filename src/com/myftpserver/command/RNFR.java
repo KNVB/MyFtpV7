@@ -35,6 +35,14 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class RNFR implements FtpCommandInterface {
 
+	/**
+	 * This command specifies the old pathname of the file which is to be renamed.<br>
+	 * For detail information about RNFR command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public RNFR()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

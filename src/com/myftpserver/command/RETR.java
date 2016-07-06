@@ -36,7 +36,15 @@ import com.util.Utility;
  */
 public class RETR implements FtpCommandInterface
 {
-
+	/**
+	 *This command causes the server-DTP to transfer a copy of the file,<br>
+     *specified in the pathname, to the server- or user-DTP at the other end of the data connection.<br>
+     *For detail information about RETR command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public RETR()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
