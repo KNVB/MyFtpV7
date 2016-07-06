@@ -34,7 +34,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class LIST implements FtpCommandInterface 
 {
-	
+	/**
+	 * It returns a list of files in the specified directory.<br>
+	 * For detail information about LIST command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>     
+	 */
+	public LIST()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{

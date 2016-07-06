@@ -31,7 +31,17 @@ import org.apache.logging.log4j.Logger;
  */
 public class PASV implements FtpCommandInterface 
 {
-
+	/**
+	 *This command requests the server-DTP to "listen" on a data<br>
+     *port (which is not its default data port) and to wait for a<br>
+     *connection rather than initiate one upon receipt of a<br>
+     *transfer command.<br>
+     *For detail information about PASV command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public PASV()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{

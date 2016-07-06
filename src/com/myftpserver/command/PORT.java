@@ -29,6 +29,14 @@ import org.apache.logging.log4j.Logger;
 public class PORT implements FtpCommandInterface 
 {
 	String temp=new String();
+	/**
+	 * The PORT command is sent by an FTP client to establish a secondary connection (address and port) for data to travel over.<br>
+	 * For detail information about PORT command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public PORT()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

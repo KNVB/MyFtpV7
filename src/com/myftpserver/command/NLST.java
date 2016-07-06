@@ -34,6 +34,14 @@ import com.myftpserver.exception.PathNotFoundException;
  */
 public class NLST implements FtpCommandInterface 
 {
+	/**
+	 * It returns list names of files in the specified folder without other information .<br>
+	 * For detail information about NLST command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>     
+	 */
+	public NLST()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

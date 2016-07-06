@@ -34,7 +34,17 @@ import com.myftpserver.exception.PathNotFoundException;
  */
 public class MKD implements FtpCommandInterface
 {
-
+	/**
+	 * This command causes the the directory specified in the pathname<br>
+	 * to be created as a directory (if the pathname is absolute)<br>
+     * or as a subdirectory of the current working directory (if<br>
+     * the pathname is relative)<br>
+	 * For detail information about MKD command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>  
+	 */
+	public MKD()
+	{
+		
+	}	
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{

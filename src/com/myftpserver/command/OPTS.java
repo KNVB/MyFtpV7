@@ -25,6 +25,16 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class OPTS implements FtpCommandInterface
 {
+	/**
+	 *The OPTS (options) command allows a user-PI to specify the desired<br>
+     *behavior of a server-FTP process when another FTP command (the target<br>
+     *command) is later issued.<br>
+     *For detail information about OPTS command,please refer  <a href="https://tools.ietf.org/html/rfc2389">RFC 2389</a>  
+	 */	
+	public OPTS()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
