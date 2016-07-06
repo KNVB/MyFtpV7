@@ -1,5 +1,4 @@
 package com.myftpserver.impl;
-import java.util.Stack;
 import java.util.Locale;
 import java.io.IOException;
 
@@ -35,20 +34,16 @@ import com.myftpserver.abstracts.ServerConfiguration;
 */
 public class MyServerConfig extends ServerConfiguration  
 {
+	private String start,end;
+	private int i,startPort,endPort;
 	private String encoding=null;
 	private String serverLocale=null;
 	
 	private FileInputStream fis=null;
 	private MessageBundle messageBundle;
-	
-	
 	private PropertyResourceBundle bundle=null;
 	private String configFile = "conf/server-config";
-	private Stack<Integer> passivePorts=new Stack<Integer>();
-	private int serverPort,maxConnection=0,commandChannelConnectionTimeOut=30000;
-	private boolean supportPassiveMode=false,havePassivePortSpecified=false;
-	private int i,startPort,endPort;
-	private String start,end;
+	
 	public MyServerConfig(Logger logger) 
 	{
 		super(logger);

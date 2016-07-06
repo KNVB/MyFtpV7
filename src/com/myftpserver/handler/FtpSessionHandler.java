@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.*;
+import com.myftpserver.abstracts.ServerConfiguration;
 import com.util.MessageBundle;
 
 import io.netty.channel.Channel;
@@ -40,7 +41,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private boolean isLogined=false;
 	private int activeDataPortNo=-1;
 	private MyFtpServer myFtpServer=null;
-	private ServerConfig serverConfig=null;
+	private ServerConfiguration serverConfig=null;
 	private MessageBundle messageBundle=null;
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
@@ -135,7 +136,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
      * Get Server Configuration object for retrieving server configuration setting
      * @return ServerConfig object
      */
-	public ServerConfig getServerConfig() 
+	public ServerConfiguration getServerConfig() 
 	{
 		return serverConfig;
 	}

@@ -1,5 +1,7 @@
 package com.myftpserver.abstracts;
 
+import java.util.Stack;
+
 import org.apache.logging.log4j.Logger;
 
 import com.util.MessageBundle;
@@ -28,7 +30,11 @@ public abstract class ServerConfiguration
 	/**
 	 * Message logger
 	 */
-	public Logger logger;
+	protected Logger logger;
+	protected int serverPort,maxConnection=0,commandChannelConnectionTimeOut=30000;
+	protected boolean supportPassiveMode=false,havePassivePortSpecified=false;
+
+	public Stack<Integer> passivePorts=new Stack<Integer>();
 	public ServerConfiguration(Logger logger)
 	{
 		this.logger=logger;

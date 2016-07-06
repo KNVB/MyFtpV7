@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.UserManager;
+import com.myftpserver.abstracts.UserManager;
 import com.myftpserver.handler.FtpSessionHandler;
 /*
  * Copyright 2004-2005 the original author or authors.

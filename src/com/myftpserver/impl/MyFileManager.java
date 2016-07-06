@@ -26,8 +26,8 @@ import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.exception.PathNotFoundException;
 import com.myftpserver.exception.QuotaExceedException;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
-import com.myftpserver.interfaces.UserManager;
+import com.myftpserver.abstracts.FileManager;
+import com.myftpserver.abstracts.UserManager;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
