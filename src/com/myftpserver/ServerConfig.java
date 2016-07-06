@@ -12,7 +12,6 @@ import com.myftpserver.interfaces.FileManager;
 import com.myftpserver.interfaces.UserManager;
 
 import org.apache.logging.log4j.Logger;
-
 /*
  * Copyright 2004-2005 the original author or authors.
  *
