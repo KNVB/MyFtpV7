@@ -36,7 +36,14 @@ import com.myftpserver.exception.PathNotFoundException;
  */
 public class STOR implements FtpCommandInterface
 {
-
+	/**
+	 *This command causes the server-DTP to accept the data transferred via the data connection and to store the data as a file at the server site.<br>
+	 *For detail information about STOR command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public STOR()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{

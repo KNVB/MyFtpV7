@@ -25,6 +25,14 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class XMKD extends MKD implements FtpCommandInterface  
 {
+	/**
+	 *Precursor for MKD<br>
+	 *For detail information about XMKD command,please refer <a href="https://tools.ietf.org/html/rfc775">RFC 775</a> 
+	 */
+	public XMKD()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

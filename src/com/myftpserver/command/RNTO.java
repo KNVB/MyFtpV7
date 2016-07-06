@@ -36,8 +36,8 @@ import com.myftpserver.exception.PathNotFoundException;
 public class RNTO implements FtpCommandInterface {
 
 	/**
-	 * This command specifies the new pathname of the file specified in the immediately preceding "rename from" command.<br>
-	 * For detail information about RNTO command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 *This command specifies the new pathname of the file specified in the immediately preceding "rename from" command.<br>
+	 *For detail information about RNTO command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
 	 */
 	public RNTO()
 	{

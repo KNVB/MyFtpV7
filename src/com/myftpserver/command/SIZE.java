@@ -32,6 +32,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class SIZE implements FtpCommandInterface
 {
+	/**
+	 *The FTP command, SIZE OF FILE (SIZE), is used to obtain the transfer size of a file from the server-FTP process.<br>
+	 *For detail information about SIZE command,please refer  <a href="https://tools.ietf.org/html/rfc3659">RFC 3659</a> 
+	 */
+	public SIZE()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

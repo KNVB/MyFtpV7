@@ -23,7 +23,13 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class XPWD extends PWD implements FtpCommandInterface  
 {
-
+	/**
+	 *Precursor for PWD<br>
+	 *For detail information about XPWD command,please refer <a href="https://tools.ietf.org/html/rfc775">RFC 775</a> 
+	 */
+	public XPWD()
+	{
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

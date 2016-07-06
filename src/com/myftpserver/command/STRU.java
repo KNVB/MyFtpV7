@@ -24,7 +24,13 @@ import com.util.Utility;
  */
 public class STRU implements com.myftpserver.interfaces.FtpCommandInterface
 {
-
+	/**
+	 *For detail information about STRU command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public STRU()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

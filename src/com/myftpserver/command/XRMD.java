@@ -24,6 +24,14 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class XRMD extends RMD implements FtpCommandInterface  
 {
+	/**
+	 *Precursor for RMD<br>
+	 *For detail information about XRMD command,please refer <a href="https://tools.ietf.org/html/rfc775">RFC 775</a>  
+	 */
+	public XRMD()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

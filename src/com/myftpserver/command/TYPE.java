@@ -26,6 +26,13 @@ import com.myftpserver.interfaces.FtpCommandInterface;
  */
 public class TYPE implements FtpCommandInterface 
 {
+	/**
+	 *For detail information about TYPE command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public TYPE()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub

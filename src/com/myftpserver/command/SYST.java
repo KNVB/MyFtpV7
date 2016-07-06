@@ -24,6 +24,14 @@ import com.myftpserver.handler.FtpSessionHandler;
  */ 
 public class SYST implements com.myftpserver.interfaces.FtpCommandInterface
 {
+	/**
+	 *This command is used to find out the type of operating system at the server.<br>
+	 *For detail information about STRU command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a> 
+	 */
+	public SYST()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) 
 	{

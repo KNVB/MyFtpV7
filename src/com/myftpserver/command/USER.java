@@ -26,6 +26,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 {
+	/**
+	 *This command will normally be the first command transmitted by the user after the control connections are made (some servers may require this).<br>
+	 *For detail information about USER command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a> 
+	 */
+	public USER()
+	{}
 	@Override
 	public void execute(FtpSessionHandler fs, String param) 
 	{

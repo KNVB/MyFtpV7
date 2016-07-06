@@ -27,6 +27,14 @@ import com.util.Utility;
  */
 public class STAT implements FtpCommandInterface 
 {
+	/**
+	 *This command shall cause a status response to be sent over the control connection in the form of a reply.<br>
+	 *For detail information about STAT command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 */
+	public STAT()
+	{
+		
+	}
 	@Override
 	public String helpMessage(FtpSessionHandler fs) {
 		// TODO Auto-generated method stub
