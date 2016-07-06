@@ -25,8 +25,7 @@ import com.myftpserver.handler.FtpSessionHandler;
 public class PWD implements com.myftpserver.interfaces.FtpCommandInterface {
 
 	/**
-	 *This command causes the name of the current working<br>
-     *directory to be returned in the reply.<br>
+	 *This command causes the name of the current working directory to be returned in the reply.<br>
      *For detail information about PWD command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
 	 */
 	public PWD()

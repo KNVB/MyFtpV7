@@ -32,10 +32,9 @@ import com.myftpserver.interfaces.UserManager;
 public class PASS implements FtpCommandInterface 
 {
 	/**
-	 *The argument field is a Telnet string specifying the user's<br>
-     *password.  This command must be immediately preceded by the<br>
-     *user name command, and, for some sites, completes the user's<br>
-     *identification for access control.<br>
+	 *The argument field is a Telnet string specifying the user's password.<br>
+     *This command must be immediately preceded by the user name command,<br>
+     *and, for some sites, completes the user's identification for access control.<br>
      *For detail information about PASS command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>  
 	 */
 	public PASS()
