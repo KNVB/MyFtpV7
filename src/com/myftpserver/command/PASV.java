@@ -3,11 +3,10 @@ package com.myftpserver.command;
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
-import com.myftpserver.interfaces.FtpCommandInterface;
-
 import java.net.InetSocketAddress;
-
 import org.apache.logging.log4j.Logger;
+import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.interfaces.FtpCommandInterface;
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -52,7 +51,7 @@ public class PASV implements FtpCommandInterface
 	{
 		int port;
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		ServerConfiguration serverConfig=fs.getServerConfig();
 		MyFtpServer server=fs.getServer();
 		String message=new String(),localIP=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
 		if (serverConfig.isSupportPassiveMode())

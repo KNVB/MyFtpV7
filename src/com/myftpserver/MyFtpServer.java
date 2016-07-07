@@ -137,6 +137,38 @@ public class MyFtpServer
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
+	 * Get next available passive port for data transfer
+	 * @return port no.<br>
+	 *         -1 when no. passive port is available.
+	 */
+	public synchronized int getNextPassivePort()
+	{
+		int nextPassivePort=-1;
+		if (serverConfig.isSupportPassiveMode())
+		{
+			if (serverConfig.isPassivePortSpecified())
+			{
+				if (passivePorts.size()>0)
+					nextPassivePort=passivePorts.pop();
+			}
+		}
+		return nextPassivePort;
+	}
+//-------------------------------------------------------------------------------------------	
+	/**
+	 * Return port no.&nbsp;to passive port pool
+	 * @param port the return passive port 
+	 */
+	public void returnPassivePort(int port) 
+	{
+		if (!passivePorts.contains(port))
+		{	
+			passivePorts.push(port);
+			logger.info("Passive Port:"+port+" return");
+		}
+	}	
+//-------------------------------------------------------------------------------------------	
+	/**
 	 *  start FTP server
 	 */
 	public void start()
