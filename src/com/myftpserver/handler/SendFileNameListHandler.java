@@ -51,13 +51,14 @@ public class SendFileNameListHandler extends SendHandler
 		this.remoteIp=fs.getClientIp();
 		//this.fileNameList=fileNameList;
 		this.fileNameList=fileNameList.toString().split("\r\n");
-		
 	}
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception 
 	{
 		if (fs.isPassiveModeTransfer)
+		{
 			startToSend(ctx);
+		}
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception 
@@ -73,7 +74,9 @@ public class SendFileNameListHandler extends SendHandler
 			closeChannel(ctx);
 		}
 		else
+		{	
 			ctx.writeAndFlush(Unpooled.copiedBuffer(fileNameList[index]+"\r\n",CharsetUtil.UTF_8));
+		}
 	}
 	
 	@Override

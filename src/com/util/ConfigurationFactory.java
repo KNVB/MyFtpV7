@@ -11,7 +11,6 @@ import com.myftpserver.abstracts.ServerConfiguration;
 
 public class ConfigurationFactory 
 {
-	
 	private Logger logger=null;
 	private FileInputStream fis=null;
 	PropertyResourceBundle bundle = null;

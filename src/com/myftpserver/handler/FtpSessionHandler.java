@@ -47,7 +47,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public boolean isPassiveModeTransfer=false;
 	private FtpCommandExecutor ftpCommandHandler=null; 
 	private File downloadFile=null,uploadTempFile=null, uploadFile=null;
-	private String userName=new String(),dataType="A",currentPath=new String();
+	private String userName=new String(),dataType="I",currentPath=new String();
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	/**
 	 * FTP session handler

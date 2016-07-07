@@ -31,17 +31,18 @@ public class MyServer<T>
 {
 	public static final int ACCEPT_MULTI_CONNECTION=1;
 	public static final int ACCEPT_SINGLE_CONNECTION=0;
-	private static Logger logger=null;
+	private Logger logger=null;
 	
 	private EventLoopGroup bossGroup=null;
     private EventLoopGroup workerGroup=null;
 	private ServerBootstrap bootStrap = null;
 	private InetSocketAddress inSocketAddress=null;
 //-------------------------------------------------------------------------------------------   
-	public MyServer(int serverType)
+	public MyServer(int serverType,Logger logger)
 	{
 		bootStrap = new ServerBootstrap();
 		workerGroup=new NioEventLoopGroup();
+		this.logger=logger;
 		if (serverType==ACCEPT_MULTI_CONNECTION)
 		{
 			bossGroup=new NioEventLoopGroup();

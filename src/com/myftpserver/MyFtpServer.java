@@ -60,7 +60,7 @@ public class MyFtpServer
 		
 		logger = LogManager.getLogger(MyFtpServer.class.getName()); 
 		logger.debug("Log4j2 is ready.");
-		myServer=new MyServer<Integer>(MyServer.ACCEPT_MULTI_CONNECTION);
+		myServer=new MyServer<Integer>(MyServer.ACCEPT_MULTI_CONNECTION,logger);
 		myServer.setChildHandlers(new CommandChannelInitializer(this,logger));
 		ConfigurationFactory cf=new ConfigurationFactory(logger);
 		serverConfig=cf.getServerConfiguration();
@@ -76,7 +76,7 @@ public class MyFtpServer
 			else
 				logger.info("NO passive port is/are specified!!!");
 		}
-		myServer.setBindAddress("127.0.0.1", serverConfig.getServerPort());
+		myServer.setBindAddress("10.53.11.32", serverConfig.getServerPort());
 	}
 //-------------------------------------------------------------------------------------------	
 	/**

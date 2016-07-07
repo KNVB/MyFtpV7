@@ -16,6 +16,9 @@ import io.netty.util.CharsetUtil;
 
 
 
+
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.PropertyResourceBundle;
@@ -273,6 +276,12 @@ public class Utility
 		} 
 		return result; 
 	}
+	/**
+	 * Instantiate a class from key
+	 * @param key
+	 * @param bundle
+	 * @return object
+	 */
 	public static final Constructor<?> getManager(String key,PropertyResourceBundle bundle)
 	{
 		@SuppressWarnings("rawtypes")
@@ -287,5 +296,40 @@ public class Utility
 			System.out.println(e.getMessage()+" not found.");
 		}
 		return null;				
-	}	
+	}
+	/**
+	 * Get all supporting raw command
+	 * @throws ClassNotFoundException 
+	 */
+	public static final String getAllSupportingCommand() throws ClassNotFoundException
+	{
+		int i=1;
+		File directory=null;
+		StringBuffer temp=new StringBuffer();
+		
+		String pckgname="com.myftpserver.command";
+		try { 
+		      directory=new File(Thread.currentThread().getContextClassLoader().getResource(pckgname.replace('.', '/')).getFile());
+		      for (String fileName :directory.list())
+		      {
+		    	  
+		    	  fileName =fileName.substring(0,fileName.lastIndexOf(".class"));
+		    	  if (i==10)
+		    	  {
+		    		 temp.append(fileName+"\r\n");
+		    		 i=1;
+		    	  }
+		    	  else
+		    	  { 
+		    		  temp.append(String.format("%1$-5s", fileName));
+		    		  i++;
+		    	  } 
+		      }
+		      return temp.toString();
+		    } 
+		catch(NullPointerException x) 
+		{ 
+		      throw new ClassNotFoundException(pckgname+" does not appear to be a valid package"); 
+		} 
+	}
 }

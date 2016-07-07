@@ -58,7 +58,7 @@ public class PassiveServer
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getLogger();
 		fs.setPassiveServer(this);
-		myServer=new MyServer<Integer>(MyServer.ACCEPT_SINGLE_CONNECTION);
+		myServer=new MyServer<Integer>(MyServer.ACCEPT_SINGLE_CONNECTION,logger);
 		myServer.setChildOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
 		myServer.setChildOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK,  1);
 		myServer.setBindAddress(localIP,port);
@@ -94,8 +94,9 @@ public class PassiveServer
 	{
 		ch.pipeline().remove("ReceiveHandler");
 		SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+		
 		ch.closeFuture().addListener(sendFileNameListHandler);
-		ch.pipeline().addLast(sendFileNameListHandler);		
+		ch.pipeline().addLast(sendFileNameListHandler);
 	}
 	/**
 	 * Set a channel for passive mode
@@ -111,6 +112,7 @@ public class PassiveServer
 	 */
 	public void stop()
 	{
+		myServer.stop();
 		myFtpServer.returnPassivePort(port);
 		logger.info("Passive Mode Server is shutdown gracefully.");
 		
