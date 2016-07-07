@@ -15,8 +15,11 @@ import io.netty.util.CharsetUtil;
 
 
 
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.PropertyResourceBundle;
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.net.NetworkInterface;
@@ -270,4 +273,19 @@ public class Utility
 		} 
 		return result; 
 	}
+	public static final Constructor<?> getManager(String key,PropertyResourceBundle bundle)
+	{
+		@SuppressWarnings("rawtypes")
+		Constructor c=null;
+		try
+		{
+			c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
+			return c;
+		}
+		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 
+		{
+			System.out.println(e.getMessage()+" not found.");
+		}
+		return null;				
+	}	
 }

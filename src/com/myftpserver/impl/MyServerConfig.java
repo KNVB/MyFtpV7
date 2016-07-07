@@ -2,11 +2,11 @@ package com.myftpserver.impl;
 import java.util.Locale;
 import java.io.IOException;
 
+import com.util.Utility;
 import com.util.MessageBundle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.logging.log4j.Logger;
@@ -170,7 +170,7 @@ public class MyServerConfig extends ServerConfiguration
 		FileManager fm=null;
 		try 
 		{
-			fm = (FileManager) getManager("fileManager.classname").newInstance(this.logger);
+			fm = (FileManager) Utility.getManager("fileManager.classname",bundle).newInstance(this.logger);
 		}
 		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
 		{
@@ -187,27 +187,12 @@ public class MyServerConfig extends ServerConfiguration
 		UserManager um=null;
 		try 
 		{
-			um = (UserManager) getManager("userManager.classname").newInstance(this.logger);
+			um = (UserManager) Utility.getManager("userManager.classname",bundle).newInstance(this.logger);
 		}
 		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
 		{
 			e.printStackTrace();
 		} 
 		return um;
-	}
-	private Constructor<?> getManager(String key)
-	{
-		@SuppressWarnings("rawtypes")
-		Constructor c=null;
-		try
-		{
-			c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
-			return c;
-		}
-		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 
-		{
-			System.out.println(e.getMessage()+" not found.");
-		}
-		return null;				
 	}
 }

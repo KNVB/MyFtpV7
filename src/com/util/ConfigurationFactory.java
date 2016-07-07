@@ -3,15 +3,11 @@ import java.io.IOException;
 import java.io.FileInputStream;
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.Constructor;
 import org.apache.logging.log4j.Logger;
 import java.util.PropertyResourceBundle;
 import java.lang.reflect.InvocationTargetException;
 
 import com.myftpserver.abstracts.ServerConfiguration;
-
-
-
 
 public class ConfigurationFactory 
 {
@@ -51,28 +47,12 @@ public class ConfigurationFactory
 		ServerConfiguration sc=null;
 		try 
 		{
-			sc = (ServerConfiguration) getManager("serverConfiguration.classname").newInstance(this.logger);
+			sc = (ServerConfiguration) Utility.getManager("serverConfiguration.classname",bundle).newInstance(this.logger);
 		}
 		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
 		{
 			e.printStackTrace();
 		} 
 		return sc;
-
-	}
-	private Constructor<?> getManager(String key)
-	{
-		@SuppressWarnings("rawtypes")
-		Constructor c=null;
-		try
-		{
-			c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
-			return c;
-		}
-		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 
-		{
-			System.out.println(e.getMessage()+" not found.");
-		}
-		return null;				
-	}
+	}	
 }
