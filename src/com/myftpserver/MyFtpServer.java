@@ -77,7 +77,8 @@ public class MyFtpServer
 			else
 				logger.info("NO passive port is/are specified!!!");
 		}
-		myServer.setBindAddress("10.53.11.32", serverConfig.getServerPort());
+		//myServer.setBindAddress("10.53.11.32", serverConfig.getServerPort());
+		myServer.setBindAddress("127.0.0.1", serverConfig.getServerPort());
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
