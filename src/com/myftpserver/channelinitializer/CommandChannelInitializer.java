@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.MyFtpServer;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandChannelClosureListener;
 
@@ -61,7 +61,7 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 		}
 		else
 		{
-			ServerConfiguration serverConfig=myFtpServer.getServerConfig();
+			ServerConfig serverConfig=myFtpServer.getServerConfig();
 			ch.closeFuture().addListener(new CommandChannelClosureListener(myFtpServer,remoteIp));
 			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(serverConfig.getCommandChannelConnectionTimeOut(), 30, 0));
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));

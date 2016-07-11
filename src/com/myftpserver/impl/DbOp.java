@@ -5,7 +5,7 @@ import com.util.MessageBundle;
 import com.myftpserver.exception.*;
 import com.myftpserver.abstracts.UserManager;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -69,7 +69,7 @@ public class DbOp
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
 		String userName=fs.getUserName();
-		ServerConfiguration serverConfig=fs.getServerConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		try
 		{
 			sql="select * from user where user_name=? and password=? and active=1";

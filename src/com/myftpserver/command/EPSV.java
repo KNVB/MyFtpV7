@@ -6,7 +6,7 @@ import com.myftpserver.MyFtpServer;
 import com.myftpserver.PassiveServer;
 import org.apache.logging.log4j.Logger;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
 /*
@@ -54,7 +54,7 @@ public class EPSV implements FtpCommandInterface
 	{
 		int port;
 		Logger logger=fs.getLogger();
-		ServerConfiguration serverConfig=fs.getServerConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		String message=new String(),localIp=new String();
 		MyFtpServer myFtpServer=fs.getServer();
 		if (serverConfig.isSupportPassiveMode())

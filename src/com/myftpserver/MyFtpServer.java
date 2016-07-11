@@ -1,14 +1,15 @@
 package com.myftpserver;
+
+import com.util.MyServer;
+import com.util.ConfigurationFactory;
+import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.channelinitializer.CommandChannelInitializer;
+
 import io.netty.channel.Channel;
 
 import java.io.File;
 import java.util.Stack;
-
-import com.myftpserver.abstracts.ServerConfiguration;
-import com.myftpserver.channelinitializer.CommandChannelInitializer;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.util.ConfigurationFactory;
-import com.util.MyServer;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +48,7 @@ public class MyFtpServer
 	private static Logger logger=null;
 	private Stack<Integer> passivePorts;
 	private static int connectionCount=0;
-	private ServerConfiguration serverConfig=null;
+	private ServerConfig serverConfig=null;
 //-------------------------------------------------------------------------------------------    
 	/**
      * FTP Server object
@@ -118,7 +119,7 @@ public class MyFtpServer
 	 * Get Configuration object
 	 * @return ServerConfiguration object
 	 */
-	public ServerConfiguration getServerConfig()
+	public ServerConfig getServerConfig()
 	{
 		return serverConfig;
 	}	

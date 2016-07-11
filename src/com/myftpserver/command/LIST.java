@@ -5,7 +5,7 @@ import com.util.Utility;
 import org.apache.logging.log4j.Logger;
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.NotADirectoryException;
@@ -55,7 +55,7 @@ public class LIST implements FtpCommandInterface
 		Logger logger=fs.getLogger();
 		String p[]=param.split(" ");
 		String clientPath=new String();
-		ServerConfiguration serverConfig=fs.getServerConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		StringBuffer resultList=new StringBuffer();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("param="+param);

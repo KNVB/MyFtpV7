@@ -1,5 +1,6 @@
 package com.myftpserver.abstracts;
 
+import java.net.UnknownHostException;
 import java.util.Stack;
 
 import org.apache.logging.log4j.Logger;
@@ -25,7 +26,7 @@ import com.util.MessageBundle;
  * @author SITO3
  *
  */
-public abstract class ServerConfiguration 
+public abstract class ServerConfig 
 {
 	/**
 	 * Message logger
@@ -35,7 +36,7 @@ public abstract class ServerConfiguration
 	protected boolean supportPassiveMode=false,havePassivePortSpecified=false;
 
 	public Stack<Integer> passivePorts=new Stack<Integer>();
-	public ServerConfiguration(Logger logger)
+	public ServerConfig(Logger logger)
 	{
 		this.logger=logger;
 	}
@@ -95,4 +96,9 @@ public abstract class ServerConfiguration
 	 * @return MessageBundle object
 	 */
 	public abstract MessageBundle getMessageBundle();
+	/**
+	 * Get all binding address(es)
+	 * @return Array of IP address
+	 */
+	public abstract String[] getAllBindAddress() throws UnknownHostException;
 }

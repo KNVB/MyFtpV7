@@ -18,6 +18,7 @@ import io.netty.util.CharsetUtil;
 
 
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -180,12 +181,12 @@ public class Utility
 	        return result;
 	}
 	/**
-	 * Get all IP address of the machine
+	 * Get all IP address of the current machine
 	 * http://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
-	 * @return Array of IP address
+	 * @return Array of IP addresses
 	 * @throws UnknownHostException
 	 */
-	public static final ArrayList<String> getLocalHostLANAddress() throws UnknownHostException
+	public static final String[] getLocalHostLANAddress() throws UnknownHostException
 	{
 		String ip;
 		ArrayList<String> result = new ArrayList<String>();
@@ -256,7 +257,7 @@ public class Utility
 			unknownHostException.initCause(e);
 			throw unknownHostException;
 		}
-		return result;
+		return (String[]) result.toArray();
 	}
 	/**
 	 * Extract IP address 

@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.abstracts.UserManager;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -54,7 +54,7 @@ public class PASS implements FtpCommandInterface
 	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
-		ServerConfiguration serverConfig=fs.getServerConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		String message=new String();
 		if ((param==null) || (param.isEmpty()))
 		{

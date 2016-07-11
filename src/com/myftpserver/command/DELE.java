@@ -7,7 +7,7 @@ import com.util.Utility;
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.NotAFileException;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -56,7 +56,7 @@ public class DELE implements FtpCommandInterface {
 	public void execute(FtpSessionHandler fs, String inPath)
 	{
 		Logger logger=fs.getLogger();
-		ServerConfiguration serverConfig=fs.getServerConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("param="+inPath+"|");
 		try

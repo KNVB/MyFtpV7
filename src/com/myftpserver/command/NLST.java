@@ -5,7 +5,7 @@ import java.nio.file.InvalidPathException;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -54,7 +54,7 @@ public class NLST implements FtpCommandInterface
 		boolean fullList=false;
 		Logger logger=fs.getLogger();
 		String clientPath=new String();
-		ServerConfiguration serverConfig=fs.getServerConfig();
+		ServerConfig serverConfig=fs.getServerConfig();
 		StringBuffer resultList=new StringBuffer();
 		FileManager fm=serverConfig.getFileManager();
 

@@ -7,6 +7,7 @@ import com.util.MessageBundle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.UnknownHostException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,7 @@ import java.util.PropertyResourceBundle;
 
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.abstracts.UserManager;
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 
 /*
 * Copyright 2004-2005 the original author or authors.
@@ -32,7 +33,7 @@ import com.myftpserver.abstracts.ServerConfiguration;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class MyServerConfig extends ServerConfiguration  
+public class MyServerConfig extends ServerConfig  
 {
 	private String start,end;
 	private int i,startPort,endPort;
@@ -194,5 +195,9 @@ public class MyServerConfig extends ServerConfiguration
 			e.printStackTrace();
 		} 
 		return um;
+	}
+	public String[] getAllBindAddress() throws UnknownHostException
+	{
+		return Utility.getLocalHostLANAddress();
 	}
 }

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.PropertyResourceBundle;
 import java.lang.reflect.InvocationTargetException;
 
-import com.myftpserver.abstracts.ServerConfiguration;
+import com.myftpserver.abstracts.ServerConfig;
 
 public class ConfigurationFactory 
 {
@@ -41,12 +41,12 @@ public class ConfigurationFactory
 			fis=null;
 		}		
 	}
-	public ServerConfiguration getServerConfiguration()
+	public ServerConfig getServerConfiguration()
 	{
-		ServerConfiguration sc=null;
+		ServerConfig sc=null;
 		try 
 		{
-			sc = (ServerConfiguration) Utility.getManager("serverConfiguration.classname",bundle).newInstance(this.logger);
+			sc = (ServerConfig) Utility.getManager("serverConfiguration.classname",bundle).newInstance(this.logger);
 		}
 		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
 		{
