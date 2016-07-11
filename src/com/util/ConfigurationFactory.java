@@ -1,14 +1,13 @@
 package com.util;
+import com.myftpserver.abstracts.ServerConfig;
+
 import java.io.IOException;
 import java.io.FileInputStream;
-
 import java.io.FileNotFoundException;
-import org.apache.logging.log4j.Logger;
 import java.util.PropertyResourceBundle;
 import java.lang.reflect.InvocationTargetException;
 
-import com.myftpserver.abstracts.ServerConfig;
-
+import org.apache.logging.log4j.Logger;
 /*
 * Copyright 2004-2005 the original author or authors.
 *
