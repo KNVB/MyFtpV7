@@ -1,12 +1,13 @@
 package com.myftpserver.handler;
 
 import java.io.File;
+import java.util.Locale;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.*;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.util.MessageBundle;
 
 import io.netty.channel.Channel;
@@ -41,7 +42,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	private boolean isLogined=false;
 	private int activeDataPortNo=-1;
 	private MyFtpServer myFtpServer=null;
-	private ServerConfig serverConfig=null;
+	private FtpServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
@@ -67,7 +68,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 
 		this.serverConfig=myFtpServer.getServerConfig();
 		this.ftpCommandHandler=new FtpCommandExecutor(this);
-		messageBundle=serverConfig.getMessageBundle();
+		messageBundle=new MessageBundle(new Locale(serverConfig.getServerLocale()));
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx)
@@ -136,7 +137,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
      * Get Server Configuration object for retrieving server configuration setting
      * @return ServerConfig object
      */
-	public ServerConfig getServerConfig() 
+	public FtpServerConfig getServerConfig() 
 	{
 		return serverConfig;
 	}

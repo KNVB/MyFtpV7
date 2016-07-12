@@ -5,7 +5,7 @@ import com.util.MessageBundle;
 import com.myftpserver.exception.*;
 import com.myftpserver.abstracts.UserManager;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -69,7 +69,7 @@ public class DbOp
 		ResultSet rs = null;
 		PreparedStatement stmt = null;
 		String userName=fs.getUserName();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		try
 		{
 			sql="select * from user where user_name=? and password=? and active=1";
@@ -89,7 +89,7 @@ public class DbOp
 			  if ((rs.getString("userLocale")!=null) && (!rs.getString("userLocale").equals(serverConfig.getServerLocale())))
 				  fs.setMessageBundle(new MessageBundle(new Locale(rs.getString("userLocale"))));
 			  else
-				  fs.setMessageBundle(serverConfig.getMessageBundle());
+				  fs.setMessageBundle(new MessageBundle(new Locale(serverConfig.getServerLocale())));
 			  if (rs.getString("diskSpaceUsed")!=null)
 			  {
 				  u.setDiskSpaceUsed(rs.getDouble("diskSpaceUsed"));

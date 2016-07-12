@@ -61,7 +61,8 @@ public class PassiveServer
 		myServer=new MyServer<Integer>(MyServer.ACCEPT_SINGLE_CONNECTION,logger);
 		myServer.setChildOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
 		myServer.setChildOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK,  1);
-		myServer.setBindAddress(localIP,port);
+		myServer.setBindAddress(localIP.split(","));
+		myServer.setServerPort(port);
 		myServer.setChildHandlers(new PassiveChannelInitializer(fs));
 		myServer.start();
 		logger.info("Passive Server listening " +localIP+":" + port);

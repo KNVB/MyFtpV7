@@ -1,7 +1,5 @@
 package com.util;
 
-import java.net.InetSocketAddress;
-
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
@@ -32,11 +30,11 @@ public class MyServer<T>
 	public static final int ACCEPT_MULTI_CONNECTION=1;
 	public static final int ACCEPT_SINGLE_CONNECTION=0;
 	private Logger logger=null;
-	
+	private int serverPort=21;
+	private String[] bindAddress= new String[]{};
 	private EventLoopGroup bossGroup=null;
     private EventLoopGroup workerGroup=null;
 	private ServerBootstrap bootStrap = null;
-	private InetSocketAddress inSocketAddress=null;
 //-------------------------------------------------------------------------------------------   
 	public MyServer(int serverType,Logger logger)
 	{
@@ -51,10 +49,14 @@ public class MyServer<T>
 		else
 			bootStrap.group(workerGroup);
         bootStrap.channel(NioServerSocketChannel.class);
-	}	
-	public void setBindAddress(String ipAddress,int port)
+	}
+	public void setServerPort(int port)
 	{
-		inSocketAddress=new InetSocketAddress(ipAddress,port); 
+		serverPort=port;
+	}
+	public void setBindAddress(String[] bindAddress)
+	{
+		this.bindAddress=bindAddress; 
 	}
 	public void setChildOption(ChannelOption<T> childOption, T value)
 	{
@@ -67,7 +69,18 @@ public class MyServer<T>
 	public void start()
 	{
 		bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-		bootStrap.bind(inSocketAddress);
+		//if no binding address is specified, bind "Wildcard" IP address
+		if (bindAddress.length==0) 
+		{
+			bootStrap.bind(serverPort);
+		}
+		else
+		{
+			for (String address:bindAddress)
+			{
+				bootStrap.bind(address,serverPort);
+			}
+		}
 	}
 	public void stop()
 	{

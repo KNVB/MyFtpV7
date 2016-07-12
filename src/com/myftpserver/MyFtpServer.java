@@ -2,7 +2,7 @@ package com.myftpserver;
 
 import com.util.MyServer;
 import com.util.ConfigurationFactory;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.channelinitializer.CommandChannelInitializer;
 
@@ -44,11 +44,12 @@ public class MyFtpServer
 	 * Specify the transfer is send a file listing to client
 	 */
 	public static final int SENDDIRLIST=2;
-	private MyServer<Integer> myServer=null;
+
 	private static Logger logger=null;
 	private Stack<Integer> passivePorts;
 	private static int connectionCount=0;
-	private ServerConfig serverConfig=null;
+	private FtpServerConfig serverConfig=null;
+	private MyServer<Integer> myServer=null;
 //-------------------------------------------------------------------------------------------    
 	/**
      * FTP Server object
@@ -77,8 +78,8 @@ public class MyFtpServer
 			else
 				logger.info("NO passive port is/are specified!!!");
 		}
-		//myServer.setBindAddress("10.53.11.32", serverConfig.getServerPort());
-		myServer.setBindAddress("127.0.0.1", serverConfig.getServerPort());
+		myServer.setServerPort(serverConfig.getServerPort());
+		myServer.setBindAddress(serverConfig.getAllBindAddress());
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
@@ -120,7 +121,7 @@ public class MyFtpServer
 	 * Get Configuration object
 	 * @return ServerConfiguration object
 	 */
-	public ServerConfig getServerConfig()
+	public FtpServerConfig getServerConfig()
 	{
 		return serverConfig;
 	}	

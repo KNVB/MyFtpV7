@@ -6,7 +6,7 @@ import java.nio.file.InvalidPathException;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.exception.PathNotFoundException;
@@ -52,7 +52,7 @@ public class RNFR implements FtpCommandInterface {
 	public void execute(FtpSessionHandler fs, String oldFileName) 
 	{
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		
 		try

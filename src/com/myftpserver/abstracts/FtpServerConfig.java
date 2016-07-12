@@ -1,11 +1,7 @@
 package com.myftpserver.abstracts;
 
-import java.net.UnknownHostException;
 import java.util.Stack;
-
 import org.apache.logging.log4j.Logger;
-
-import com.util.MessageBundle;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -26,17 +22,18 @@ import com.util.MessageBundle;
  * @author SITO3
  *
  */
-public abstract class ServerConfig 
+public abstract class FtpServerConfig 
 {
 	/**
 	 * Message logger
 	 */
 	protected Logger logger;
-	protected int serverPort,maxConnection=0,commandChannelConnectionTimeOut=30000;
+	protected String serverLocale="en_us";
+	protected int serverPort=21,maxConnection=1,commandChannelConnectionTimeOut=30000;
 	protected boolean supportPassiveMode=false,havePassivePortSpecified=false;
 
 	public Stack<Integer> passivePorts=new Stack<Integer>();
-	public ServerConfig(Logger logger)
+	public FtpServerConfig(Logger logger)
 	{
 		this.logger=logger;
 	}
@@ -55,11 +52,6 @@ public abstract class ServerConfig
 	 * @return the port no. that server is listening
 	 */
 	public abstract int getServerPort();
-	/**
-	 * Get Default FTP server encoding setting 
-	 * @return FTP server encoding
-	 */	
-	public abstract String getEncoding();
 	/**
 	 *Get properly message text for specified return code 
 	 * @param key the message key
@@ -92,13 +84,8 @@ public abstract class ServerConfig
 	 */
 	public abstract String getServerLocale();
 	/**
-	 * Get FTP message bundle object to FTP session for properly message return to user. 
-	 * @return MessageBundle object
-	 */
-	public abstract MessageBundle getMessageBundle();
-	/**
 	 * Get all binding address(es)
 	 * @return Array of IP address
 	 */
-	public abstract String[] getAllBindAddress() throws UnknownHostException;
+	public abstract String[] getAllBindAddress();
 }

@@ -1,22 +1,20 @@
 package com.myftpserver.impl;
-import java.util.Locale;
-import java.io.IOException;
 
 import com.util.Utility;
 import com.util.MessageBundle;
 
+import java.util.Locale;
+import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.logging.log4j.Logger;
-
 import java.util.PropertyResourceBundle;
+import java.util.MissingResourceException;
+import java.lang.reflect.InvocationTargetException;
+import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.abstracts.UserManager;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 
 /*
 * Copyright 2004-2005 the original author or authors.
@@ -33,66 +31,27 @@ import com.myftpserver.abstracts.ServerConfig;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-public class MyServerConfig extends ServerConfig  
+public class MyServerConfig_bad extends FtpServerConfig  
 {
 	private String start,end;
 	private int i,startPort,endPort;
 	private String encoding=null;
 	private String serverLocale=null;
+	private String bindingAddressString=null;
 	
 	private FileInputStream fis=null;
 	private MessageBundle messageBundle;
 	private PropertyResourceBundle bundle=null;
-	private String configFile = "conf/server-config";
 	
-	public MyServerConfig(Logger logger) 
+	private String configFile = "conf/server-config";
+	public MyServerConfig_bad(Logger logger) 
 	{
 		super(logger);
 		try
 		{
 			fis=new FileInputStream(configFile);
 			bundle = new PropertyResourceBundle(fis);
-			logger.debug("Server Configuration is loaded successfully.");
-			serverLocale=bundle.getString("serverLocale");
-			messageBundle=new MessageBundle(new Locale(serverLocale));
-			serverPort=Integer.parseInt(bundle.getString("port"));
-			maxConnection=Integer.parseInt(bundle.getString("maxConnection"));
-			commandChannelConnectionTimeOut=Integer.parseInt(bundle.getString("commandChannelConnectionTimeOut"));
-			supportPassiveMode=Boolean.parseBoolean(bundle.getString("supportPassiveMode"));
-			if (supportPassiveMode)
-			{
-				if (bundle.containsKey("passivePortRange"))
-				{
-					for(String tempStr:bundle.getString("passivePortRange").split(","))
-					{
-						try
-						{   i=tempStr.indexOf("-");
-							if (i>-1)
-							{
-								start=tempStr.substring(0,i);
-								end=tempStr.substring(i+1);
-								//logger.debug("Start port="+start+",end port="+end);
-								startPort=Integer.parseInt(start);
-								endPort=Integer.parseInt(end);
-								if (startPort<endPort)
-								{
-									for (i=startPort;i<=endPort;i++)
-									{
-										passivePorts.add(i);
-									}
-								}
-							}	
-							else	
-								passivePorts.add(Integer.parseInt(tempStr));
-						}
-						catch (NumberFormatException ne)
-						{
-							
-						}
-					}
-					havePassivePortSpecified=(passivePorts.size()>0);
-				}
-			}
+			logger.debug("FTP Server Configuration is loaded successfully.");
 			fis.close();
 		}
 		catch (FileNotFoundException e) 
@@ -124,14 +83,17 @@ public class MyServerConfig extends ServerConfig
 	@Override
 	public int getServerPort() 
 	{
-		return serverPort;
+		if (serverPort>-1)
+			return serverPort;
+		else
+			return 21;
 	}
 
-	@Override
+	/*@Override
 	public String getEncoding() 
 	{
 		return encoding;
-	}
+	}*/
 
 	@Override
 	public String getFtpMessage(String key) 
@@ -158,10 +120,10 @@ public class MyServerConfig extends ServerConfig
 	}
 
 	@Override
-	public MessageBundle getMessageBundle() 
+	/*public MessageBundle getMessageBundle() 
 	{
 		return this.messageBundle;
-	}
+	}*/
 	/**
 	 * Get an file manager object
 	 * @return an file manager object
@@ -196,8 +158,11 @@ public class MyServerConfig extends ServerConfig
 		} 
 		return um;
 	}
-	public String[] getAllBindAddress() throws UnknownHostException
+	public String[] getAllBindAddress()
 	{
-		return Utility.getLocalHostLANAddress();
+		String[] bindAddress = new String[]{};
+		if (bindingAddressString!=null)
+			bindAddress=bindingAddressString.split(",");
+		return bindAddress;
 	}
 }

@@ -6,7 +6,7 @@ import java.nio.file.InvalidPathException;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.NotAFileException;
@@ -54,7 +54,7 @@ public class RNTO implements FtpCommandInterface {
 	{
 		String newFileName;
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("inPath="+inPath+"|");
 		newFileName=inPath;

@@ -58,7 +58,6 @@ public class HELP implements FtpCommandInterface
 		} 
 		catch (ClassNotFoundException e) 
 		{
-			// TODO Auto-generated catch block
 			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),e.getMessage());
 		}
 		

@@ -5,7 +5,7 @@ import com.myftpserver.*;
 import com.myftpserver.handler.*;
 import java.net.InetSocketAddress;
 import org.apache.logging.log4j.Logger;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
 /*
@@ -51,7 +51,7 @@ public class PASV implements FtpCommandInterface
 	{
 		int port;
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		MyFtpServer server=fs.getServer();
 		String message=new String(),localIP=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
 		if (serverConfig.isSupportPassiveMode())

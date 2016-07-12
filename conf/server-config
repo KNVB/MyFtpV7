@@ -1,8 +1,8 @@
 #FTP Server Configurations
 fileManager.classname=com.myftpserver.impl.MyFileManager
 userManager.classname=com.myftpserver.impl.MyUserManager
-serverConfiguration.classname=com.myftpserver.impl.MyServerConfig
-port=21
+serverConfiguration.classname=com.myftpserver.impl.MyFtpServerConfig
+#port=21
 maxConnection=10
 supportPassiveMode=true
 #passivePortRange=1234,4567-4576,4466

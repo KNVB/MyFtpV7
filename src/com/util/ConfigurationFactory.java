@@ -1,5 +1,5 @@
 package com.util;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -55,12 +55,12 @@ public class ConfigurationFactory
 			fis=null;
 		}		
 	}
-	public ServerConfig getServerConfiguration()
+	public FtpServerConfig getServerConfiguration()
 	{
-		ServerConfig sc=null;
+		FtpServerConfig sc=null;
 		try 
 		{
-			sc = (ServerConfig) Utility.getManager("serverConfiguration.classname",bundle).newInstance(this.logger);
+			sc = (FtpServerConfig) Utility.getManager("serverConfiguration.classname",bundle).newInstance(this.logger);
 		}
 		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
 		{

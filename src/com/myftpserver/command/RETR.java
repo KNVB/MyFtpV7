@@ -7,7 +7,7 @@ import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.interfaces.FtpCommandInterface;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
 
@@ -52,7 +52,7 @@ public class RETR implements FtpCommandInterface
 	public void execute(FtpSessionHandler fs, String inPath) 
 	{
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("inPath="+inPath+"|");
 		try 

@@ -3,7 +3,7 @@ package com.myftpserver.command;
 import java.nio.file.InvalidPathException;
 
 import com.util.*;
-import com.myftpserver.abstracts.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.exception.*;
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
@@ -49,7 +49,7 @@ public class SIZE implements FtpCommandInterface
 	public void execute(FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		String message=new String();
 		try 
