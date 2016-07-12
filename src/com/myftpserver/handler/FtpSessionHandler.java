@@ -33,7 +33,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author SITO3
  *
  */
-public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
+public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 {
 	private User user;
 	private Channel ch;

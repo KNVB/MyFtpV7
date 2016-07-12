@@ -30,6 +30,11 @@ import org.apache.logging.log4j.core.config.Configurator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * 
+ * @author SITO3
+ *
+ */
 public class MyFtpServer 
 {
 	/**

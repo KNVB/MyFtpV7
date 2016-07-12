@@ -6,10 +6,10 @@ ftpServerConfig.classname=com.myftpserver.impl.MyFtpServerConfig
 maxConnection=10
 supportPassiveMode=true
 #passivePortRange=1234,4567-4576,4466
-#passivePortRange=1232-1234
+passivePortRange=1232-1234
 #client connection time out in second
-#commandChannelConnectionTimeOut=900
-commandChannelConnectionTimeOut=10
+commandChannelConnectionTimeOut=900
+#commandChannelConnectionTimeOut=10
 serverLocale=en_us
 #serverLocale=zh_tw
 bindAddress=127.0.0.1,10.53.11.32
