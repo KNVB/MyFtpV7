@@ -78,6 +78,7 @@ public class PASS implements FtpCommandInterface
 			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
 			{
 				Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),e.getMessage());
+				//Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage(e.getMessage()));
 			} 
 		}
 	}

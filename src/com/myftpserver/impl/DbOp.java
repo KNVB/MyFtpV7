@@ -109,7 +109,7 @@ public class DbOp
 		if (result!=0)
 		{
 			u=null;
-			throw new LoginFailureException(serverConfig.getFtpMessage("530_Invalid_Login")); 
+			throw new LoginFailureException(fs.getFtpMessage("530_Invalid_Login")); 
 		}
 		return u;
 	}

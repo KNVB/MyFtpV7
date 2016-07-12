@@ -73,7 +73,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	@Override
 	public void channelActive(ChannelHandlerContext ctx)
 	{
-		Utility.sendMessageToClient(ch,logger,clientIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
+		Utility.sendMessageToClient(ch,logger,clientIp,"220 "+messageBundle.getMessage("Greeting_Message"));
 	}
 	/**
 	 * User input command event handler
