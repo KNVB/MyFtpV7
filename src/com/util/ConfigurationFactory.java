@@ -60,7 +60,7 @@ public class ConfigurationFactory
 		FtpServerConfig sc=null;
 		try 
 		{
-			sc = (FtpServerConfig) Utility.getManager("serverConfiguration.classname",bundle).newInstance(this.logger);
+			sc = (FtpServerConfig) Utility.getManager("ftpServerConfig.classname",bundle).newInstance(this.logger);
 		}
 		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
 		{

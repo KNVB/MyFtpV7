@@ -36,6 +36,11 @@ public class MyServer<T>
     private EventLoopGroup workerGroup=null;
 	private ServerBootstrap bootStrap = null;
 //-------------------------------------------------------------------------------------------   
+	/**
+	 * It is a standard server object
+	 * @param serverType  
+	 * @param logger message logger
+	 */
 	public MyServer(int serverType,Logger logger)
 	{
 		bootStrap = new ServerBootstrap();
@@ -50,38 +55,67 @@ public class MyServer<T>
 			bootStrap.group(workerGroup);
         bootStrap.channel(NioServerSocketChannel.class);
 	}
+	/**
+	 * Server listening port
+	 * @param port no. that server to listen
+	 */
 	public void setServerPort(int port)
 	{
 		serverPort=port;
 	}
+	/**
+	 * Set serve binding address
+	 * @param bindAddress
+	 */
 	public void setBindAddress(String[] bindAddress)
 	{
 		this.bindAddress=bindAddress; 
 	}
+	/**
+	 * Set the child option
+	 * @param childOption
+	 * @param value
+	 */
 	public void setChildOption(ChannelOption<T> childOption, T value)
 	{
 		bootStrap.childOption(childOption, value);
 	}
+	/**
+	 * Set the child handler
+	 * @param ci child handler
+	 */
 	public void setChildHandlers(ChannelHandler  ci)
 	{
 		bootStrap.childHandler(ci);
 	}
+	/**
+	 * Start the server
+	 */
 	public void start()
 	{
 		bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-		//if no binding address is specified, bind "Wildcard" IP address
+		/*
+		 * if no binding address is specified, bind "Wildcard" IP address.
+		 * https://docs.oracle.com/javase/7/docs/api/java/net/InetSocketAddress.html
+		 */
 		if (bindAddress.length==0) 
 		{
 			bootStrap.bind(serverPort);
 		}
 		else
 		{
+			/*
+			 * Looping through binding address array, bind it one by one.
+			 */
 			for (String address:bindAddress)
 			{
 				bootStrap.bind(address,serverPort);
 			}
 		}
 	}
+	/**
+	 * Stop the server
+	 */
 	public void stop()
 	{
 		if (bossGroup!=null)

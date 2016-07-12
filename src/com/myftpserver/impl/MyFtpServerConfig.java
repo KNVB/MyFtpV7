@@ -40,10 +40,50 @@ public class MyFtpServerConfig extends FtpServerConfig
 		super(logger);
 		try
 		{
+			String start,end;
+			int i,startPort,endPort;
 			fis=new FileInputStream(configFile);
 			bundle = new PropertyResourceBundle(fis);
 			logger.debug("FTP Server Configuration is loaded successfully.");
 			fis.close();
+			if (bundle.containsKey("supportPassiveMode"))
+			{	
+				supportPassiveMode=Boolean.parseBoolean(bundle.getString("supportPassiveMode"));
+			}
+			if (supportPassiveMode)
+			{
+				if (bundle.containsKey("passivePortRange"))
+				{
+					for(String tempStr:bundle.getString("passivePortRange").split(","))
+					{
+						try
+						{   i=tempStr.indexOf("-");
+							if (i>-1)
+							{
+								start=tempStr.substring(0,i);
+								end=tempStr.substring(i+1);
+								//logger.debug("Start port="+start+",end port="+end);
+								startPort=Integer.parseInt(start);
+								endPort=Integer.parseInt(end);
+								if (startPort<endPort)
+								{
+									for (i=startPort;i<=endPort;i++)
+									{
+										passivePorts.add(i);
+									}
+								}
+							}	
+							else	
+								passivePorts.add(Integer.parseInt(tempStr));
+						}
+						catch (NumberFormatException ne)
+						{
+							
+						}
+					}
+					havePassivePortSpecified=(passivePorts.size()>0);
+				}
+			}
 		}
 		catch (FileNotFoundException e) 
 		{
@@ -62,46 +102,6 @@ public class MyFtpServerConfig extends FtpServerConfig
 	@Override
 	public boolean isSupportPassiveMode() 
 	{
-		String start,end;
-		int i,startPort,endPort;
-		if (bundle.containsKey("supportPassiveMode"))
-		{	
-			supportPassiveMode=Boolean.parseBoolean(bundle.getString("supportPassiveMode"));
-		}
-		if (supportPassiveMode)
-		{
-			if (bundle.containsKey("passivePortRange"))
-			{
-				for(String tempStr:bundle.getString("passivePortRange").split(","))
-				{
-					try
-					{   i=tempStr.indexOf("-");
-						if (i>-1)
-						{
-							start=tempStr.substring(0,i);
-							end=tempStr.substring(i+1);
-							//logger.debug("Start port="+start+",end port="+end);
-							startPort=Integer.parseInt(start);
-							endPort=Integer.parseInt(end);
-							if (startPort<endPort)
-							{
-								for (i=startPort;i<=endPort;i++)
-								{
-									passivePorts.add(i);
-								}
-							}
-						}	
-						else	
-							passivePorts.add(Integer.parseInt(tempStr));
-					}
-					catch (NumberFormatException ne)
-					{
-						
-					}
-				}
-				havePassivePortSpecified=(passivePorts.size()>0);
-			}
-		}
 		return supportPassiveMode; 
 	}
 
@@ -186,7 +186,7 @@ public class MyFtpServerConfig extends FtpServerConfig
 		String[] bindAddress=new String[]{};
 		if (bundle.containsKey("bindAddress"))
 			bindAddress=bundle.getString("bindAddress").split(",");
-		return bindAddress;
+		return bindAddress; 
 	}
 
 }

@@ -33,6 +33,10 @@ public abstract class FtpServerConfig
 	protected boolean supportPassiveMode=false,havePassivePortSpecified=false;
 
 	public Stack<Integer> passivePorts=new Stack<Integer>();
+	/**
+	 * FTP server configuration interface
+	 * @param logger Message logger
+	 */
 	public FtpServerConfig(Logger logger)
 	{
 		this.logger=logger;
