@@ -5,15 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.abstracts.FileManager;
-import com.myftpserver.abstracts.FtpServerConfig;
-import com.myftpserver.abstracts.UserManager;
-import com.util.MessageBundle;
 import com.util.Utility;
+import com.util.MessageBundle;
+import com.myftpserver.abstracts.FileManager;
+import com.myftpserver.abstracts.UserManager;
+import com.myftpserver.abstracts.FtpServerConfig;
+
 /*
 * Copyright 2004-2005 the original author or authors.
 *
@@ -31,13 +33,23 @@ import com.util.Utility;
 */
 public class MyFtpServerConfig extends FtpServerConfig 
 {
+	private FileManager fm=null;
+	private UserManager um=null;
 	private FileInputStream fis=null;
 	private MessageBundle ftpMessageBundle;
 	private PropertyResourceBundle bundle=null;
 	private String configFile = "conf/server-config";
+	/**
+	 *  MyFtpServerConfig is a concrete subclass of {@link com.myftpserver.abstracts.FtpServerConfig}
+	 * @param logger
+	 */
 	public MyFtpServerConfig(Logger logger) 
 	{
 		super(logger);
+	}
+	public int init()
+	{	
+		int initResult=FtpServerConfig.INIT_OK;
 		try
 		{
 			String start,end;
@@ -46,6 +58,9 @@ public class MyFtpServerConfig extends FtpServerConfig
 			bundle = new PropertyResourceBundle(fis);
 			logger.debug("FTP Server Configuration is loaded successfully.");
 			fis.close();
+			um = (UserManager) Utility.getObject("userManager.classname",bundle).newInstance(this.logger);
+			fm = (FileManager) Utility.getObject("fileManager.classname",bundle).newInstance(this.logger);
+
 			if (bundle.containsKey("supportPassiveMode"))
 			{	
 				supportPassiveMode=Boolean.parseBoolean(bundle.getString("supportPassiveMode"));
@@ -83,20 +98,33 @@ public class MyFtpServerConfig extends FtpServerConfig
 					}
 					havePassivePortSpecified=(passivePorts.size()>0);
 				}
-			}
+			}			
 		}
 		catch (FileNotFoundException e) 
 		{
+			initResult=FtpServerConfig.INIT_FAIL;
 			logger.info("Config. file not found.");
 		} 
 		catch (IOException e) 
 		{
+			initResult=FtpServerConfig.INIT_FAIL;
 			logger.info("An exception occur when loading config. file.");
+		} 
+	    catch (InstantiationException |IllegalAccessException |IllegalArgumentException |InvocationTargetException e) 
+		{
+	    	initResult=FtpServerConfig.INIT_FAIL;
+	    	logger.debug(e.getMessage());
+		} 
+		catch (NoSuchMethodException |SecurityException |ClassNotFoundException|MissingResourceException e) 
+		{
+	    	initResult=FtpServerConfig.INIT_FAIL;
+	    	logger.debug(e.getMessage());
 		}
 		finally
 		{
 			fis=null;
-		}		
+		}	
+		return initResult;
 	}
 
 	@Override
@@ -144,30 +172,12 @@ public class MyFtpServerConfig extends FtpServerConfig
 	@Override
 	public UserManager getUserManager() 
 	{
-		UserManager um=null;
-		try 
-		{
-				um = (UserManager) Utility.getManager("userManager.classname",bundle).newInstance(this.logger);
-		} 
-		catch (InstantiationException | IllegalAccessException| IllegalArgumentException | InvocationTargetException e) 
-		{
-				logger.debug(e.getMessage());
-		}
 		return um;
 	}
 
 	@Override
 	public FileManager getFileManager() 
 	{
-		FileManager fm=null;
-		try 
-		{
-				fm = (FileManager) Utility.getManager("fileManager.classname",bundle).newInstance(this.logger);
-		} 
-		catch (InstantiationException | IllegalAccessException| IllegalArgumentException | InvocationTargetException e) 
-		{
-			logger.debug(e.getMessage());
-		}
 		return fm;
 	}
 

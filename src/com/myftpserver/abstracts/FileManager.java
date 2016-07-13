@@ -50,7 +50,7 @@ public abstract class FileManager
 	 */
 	protected Logger logger;
 	/**
-	 * File Manager interface
+	 * The FileManager class is an abstract class that provide method for FTP user to manipulate the file or folder in FTP server 
 	 * @param logger Message logger
 	 */
 	public FileManager(Logger logger)

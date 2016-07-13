@@ -58,14 +58,15 @@ public class ConfigurationFactory
 	public FtpServerConfig getServerConfiguration()
 	{
 		FtpServerConfig sc=null;
-		try 
-		{
-			sc = (FtpServerConfig) Utility.getManager("ftpServerConfig.classname",bundle).newInstance(this.logger);
+		try {
+			sc = (FtpServerConfig) Utility.getObject("ftpServerConfig.classname",bundle).newInstance(this.logger);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException
+				| ClassNotFoundException e) {
+			
+			logger.debug(e.getMessage());
 		}
-		catch (IllegalAccessException|InstantiationException|IllegalArgumentException|InvocationTargetException e) 
-		{
-			e.printStackTrace();
-		} 
 		return sc;
 	}	
 }

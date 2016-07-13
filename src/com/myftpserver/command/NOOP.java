@@ -28,7 +28,7 @@ public class NOOP implements FtpCommandInterface {
 
 	/**
 	 * This command does not affect any parameters or previously<br>
-     * entered commands. It specifies no action other than that the<br>
+     * entered commands.It specifies no action other than that the<br>
      * server send an OK reply.<br>
 	 * For detail information about NOOP command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>     
 	 */

@@ -50,14 +50,20 @@ public class MyFtpServer
 	 */
 	public static final int SENDDIRLIST=2;
 
+	
+	
 	private static Logger logger=null;
-	private Stack<Integer> passivePorts;
 	private static int connectionCount=0;
+	
+	public int initResult=FtpServerConfig.INIT_FAIL;
+
+	private Stack<Integer> passivePorts;
 	private FtpServerConfig serverConfig=null;
 	private MyServer<Integer> myServer=null;
 //-------------------------------------------------------------------------------------------    
 	/**
      * FTP Server object
+	 * @throws Exception 
      */
 	public MyFtpServer()
 	{
@@ -71,20 +77,24 @@ public class MyFtpServer
 		myServer.setChildHandlers(new CommandChannelInitializer(this,logger));
 		ConfigurationFactory cf=new ConfigurationFactory(logger);
 		serverConfig=cf.getServerConfiguration();
-		logger.info("Server locale="+ serverConfig.getServerLocale());
-		logger.info("support passive mode="+serverConfig.isSupportPassiveMode());
-		if (serverConfig.isSupportPassiveMode()) 
+		initResult=serverConfig.init();
+		if (initResult==FtpServerConfig.INIT_OK)
 		{
-			if (serverConfig.isPassivePortSpecified())
+			logger.info("Server locale="+ serverConfig.getServerLocale());
+			logger.info("support passive mode="+serverConfig.isSupportPassiveMode());
+			if (serverConfig.isSupportPassiveMode()) 
 			{
-				passivePorts=serverConfig.passivePorts;
-				logger.info("Available passive port:"+passivePorts.toString());
+				if (serverConfig.isPassivePortSpecified())
+				{
+					passivePorts=serverConfig.passivePorts;
+					logger.info("Available passive port:"+passivePorts.toString());
+				}
+				else
+					logger.info("NO passive port is/are specified!!!");
 			}
-			else
-				logger.info("NO passive port is/are specified!!!");
+			myServer.setServerPort(serverConfig.getServerPort());
+			myServer.setBindAddress(serverConfig.getAllBindAddress());			
 		}
-		myServer.setServerPort(serverConfig.getServerPort());
-		myServer.setBindAddress(serverConfig.getAllBindAddress());
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
@@ -196,10 +206,12 @@ public class MyFtpServer
 		Configurator.shutdown(context);
 	}
 //-------------------------------------------------------------------------------------------	
-	public static void main(String[] args) 
+	public static void main(String[] args)  
 	{
-		MyFtpServer m=new MyFtpServer();
-		m.start();
+		MyFtpServer m;
+		m = new MyFtpServer();
+		if (m.initResult==FtpServerConfig.INIT_OK)
+			m.start();
 	}
 
 }

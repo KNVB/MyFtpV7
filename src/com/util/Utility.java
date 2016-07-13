@@ -2,22 +2,13 @@ package com.util;
 
 import com.myftpserver.*;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.SessionClosureListener;
-//import com.myftpserver.listener.TransferExceptionListener;
-
+import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.TransferExceptionListener;
 
 import io.netty.channel.Channel;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
-
-
-
-
-
-
-
 
 import java.io.File;
 import java.io.IOException;
@@ -278,28 +269,23 @@ public class Utility
 		return result; 
 	}
 	/**
-	 * Instantiate a class from key
+	 * Instantiate a class from key of a bundle
 	 * @param key
 	 * @param bundle
 	 * @return object
+	 * @throws ClassNotFoundException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
 	 */
-	public static final Constructor<?> getManager(String key,PropertyResourceBundle bundle)
+	public static final Constructor<?> getObject(String key,PropertyResourceBundle bundle) throws NoSuchMethodException, SecurityException, ClassNotFoundException
 	{
 		@SuppressWarnings("rawtypes")
 		Constructor c=null;
-		try
-		{
-			c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
-			return c;
-		}
-		catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) 
-		{
-			System.out.println(e.getMessage()+" not found.");
-		}
-		return null;				
+		c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
+		return c;
 	}
 	/**
-	 * Get all supporting raw command
+	 * Get all supporting raw FTP command
 	 * @throws ClassNotFoundException 
 	 */
 	public static final String getAllSupportingCommand() throws ClassNotFoundException

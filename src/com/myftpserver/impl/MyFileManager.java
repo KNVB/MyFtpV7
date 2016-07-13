@@ -51,7 +51,7 @@ import com.myftpserver.abstracts.UserManager;
 public class MyFileManager extends FileManager 
 {
 	/**
-	 * An File Manager implementation
+	 * MyFileManager is a concrete subclass of {@link com.myftpserver.abstracts.FileManager}
 	 * @param logger Message logger
 	 */
 	public MyFileManager(Logger logger) 

@@ -1,6 +1,7 @@
 package com.myftpserver.abstracts;
 
 import java.util.Stack;
+
 import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -25,16 +26,23 @@ import org.apache.logging.log4j.Logger;
 public abstract class FtpServerConfig 
 {
 	/**
-	 * Message logger
+	 * It indicated the FTP server configuration file is loaded successfully
 	 */
+	public static final int INIT_OK=0;
+	/**
+	 * It indicated there are something wrong when loading  FTP server configuration file
+	 */
+	public static final int INIT_FAIL=1;
+	
 	protected Logger logger;
 	protected String serverLocale="en_us";
+	
 	protected int serverPort=21,maxConnection=1,commandChannelConnectionTimeOut=30000;
 	protected boolean supportPassiveMode=false,havePassivePortSpecified=false;
 
 	public Stack<Integer> passivePorts=new Stack<Integer>();
 	/**
-	 * FTP server configuration interface
+	 * The FtpServerConfig  class is an abstract class that provide method for FTP Server Configuration management
 	 * @param logger Message logger
 	 */
 	public FtpServerConfig(Logger logger)
@@ -92,4 +100,5 @@ public abstract class FtpServerConfig
 	 * @return Array of IP address
 	 */
 	public abstract String[] getAllBindAddress();
+	public abstract int init();
 }

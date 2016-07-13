@@ -38,7 +38,7 @@ public class MyUserManager extends UserManager
 	String strSql=new String();
 	ArrayList<Object> values=null;
 	/**
-	 * An File Manager implementation
+	 * MyUserManager is a concrete subclass of {@link com.myftpserver.abstracts.UserManager}
 	 * @param logger Message logger
 	 */
 	public MyUserManager(Logger logger) 

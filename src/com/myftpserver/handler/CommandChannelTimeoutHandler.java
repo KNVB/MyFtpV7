@@ -29,6 +29,11 @@ public class CommandChannelTimeoutHandler extends ChannelDuplexHandler
 {
 	Logger logger;
 	String remoteIp;
+	/**
+	 * It is used to handle Command Channel event.
+	 * @param l Message logger
+	 * @param remoteIp The remote end of time out channel {@link io.netty.channel.Channel}
+	 */
 	public CommandChannelTimeoutHandler (Logger l, String remoteIp)
 	{
 		this.logger=l;
