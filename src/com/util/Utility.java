@@ -172,7 +172,7 @@ public class Utility
 	        return result;
 	}
 	/**
-	 * Get all IP address of the current machine
+	 * Get all IP address of the current machine.<br>
 	 * http://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
 	 * @return Array of IP addresses
 	 * @throws UnknownHostException
@@ -270,8 +270,8 @@ public class Utility
 	}
 	/**
 	 * Instantiate a class from key of a bundle
-	 * @param key
-	 * @param bundle
+	 * @param key 
+	 * @param bundle Resource bundle
 	 * @return object
 	 * @throws ClassNotFoundException 
 	 * @throws SecurityException 
