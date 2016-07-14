@@ -54,9 +54,7 @@ public class MyFtpServer
 	
 	private static Logger logger=null;
 	private static int connectionCount=0;
-	
-	public int initResult=FtpServerConfig.INIT_FAIL;
-
+	private boolean serverInitOk=false;
 	private Stack<Integer> passivePorts;
 	private FtpServerConfig serverConfig=null;
 	private MyServer<Integer> myServer=null;
@@ -67,6 +65,7 @@ public class MyFtpServer
      */
 	public MyFtpServer()
 	{
+		int loadConfigResult=FtpServerConfig.LOAD_FAIL;
 		File file = new File("conf/MyFtpServer.xml");
 		LoggerContext context =(org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
 		context.setConfigLocation(file.toURI());
@@ -77,8 +76,8 @@ public class MyFtpServer
 		myServer.setChildHandlers(new CommandChannelInitializer(this,logger));
 		ConfigurationFactory cf=new ConfigurationFactory(logger);
 		serverConfig=cf.getServerConfiguration();
-		initResult=serverConfig.init();
-		if (initResult==FtpServerConfig.INIT_OK)
+		loadConfigResult=serverConfig.load();
+		if (loadConfigResult==FtpServerConfig.LOAD_OK)
 		{
 			logger.info("Server locale="+ serverConfig.getServerLocale());
 			logger.info("support passive mode="+serverConfig.isSupportPassiveMode());
@@ -93,7 +92,8 @@ public class MyFtpServer
 					logger.info("NO passive port is/are specified!!!");
 			}
 			myServer.setServerPort(serverConfig.getServerPort());
-			myServer.setBindAddress(serverConfig.getAllBindAddress());			
+			myServer.setBindAddress(serverConfig.getAllBindAddress());
+			serverInitOk=true;
 		}
 	}
 //-------------------------------------------------------------------------------------------	
@@ -210,7 +210,7 @@ public class MyFtpServer
 	{
 		MyFtpServer m;
 		m = new MyFtpServer();
-		if (m.initResult==FtpServerConfig.INIT_OK)
+		if (m.serverInitOk)
 			m.start();
 	}
 

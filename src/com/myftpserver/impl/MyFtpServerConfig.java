@@ -47,9 +47,9 @@ public class MyFtpServerConfig extends FtpServerConfig
 	{
 		super(logger);
 	}
-	public int init()
+	public int load()
 	{	
-		int initResult=FtpServerConfig.INIT_OK;
+		int initResult=FtpServerConfig.LOAD_OK;
 		try
 		{
 			String start,end;
@@ -102,22 +102,22 @@ public class MyFtpServerConfig extends FtpServerConfig
 		}
 		catch (FileNotFoundException e) 
 		{
-			initResult=FtpServerConfig.INIT_FAIL;
+			initResult=FtpServerConfig.LOAD_FAIL;
 			logger.info("Config. file not found.");
 		} 
 		catch (IOException e) 
 		{
-			initResult=FtpServerConfig.INIT_FAIL;
+			initResult=FtpServerConfig.LOAD_FAIL;
 			logger.info("An exception occur when loading config. file.");
 		} 
 	    catch (InstantiationException |IllegalAccessException |IllegalArgumentException |InvocationTargetException e) 
 		{
-	    	initResult=FtpServerConfig.INIT_FAIL;
+	    	initResult=FtpServerConfig.LOAD_FAIL;
 	    	logger.debug(e.getMessage());
 		} 
 		catch (NoSuchMethodException |SecurityException |ClassNotFoundException|MissingResourceException e) 
 		{
-	    	initResult=FtpServerConfig.INIT_FAIL;
+	    	initResult=FtpServerConfig.LOAD_FAIL;
 	    	logger.debug(e.getMessage());
 		}
 		finally

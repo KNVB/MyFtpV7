@@ -28,11 +28,11 @@ public abstract class FtpServerConfig
 	/**
 	 * It indicated the FTP server configuration file is loaded successfully
 	 */
-	public static final int INIT_OK=0;
+	public static final int LOAD_OK=0;
 	/**
 	 * It indicated there are something wrong when loading  FTP server configuration file
 	 */
-	public static final int INIT_FAIL=1;
+	public static final int LOAD_FAIL=1;
 	
 	protected Logger logger;
 	protected String serverLocale="en_us";
@@ -49,6 +49,11 @@ public abstract class FtpServerConfig
 	{
 		this.logger=logger;
 	}
+	/**
+	 * Load all server configuration
+	 * @return return whether load configuration {@link com.myftpserver.abstracts.FtpServerConfig.LOAD_OK} or not {@link com.myftpserver.abstracts.FtpServerConfig.LOAD_FAIL} 
+	 */
+	public abstract int load();
 	/**
 	 * Does the server support passive mode transfer or not? 
 	 * @return return true when the server is support passive mode transfer
@@ -100,5 +105,4 @@ public abstract class FtpServerConfig
 	 * @return Array of IP address
 	 */
 	public abstract String[] getAllBindAddress();
-	public abstract int init();
 }
