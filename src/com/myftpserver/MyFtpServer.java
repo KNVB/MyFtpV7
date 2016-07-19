@@ -191,10 +191,10 @@ public class MyFtpServer
 	 */
 	public void start()
 	{
-		String message=serverConfig.getFtpMessage("Server_Started");
+		//String message=serverConfig.getFtpMessage("Server_Started");
 		myServer.start();
-		message=message.replace("%1",String.valueOf(serverConfig.getServerPort())); 
-        logger.info(message);
+		//message=message.replace("%1",String.valueOf(serverConfig.getServerPort())); 
+        //logger.info(message);
 	}	
 	/**
 	*  stop FTP server

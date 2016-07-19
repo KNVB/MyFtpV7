@@ -30,7 +30,7 @@ public class MyServer<T>
 	public static final int ACCEPT_MULTI_CONNECTION=1;
 	public static final int ACCEPT_SINGLE_CONNECTION=0;
 	private Logger logger=null;
-	private int serverPort=21;
+	private int serverPort=-1;
 	private String[] bindAddress= new String[]{};
 	private EventLoopGroup bossGroup=null;
     private EventLoopGroup workerGroup=null;
@@ -100,7 +100,7 @@ public class MyServer<T>
 		 */
 		if (bindAddress.length==0) 
 		{
-			bootStrap.bind(serverPort);
+			bootStrap.bind(serverPort).addListener(new ServerBindListener(logger));
 		}
 		else
 		{
@@ -109,7 +109,7 @@ public class MyServer<T>
 			 */
 			for (String address:bindAddress)
 			{
-				bootStrap.bind(address,serverPort);
+				bootStrap.bind(address,serverPort).addListener(new ServerBindListener(logger));
 			}
 		}
 	}
