@@ -90,9 +90,12 @@ public class MyServer<T>
 	}
 	/**
 	 * Start the server
+	 * @throws IllegalArgumentException
+	 * @throws SecurityException
 	 */
-	public void start()
+	public void start() throws IllegalArgumentException,SecurityException  
 	{
+		ServerBindListener serverBindListener=new ServerBindListener(logger);
 		bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 		/*
 		 * if no binding address is specified, bind "Wildcard" IP address.
@@ -100,7 +103,7 @@ public class MyServer<T>
 		 */
 		if (bindAddress.length==0) 
 		{
-			bootStrap.bind(serverPort).addListener(new ServerBindListener(logger));
+			bootStrap.bind(serverPort).addListener(serverBindListener);
 		}
 		else
 		{
@@ -109,7 +112,7 @@ public class MyServer<T>
 			 */
 			for (String address:bindAddress)
 			{
-				bootStrap.bind(address,serverPort).addListener(new ServerBindListener(logger));
+				bootStrap.bind(address,serverPort).addListener(serverBindListener);
 			}
 		}
 	}
