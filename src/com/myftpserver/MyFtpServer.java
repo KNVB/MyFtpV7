@@ -201,6 +201,7 @@ public class MyFtpServer
 	*/
 	public void stop()
 	{
+		myServer.stop();
 		logger.info("FTP Server shutdown gracefully.");
 		LoggerContext context = (LoggerContext) LogManager.getContext();
 		Configurator.shutdown(context);

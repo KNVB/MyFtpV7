@@ -1,5 +1,7 @@
 package com.util;
 
+import java.util.concurrent.TimeUnit;
+
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
@@ -95,7 +97,7 @@ public class MyServer<T>
 	 */
 	public void start() throws IllegalArgumentException,SecurityException  
 	{
-		ServerBindListener serverBindListener=new ServerBindListener(logger);
+		ServerBindListener serverBindListener=new ServerBindListener(logger,this);
 		bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 		/*
 		 * if no binding address is specified, bind "Wildcard" IP address.
@@ -123,11 +125,11 @@ public class MyServer<T>
 	{
 		if (bossGroup!=null)
 		{	
-			bossGroup.shutdownGracefully();
+			bossGroup.shutdownGracefully(0,0,TimeUnit.MILLISECONDS);
 		}
 		if (workerGroup!=null)
 		{	
-			workerGroup.shutdownGracefully();
+			workerGroup.shutdownGracefully(0,0,TimeUnit.MILLISECONDS);
 		}
         bossGroup=null;
         workerGroup=null;

@@ -28,20 +28,30 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class ServerBindListener implements ChannelFutureListener 
 {
-	private Logger logger; 
+	private Logger logger;
+	private MyServer<?> myServer;
 	/**
 	 * It is triggered when a server bind a socket successfully 
 	 * @param logger Message logger
 	 */
-	public ServerBindListener(Logger logger)
+	public ServerBindListener(Logger logger, MyServer<?> myServer)
 	{
 		this.logger=logger;
+		this.myServer=myServer;
 	}
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
 		InetSocketAddress localAddress=(InetSocketAddress) cf.channel().localAddress();
-		logger.info("Server listen on "+localAddress.getAddress().getHostAddress()+":"+localAddress.getPort());
+		if (localAddress==null)
+		{
+			logger.info("Server bind address failure");  
+			myServer.stop();
+		}
+		else	
+		{	
+			logger.info("Server listen on "+localAddress.getAddress().getHostAddress()+":"+localAddress.getPort());
+		}
 	}
 
 }
