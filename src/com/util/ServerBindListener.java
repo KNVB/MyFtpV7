@@ -33,6 +33,7 @@ public class ServerBindListener implements ChannelFutureListener
 	/**
 	 * It is triggered when a server bind a socket successfully 
 	 * @param logger Message logger
+	 * @param myServer {@link com.util.MyServer} 
 	 */
 	public ServerBindListener(Logger logger, MyServer<?> myServer)
 	{
@@ -42,16 +43,19 @@ public class ServerBindListener implements ChannelFutureListener
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		InetSocketAddress localAddress=(InetSocketAddress) cf.channel().localAddress();
-		if (localAddress==null)
-		{
-			logger.info("Server bind address failure");  
-			myServer.stop();
-		}
-		else	
+		if (cf.isSuccess())
 		{	
+			//if Server bind address successfully
+			InetSocketAddress localAddress=(InetSocketAddress) cf.channel().localAddress();
 			logger.info("Server listen on "+localAddress.getAddress().getHostAddress()+":"+localAddress.getPort());
 		}
+		else
+		{
+			//if not display error message
+			logger.info("Server bind address failure:"+cf.cause().getMessage());
+			//cf.cause().printStackTrace();
+			myServer.stop();
+		}		
 	}
 
 }

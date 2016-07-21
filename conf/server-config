@@ -9,7 +9,7 @@ userManager.classname=com.myftpserver.impl.MyUserManager
 ftpServerConfig.classname=com.myftpserver.impl.MyFtpServerConfig
 
 #It specify the port no. that server listen
-port=80
+port=21
 
 #It specify maximum no. of concurrent connection of server that accept
 maxConnection=10
