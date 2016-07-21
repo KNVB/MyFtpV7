@@ -53,8 +53,8 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	/**
 	 * FTP session handler
 	 * @param ch {@link io.netty.channel.Channel}
-	 * @param myFtpServer {@link MyFtpServer}
-	 * @param remoteIp {@link String} Client IP address
+	 * @param myFtpServer {@link com.myftpserver.MyFtpServer}
+	 * @param remoteIp {@link String Client IP address} 
 	 */
 	public FtpSessionHandler(Channel ch, MyFtpServer myFtpServer, String remoteIp)
 	{

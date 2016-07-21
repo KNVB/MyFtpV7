@@ -31,7 +31,7 @@ public class ServerBindListener implements ChannelFutureListener
 	private Logger logger;
 	private MyServer<?> myServer;
 	/**
-	 * It is triggered when a server bind a socket successfully 
+	 * It is triggered when a server bind a socket address process completed. 
 	 * @param logger Message logger
 	 * @param myServer {@link com.util.MyServer} 
 	 */

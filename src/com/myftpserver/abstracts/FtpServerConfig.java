@@ -51,7 +51,7 @@ public abstract class FtpServerConfig
 	}
 	/**
 	 * Load all server configuration
-	 * @return return whether load configuration {@link com.myftpserver.abstracts.FtpServerConfig.LOAD_OK} or not {@link com.myftpserver.abstracts.FtpServerConfig.LOAD_FAIL} 
+	 * @return return whether load configuration {@link FtpServerConfig#LOAD_OK success} or {@link FtpServerConfig#LOAD_FAIL not} 
 	 */
 	public abstract int load();
 	/**
