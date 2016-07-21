@@ -92,10 +92,8 @@ public class MyServer<T>
 	}
 	/**
 	 * Start the server
-	 * @throws IllegalArgumentException
-	 * @throws SecurityException
 	 */
-	public void start() throws IllegalArgumentException,SecurityException  
+	public void start()   
 	{
 		ServerBindListener serverBindListener=new ServerBindListener(logger,this);
 		bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
