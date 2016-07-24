@@ -1,7 +1,5 @@
 package com.util;
 
-import java.net.InetSocketAddress;
-
 import org.apache.logging.log4j.Logger;
 
 import io.netty.channel.ChannelFuture;
@@ -28,7 +26,7 @@ import io.netty.channel.ChannelFutureListener;
  */
 public class ServerBindListener implements ChannelFutureListener 
 {
-	private Logger logger;
+	//private Logger logger;
 	private MyServer<?> myServer;
 	/**
 	 * It is triggered when a server bind a socket address process completed. 
@@ -37,13 +35,14 @@ public class ServerBindListener implements ChannelFutureListener
 	 */
 	public ServerBindListener(Logger logger, MyServer<?> myServer)
 	{
-		this.logger=logger;
+		//this.logger=logger;
 		this.myServer=myServer;
 	}
 	@Override
 	public void operationComplete(ChannelFuture cf) throws Exception 
 	{
-		if (cf.isSuccess())
+		myServer.setBindStatus(cf);
+		/*if (cf.isSuccess())
 		{	
 			//if Server bind address successfully
 			InetSocketAddress localAddress=(InetSocketAddress) cf.channel().localAddress();
@@ -55,7 +54,7 @@ public class ServerBindListener implements ChannelFutureListener
 			logger.info("Server bind address failure:"+cf.cause().getMessage());
 			//cf.cause().printStackTrace();
 			myServer.stop();
-		}		
+		}*/		
 	}
 
 }

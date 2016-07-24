@@ -1,7 +1,9 @@
 package com.util;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
@@ -32,7 +34,7 @@ public class MyServer<T>
 	public static final int ACCEPT_MULTI_CONNECTION=1;
 	public static final int ACCEPT_SINGLE_CONNECTION=0;
 	private Logger logger=null;
-	private int serverPort=-1;
+	private int serverPort=-1,bindSuccessCount=0;
 	private String[] bindAddress= new String[]{};
 	private EventLoopGroup bossGroup=null;
     private EventLoopGroup workerGroup=null;
@@ -90,10 +92,28 @@ public class MyServer<T>
 	{
 		bootStrap.childHandler(ci);
 	}
+	synchronized protected void setBindStatus(ChannelFuture cf) 
+	{
+		if (cf.isSuccess())		
+		{	
+			bindSuccessCount++;
+			InetSocketAddress localAddress=(InetSocketAddress) cf.channel().localAddress();
+			logger.info("Server listen on "+localAddress.getAddress().getHostAddress()+":"+localAddress.getPort());
+			if (bindSuccessCount>=bindAddress.length)
+			{
+				logger.info("Server started");
+			}
+		}
+		else
+		{
+			logger.info("Server bind address failure:"+cf.cause().getMessage());
+			this.stop();
+		}
+	}
 	/**
 	 * Start the server
 	 */
-	public void start()   
+	public void start() throws IllegalArgumentException  
 	{
 		ServerBindListener serverBindListener=new ServerBindListener(logger,this);
 		bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
@@ -133,5 +153,5 @@ public class MyServer<T>
         workerGroup=null;
         bootStrap = null;
         logger.info("Server shutdown gracefully.");		
-	}
+	}	
 }

@@ -192,7 +192,14 @@ public class MyFtpServer
 	public void start()
 	{
 		//String message=serverConfig.getFtpMessage("Server_Started");
-		myServer.start();
+		try
+		{
+			myServer.start();
+		}
+		catch (IllegalArgumentException e)
+		{
+			logger.info("Something Wrong:"+e.getMessage());
+		}
 		//message=message.replace("%1",String.valueOf(serverConfig.getServerPort())); 
         //logger.info(message);
 	}	
