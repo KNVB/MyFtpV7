@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -44,14 +46,14 @@ public class PORT implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs,String param) 
 	{
 		Logger logger=fs.getLogger();
 		param=param.trim();
 		String[] p=param.split(",");
 		if (p.length!=6)
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
 		}
 		else
 		{
@@ -60,7 +62,7 @@ public class PORT implements FtpCommandInterface
 		    int low = Integer.parseInt(p[5]);
 		    if (high < 0 || high > 255 || low < 0 || low > 255)
 			{
-		    	Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
+		    	Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
 			}
 		    else
 		    {	 
@@ -68,7 +70,7 @@ public class PORT implements FtpCommandInterface
 		    	logger.debug("Port="+clientPort);
 		    	fs.isPassiveModeTransfer=false;
 		    	fs.setActiveDataPortNo(clientPort);
-		    	Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), fs.getFtpMessage("200_Port_Ok"));
+		    	Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("200_Port_Ok"));
 		    }
 		}
 	}

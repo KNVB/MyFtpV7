@@ -46,7 +46,7 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	private MessageBundle messageBundle=null;
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
-	private FtpCommandExecutor ftpCommandHandler=null; 
+	private FtpCommandExecutor ftpCommandExecuter=null; 
 	private File downloadFile=null,uploadTempFile=null, uploadFile=null;
 	private String userName=new String(),dataType="I",currentPath=new String();
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
@@ -67,7 +67,7 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 		this.logger=myFtpServer.getLogger();
 
 		this.serverConfig=myFtpServer.getServerConfig();
-		this.ftpCommandHandler=new FtpCommandExecutor(this);
+		this.ftpCommandExecuter=new FtpCommandExecutor(this);
 		messageBundle=new MessageBundle(new Locale(serverConfig.getServerLocale()));
 	}
 	@Override
@@ -84,9 +84,8 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception 
 	{ 
 		commandString=msg.trim();
-		this.ch=ctx.channel();
 		logger.info("Command:"+commandString+" received from "+this.clientIp);
-		ftpCommandHandler.doCommand(ctx,commandString, logger);
+		ftpCommandExecuter.doCommand(ctx,commandString, logger);
 	}
 	/**
 	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
@@ -145,10 +144,10 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	 * Get user interaction channel
 	 * @return io.netty.channel.Channel object
 	 */
-	public Channel getChannel() 
+	/*public Channel getChannel() 
 	{
 		return ch;
-	}
+	}*/
 	/**
 	 * Set User login name for current ftp session
 	 * @param userName User login name
@@ -241,9 +240,9 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	/**
 	 * Reinitialize Command Session
 	 */
-	public void reinitialize() 
+	public void reinitialize(ChannelHandlerContext ctx) 
 	{
-		myFtpServer.reinitializeSession(this.ch,this.clientIp);
+		myFtpServer.reinitializeSession(ctx.channel(),this.clientIp);
 	}
 	/**
 	 * Set original file name for rename

@@ -2,6 +2,7 @@ package com.myftpserver;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -19,13 +20,15 @@ public class ActiveClient
 {
 	private Logger logger;
 	private FtpSessionHandler fs;
+	private ChannelHandlerContext ctx;
 	/**
 	 * This is an active mode client for file transfer and file listing transfer	
 	 * @param fs FtpSessionHandler Object
 	 */
-	public ActiveClient(FtpSessionHandler fs) 
+	public ActiveClient(ChannelHandlerContext ctx,FtpSessionHandler fs) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.logger=fs.getLogger();
 	}
 	/**
@@ -43,7 +46,7 @@ public class ActiveClient
 			b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
 			b.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
 	        b.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1);
-	        b.handler(new ActiveChannelInitializer(fs,resultList));
+	        b.handler(new ActiveChannelInitializer(ctx,fs,resultList));
 	        b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 	        ChannelFuture f = b.connect().sync();
 			f.channel().closeFuture().sync();
@@ -78,7 +81,7 @@ public class ActiveClient
             b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
             b.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
 	        b.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1);
-            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.SENDFILE));
+            b.handler(new ActiveChannelInitializer(ctx,fs,MyFtpServer.SENDFILE));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }
@@ -104,7 +107,7 @@ public class ActiveClient
             Bootstrap b = new Bootstrap();
             b.group(group).channel(NioSocketChannel.class);
             b.remoteAddress(new InetSocketAddress(fs.getClientIp(), fs.getActiveDataPortNo()));
-            b.handler(new ActiveChannelInitializer(fs,MyFtpServer.RECEIVEFILE));
+            b.handler(new ActiveChannelInitializer(ctx,fs,MyFtpServer.RECEIVEFILE));
             ChannelFuture f = b.connect().sync();
             f.channel().closeFuture().sync();
         }

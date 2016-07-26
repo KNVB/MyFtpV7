@@ -60,8 +60,9 @@ public class TransferExceptionListener  implements ChannelFutureListener
 			if ((fs.getUploadTempFile()!=null) &&(fs.getUploadTempFile().exists()))
 			{
 				fs.getUploadTempFile().delete();
-				fs.setUploadTempFile(null);
 				logger.debug("Temp file "+fs.getUploadTempFile().getAbsolutePath()+" is deleted.");
+				fs.setUploadTempFile(null);
+				
 			}
 		}
 	}

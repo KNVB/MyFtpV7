@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.myftpserver.handler.FtpSessionHandler;
 import com.util.Utility;
 /*
@@ -38,7 +40,7 @@ public class STRU implements com.myftpserver.interfaces.FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		String message=fs.getFtpMessage("200_Structure_set_to");
 		if (param==null)
@@ -57,7 +59,7 @@ public class STRU implements com.myftpserver.interfaces.FtpCommandInterface
 			else
 				message=fs.getFtpMessage("504_Command_Not_Support_This_Parameter");
 		}
-		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(),message);
+		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),message);
 	}
 	
 }

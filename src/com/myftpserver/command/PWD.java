@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 /*
@@ -39,9 +41,9 @@ public class PWD implements com.myftpserver.interfaces.FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param)	
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param)	
 	{
-		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("257_PWD").replace("%1", fs.getCurrentPath()));
+		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(), fs.getFtpMessage("257_PWD").replace("%1", fs.getCurrentPath()));
 	}
 	
 }

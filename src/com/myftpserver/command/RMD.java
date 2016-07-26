@@ -1,9 +1,15 @@
 package com.myftpserver.command;
 
 import com.util.Utility;
+
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
+
 import org.apache.logging.log4j.Logger;
+
 import java.nio.file.InvalidPathException;
+
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.abstracts.FtpServerConfig;
@@ -51,7 +57,7 @@ public class RMD implements FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, String inPath) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String inPath) 
 	{
 		String message;
 		Logger logger=fs.getLogger();
@@ -63,18 +69,18 @@ public class RMD implements FtpCommandInterface
 			fm.deleteDirectory(fs, inPath);
 			message=fs.getFtpMessage("250_RMD");
 			message=message.replace("%1", inPath);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
 		}
 		catch (AccessDeniedException|NotADirectoryException|PathNotFoundException|IOException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (InvalidPathException err) 
 		{
 			//err.printStackTrace();
 			message=fs.getFtpMessage("550_RMD_Failure");
 			message=message.replace("%1", inPath);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message+":"+err.getMessage());
 		} 
 	}
 	/*@Override

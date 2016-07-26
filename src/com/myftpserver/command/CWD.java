@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.*;
 import com.myftpserver.exception.*;
 import com.myftpserver.abstracts.FileManager;
@@ -48,7 +50,7 @@ public class CWD implements FtpCommandInterface
 	 * if one of these tests fail, it will return error message.  
 	 */
 	@Override
-	public void execute(FtpSessionHandler fs,String param)
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs,String param)
 	{
 		Logger logger=fs.getLogger();
 		FileManager fm=fs.getServerConfig().getFileManager();
@@ -57,11 +59,11 @@ public class CWD implements FtpCommandInterface
 		try 
 		{
 			fm.changeDirectory(fs,param);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("200_Ok"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("200_Ok"));
 		} 
 		catch (AccessDeniedException | PathNotFoundException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 	}
 }

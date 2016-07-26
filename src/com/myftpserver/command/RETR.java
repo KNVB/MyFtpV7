@@ -1,8 +1,14 @@
 package com.myftpserver.command;
 import com.util.Utility;
+
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
+
 import org.apache.logging.log4j.Logger;
+
 import java.nio.file.InvalidPathException;
+
 import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.NotAFileException;
@@ -49,7 +55,7 @@ public class RETR implements FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, String inPath) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String inPath) 
 	{
 		Logger logger=fs.getLogger();
 		FtpServerConfig serverConfig=fs.getServerConfig();
@@ -58,15 +64,15 @@ public class RETR implements FtpCommandInterface
 		try 
 		{
 			fs.setDownloadFile(fm.getDownloadFileObject(fs, inPath));
-			Utility.sendFileToClient(fs);
+			Utility.sendFileToClient(ctx,fs);
 		} 
 		catch (InterruptedException|NotAFileException |AccessDeniedException |IOException err) 
 		{
-			Utility.handleTransferException(fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 	}
 	/*@Override

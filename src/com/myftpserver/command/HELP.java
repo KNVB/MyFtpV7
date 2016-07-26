@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.handler.FtpSessionHandler;
@@ -43,7 +45,7 @@ public class HELP implements FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		String message=fs.getFtpMessage("214_Command_Recognized");
@@ -54,11 +56,11 @@ public class HELP implements FtpCommandInterface
 			if (!message.endsWith("\r\n"))
 				message+="\r\n";
 			message+=fs.getFtpMessage("214_Ok");
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
 		} 
 		catch (ClassNotFoundException e) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),e.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),e.getMessage());
 		}
 		
 	}

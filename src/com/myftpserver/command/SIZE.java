@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.nio.file.InvalidPathException;
 
 import com.util.*;
@@ -46,7 +48,7 @@ public class SIZE implements FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		FtpServerConfig serverConfig=fs.getServerConfig();
@@ -57,11 +59,11 @@ public class SIZE implements FtpCommandInterface
 			long size=fm.getPathSize(fs, param);
 			message=fs.getFtpMessage("213_File_Size");
 			message=message.replace("%1", String.valueOf(size));
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),message);
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),message);
 		} 
 		catch (PathNotFoundException|InvalidPathException |AccessDeniedException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 	}
 }

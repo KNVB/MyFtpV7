@@ -2,6 +2,7 @@ package com.myftpserver;
 import java.io.IOException;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
@@ -43,6 +44,7 @@ public class PassiveServer
 	private Logger logger;
 	private FtpSessionHandler fs;
 	private MyFtpServer myFtpServer;
+	private ChannelHandlerContext ctx;
 	private MyServer<Integer> myServer=null;
 	/**
 	 * This is passive mode server object for provide passive mode transfer
@@ -50,9 +52,10 @@ public class PassiveServer
 	 * @param localIP Server IP address
 	 * @param port Passive port no.
 	 */
-	public PassiveServer(FtpSessionHandler fs, String localIP, int port) 
+	public PassiveServer(ChannelHandlerContext ctx,FtpSessionHandler fs, String localIP, int port) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.port=port;
 		this.user=fs.getUser();
 		this.myFtpServer=fs.getServer();
@@ -63,7 +66,7 @@ public class PassiveServer
 		myServer.setChildOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK,  1);
 		myServer.setBindAddress(localIP.split(","));
 		myServer.setServerPort(port);
-		myServer.setChildHandlers(new PassiveChannelInitializer(fs));
+		myServer.setChildHandlers(new PassiveChannelInitializer(ctx,fs));
 		myServer.start();
 		logger.info("Passive Server listening " +localIP+":" + port);
 	}
@@ -81,20 +84,21 @@ public class PassiveServer
 		}
 		SendHandler sendFileHandler;
 		if (fs.getDataType().equals("I"))
-			sendFileHandler=new SendBinaryFileHandler(fs);
+			sendFileHandler=new SendBinaryFileHandler(fs,ctx);
 		else
-			sendFileHandler=new SendTextFileHandler(fs);
+			sendFileHandler=new SendTextFileHandler(fs,ctx);
 		ch.closeFuture().addListener(sendFileHandler);
 		ch.pipeline().addLast(sendFileHandler);
 	}
 	/**
 	 * Send a file name list to client
+	 * @param ctx2 
 	 * @param fileNameList A StringBuffer object that contains file listing
 	 */
-	public void sendFileNameList(StringBuffer fileNameList) 
+	public void sendFileNameList(ChannelHandlerContext ctx2, StringBuffer fileNameList) 
 	{
 		ch.pipeline().remove("ReceiveHandler");
-		SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+		SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs,ctx2);
 		
 		ch.closeFuture().addListener(sendFileNameListHandler);
 		ch.pipeline().addLast(sendFileNameListHandler);

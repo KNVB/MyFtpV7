@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
@@ -51,7 +53,7 @@ public class PASS implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		FtpServerConfig serverConfig=fs.getServerConfig();
@@ -73,15 +75,15 @@ public class PASS implements FtpCommandInterface
 				fs.setCurrentPath("/");
 				fm.getRealHomePath(fs);
 				message=fs.getFtpMessage("230_Login_Ok").replace("%1", fs.getUserName());
-				Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 			}
 			catch (LoginFailureException e)
 			{
-				Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("530_Invalid_Login"));
+				Utility.disconnectFromClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("530_Invalid_Login"));
 			}
 			catch (AccessDeniedException | InvalidHomeDirectoryException e) 
 			{
-				Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),e.getMessage());
+				Utility.disconnectFromClient(ctx.channel(), logger,fs.getClientIp(),e.getMessage());
 				//Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage(e.getMessage()));
 			} 
 		}

@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
@@ -49,7 +51,7 @@ public class RNFR implements FtpCommandInterface {
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, String oldFileName) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String oldFileName) 
 	{
 		Logger logger=fs.getLogger();
 		FtpServerConfig serverConfig=fs.getServerConfig();
@@ -58,15 +60,15 @@ public class RNFR implements FtpCommandInterface {
 		try
 		{
 			fm.renameFrom(fs, oldFileName);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("350_Ready_For_RNTO"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("350_Ready_For_RNTO"));
 		}
 		catch (IOException|NotAFileException |AccessDeniedException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		} 
 	}
 	/*@Override

@@ -152,6 +152,6 @@ public class MyServer<T>
         bossGroup=null;
         workerGroup=null;
         bootStrap = null;
-        logger.info("Server shutdown gracefully.");		
+        logger.debug("Server shutdown gracefully.");		
 	}	
 }

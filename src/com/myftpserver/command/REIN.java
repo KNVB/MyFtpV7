@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.handler.FtpSessionHandler;
@@ -44,13 +46,13 @@ public class REIN implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		String message=new String();
 		Logger logger=fs.getLogger();
 		message=fs.getFtpMessage("220_Reinitialize");
-		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
-		fs.reinitialize();
+		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+		fs.reinitialize(ctx);
 		
 		//MyFtpServer myFtpServer=fs.getServer();
 		//myFtpServer.	Reinitialize

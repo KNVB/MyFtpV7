@@ -1,5 +1,7 @@
 package com.myftpserver.interfaces;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.myftpserver.handler.FtpSessionHandler;
 
 /*
@@ -30,5 +32,5 @@ public interface FtpCommandInterface
  	 * @return Help message
  	 */
 	public String helpMessage(FtpSessionHandler fs);
-	public void execute (FtpSessionHandler fs,String param); 
+	public void execute (ChannelHandlerContext ctx,FtpSessionHandler fs,String param); 
 }

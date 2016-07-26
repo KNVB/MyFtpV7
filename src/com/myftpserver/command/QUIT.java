@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -43,11 +45,11 @@ public class QUIT implements FtpCommandInterface
 
 	
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getConfig().getFtpMessage("221_Logout_Ok"));
 		String goodByeMsg=fs.getFtpMessage("221_Logout_Ok");
 		String remoteIp=fs.getClientIp();
-		Utility.disconnectFromClient(fs.getChannel(), fs.getLogger(), remoteIp, goodByeMsg);
+		Utility.disconnectFromClient(ctx.channel(), fs.getLogger(), remoteIp, goodByeMsg);
 	}
 }

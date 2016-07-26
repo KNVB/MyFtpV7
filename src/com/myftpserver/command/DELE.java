@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
@@ -11,6 +13,7 @@ import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
+
 import org.apache.logging.log4j.Logger;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -53,7 +56,7 @@ public class DELE implements FtpCommandInterface {
 	 * if one of these tests fail, it will return error message.  
 	 */
 	@Override
-	public void execute(FtpSessionHandler fs, String inPath)
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String inPath)
 	{
 		Logger logger=fs.getLogger();
 		FtpServerConfig serverConfig=fs.getServerConfig();
@@ -62,15 +65,15 @@ public class DELE implements FtpCommandInterface {
 		try
 		{
 			fm.deleteFile(fs, inPath);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
 		}
 		catch (IOException|AccessDeniedException|NotAFileException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
 		}
 	}
 	/*@Override

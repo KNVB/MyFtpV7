@@ -36,17 +36,18 @@ public class SendFileNameListHandler extends SendHandler
 	private Logger logger;
 	private String remoteIp;
 	private FtpSessionHandler fs;
-	//private StringBuffer fileNameList;
 	private String[] fileNameList;
+	private ChannelHandlerContext ctx;
 	/**
 	 * Send file name list handler
 	 * It send file listing to client and then close the channel.
 	 * @param fileNameList  A StringBuffer object that contains file listing
 	 * @param fs  FtpSessionHandler object 
 	 */
-	public SendFileNameListHandler(StringBuffer fileNameList,FtpSessionHandler fs) 
+	public SendFileNameListHandler(StringBuffer fileNameList,FtpSessionHandler fs,ChannelHandlerContext ctx) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.logger=fs.getLogger();
 		this.remoteIp=fs.getClientIp();
 		//this.fileNameList=fileNameList;
@@ -114,7 +115,7 @@ public class SendFileNameListHandler extends SendHandler
 	public void operationComplete(ChannelFuture cf) throws Exception
 	{
 		String message=fs.getFtpMessage("226_Transfer_Ok");
-		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
+		Utility.sendMessageToClient(this.ctx.channel(),logger, remoteIp,message);
 	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)	throws Exception 
