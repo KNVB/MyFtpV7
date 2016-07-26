@@ -37,6 +37,8 @@ import io.netty.handler.codec.string.StringDecoder;
  * @author SITO3
  *
  */
+
+
 public class CommandChannelInitializer extends ChannelInitializer<Channel>
 {
 	private Logger logger;

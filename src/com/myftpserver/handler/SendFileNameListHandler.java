@@ -5,9 +5,9 @@ import com.myftpserver.PassiveServer;
 import com.myftpserver.interfaces.SendHandler;
 
 import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.CharsetUtil;
 
 import org.apache.logging.log4j.Logger;
 /*
@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 * @author SITO3
 *
 */
+
 public class SendFileNameListHandler extends SendHandler
 {
 	private int index=0;

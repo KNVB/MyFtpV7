@@ -4,7 +4,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandler;
-import io.netty.channel.ChannelHandler.Sharable;
 /*
 * Copyright 2004-2005 the original author or authors.
 *
@@ -25,7 +24,6 @@ import io.netty.channel.ChannelHandler.Sharable;
 * @author SITO3
 *
 */
-@Sharable
 public abstract class SendHandler implements ChannelInboundHandler,ChannelFutureListener  
 {
 	public abstract void closeChannel(ChannelHandlerContext ctx)throws Exception;

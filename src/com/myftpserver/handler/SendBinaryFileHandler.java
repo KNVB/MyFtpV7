@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 * @author SITO3
 *
 */
+
 public class SendBinaryFileHandler extends SendHandler
 {
 	

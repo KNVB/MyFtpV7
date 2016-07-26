@@ -90,7 +90,7 @@ public class NLST implements FtpCommandInterface
 		catch (Exception err)
 		{
 			Utility.handleTransferException(ctx,fs,err.getMessage());
-		}
+		}		
 	}
 
 }
