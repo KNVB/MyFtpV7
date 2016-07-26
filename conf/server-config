@@ -30,4 +30,4 @@ serverLocale=en_us
 #serverLocale=zh_tw
 
 #It specify the IP address which server binded
-bindAddress=127.0.0.1
+#bindAddress=127.0.0.1
