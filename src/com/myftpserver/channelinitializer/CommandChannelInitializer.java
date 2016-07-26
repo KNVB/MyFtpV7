@@ -68,7 +68,7 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 			ch.pipeline().addLast("CommandChannelTimeoutHandler", new CommandChannelTimeoutHandler(logger,remoteIp));
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
 			ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
-			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,myFtpServer,remoteIp));
+			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(myFtpServer,remoteIp));
 		}
 	}
 

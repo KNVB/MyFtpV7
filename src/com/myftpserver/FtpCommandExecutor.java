@@ -84,7 +84,8 @@ public class FtpCommandExecutor
 					case "QUIT":
 					case "PASS":executeCommand(ctx,command,parameters);
 								break;
-					default:Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("530_Not_Login"));
+					default://Utility.disconnectFromClient(ctx.channel(),logger,thisSession.getClientIp(),thisSession.getFtpMessage("530_Not_Login"));
+							Utility.sendMessageToClient(ctx.channel(), logger, thisSession.getClientIp(),thisSession.getFtpMessage("530_Not_Login"));
 							break;	
 				}
 			}

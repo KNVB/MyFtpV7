@@ -6,11 +6,13 @@ import java.util.Locale;
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.*;
-import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.User;
 import com.util.MessageBundle;
+import com.myftpserver.MyFtpServer;
+import com.myftpserver.PassiveServer;
+import com.myftpserver.FtpCommandExecutor;
+import com.myftpserver.abstracts.FtpServerConfig;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 /*
@@ -36,8 +38,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 {
 	private User user;
-	private Channel ch;
-	
 	private Logger logger;
 	private boolean isLogined=false;
 	private int activeDataPortNo=-1;
@@ -52,13 +52,11 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	/**
 	 * FTP session handler
-	 * @param ch {@link io.netty.channel.Channel}
 	 * @param myFtpServer {@link com.myftpserver.MyFtpServer}
 	 * @param remoteIp {@link String Client IP address} 
 	 */
-	public FtpSessionHandler(Channel ch, MyFtpServer myFtpServer, String remoteIp)
+	public FtpSessionHandler(MyFtpServer myFtpServer, String remoteIp)
 	{
-		this.ch=ch;
 		this.currentPath="/";
 		this.clientIp=remoteIp;
 		
@@ -73,7 +71,7 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	@Override
 	public void channelActive(ChannelHandlerContext ctx)
 	{
-		Utility.sendMessageToClient(ch,logger,clientIp,"220 "+messageBundle.getMessage("Greeting_Message"));
+		Utility.sendMessageToClient(ctx.channel(),logger,clientIp,"220 "+messageBundle.getMessage("Greeting_Message"));
 	}
 	/**
 	 * User input command event handler
@@ -139,15 +137,7 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	public FtpServerConfig getServerConfig() 
 	{
 		return serverConfig;
-	}
-	/**
-	 * Get user interaction channel
-	 * @return io.netty.channel.Channel object
-	 */
-	/*public Channel getChannel() 
-	{
-		return ch;
-	}*/
+	}	
 	/**
 	 * Set User login name for current ftp session
 	 * @param userName User login name
@@ -353,7 +343,7 @@ public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 	 */
 	public void close()
 	{
-		ch.close();
-		ch=null;		
+		/*ch.close();
+		ch=null;*/		
 	}
 }

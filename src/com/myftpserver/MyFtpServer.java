@@ -151,7 +151,7 @@ public class MyFtpServer
 	public void reinitializeSession(Channel ch,String remoteIp) 
 	{
 		ch.pipeline().remove("MyHandler");
-		ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,this,remoteIp));
+		ch.pipeline().addLast("MyHandler",new FtpSessionHandler(this,remoteIp));
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
