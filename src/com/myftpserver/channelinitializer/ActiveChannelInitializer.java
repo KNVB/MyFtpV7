@@ -13,6 +13,7 @@ import com.myftpserver.handler.SendFileNameListHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -40,15 +41,17 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	private User user;
 	private Logger logger;
 	private FtpSessionHandler fs;
+	private ChannelHandlerContext ctx;
 	private StringBuffer fileNameList;
 	/**
 	 * Initialize an active mode channel for file transmission
 	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
 	 * @param mode Transfer mode (Please refer {@link MyFtpServer#SENDFILE},{@link MyFtpServer#RECEIVEFILE},{@link MyFtpServer#SENDDIRLIST})
 	 */
-	public ActiveChannelInitializer(FtpSessionHandler fs,int mode) 
+	public ActiveChannelInitializer(ChannelHandlerContext ctx,FtpSessionHandler fs,int mode) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.mode=mode;
 		this.user=fs.getUser();
 		this.logger=fs.getLogger();
@@ -58,9 +61,10 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object
 	 * @param fileNameList  {@link StringBuffer}  A StringBuffer object that contain directory listing 
 	 */
-	public ActiveChannelInitializer(FtpSessionHandler fs,StringBuffer fileNameList) 
+	public ActiveChannelInitializer(ChannelHandlerContext ctx,FtpSessionHandler fs,StringBuffer fileNameList) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.user=fs.getUser();
 		this.logger=fs.getLogger();
 		this.fileNameList=fileNameList;
@@ -80,17 +84,17 @@ public class ActiveChannelInitializer extends ChannelInitializer<Channel>
 										}
 										SendHandler sendFileHandler;
 										if (fs.getDataType().equals("I"))
-											sendFileHandler=new SendBinaryFileHandler(fs);
+											sendFileHandler=new SendBinaryFileHandler(fs,ctx);
 										else
-											sendFileHandler=new SendTextFileHandler(fs);
+											sendFileHandler=new SendTextFileHandler(fs,ctx);
 										ch.closeFuture().addListener(sendFileHandler);
 										ch.pipeline().addLast(sendFileHandler);
 										break;
-			case MyFtpServer.SENDDIRLIST:SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+			case MyFtpServer.SENDDIRLIST:SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs,ctx);
 										 ch.closeFuture().addListener(sendFileNameListHandler);
 										 ch.pipeline().addLast(sendFileNameListHandler);
 										 break;
-			case MyFtpServer.RECEIVEFILE:ReceiveFileHandler receiveFileHandler=new ReceiveFileHandler(fs);
+			case MyFtpServer.RECEIVEFILE:ReceiveFileHandler receiveFileHandler=new ReceiveFileHandler(fs,ctx);
 										 ch.closeFuture().addListener(receiveFileHandler);
 										 ch.pipeline().addLast(receiveFileHandler);
 										 break;										 

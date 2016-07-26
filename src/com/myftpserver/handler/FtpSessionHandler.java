@@ -1,14 +1,18 @@
 package com.myftpserver.handler;
 
 import java.io.File;
+import java.util.Locale;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.*;
+import com.myftpserver.User;
 import com.util.MessageBundle;
+import com.myftpserver.MyFtpServer;
+import com.myftpserver.PassiveServer;
+import com.myftpserver.FtpCommandExecutor;
+import com.myftpserver.abstracts.FtpServerConfig;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 /*
@@ -31,32 +35,28 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author SITO3
  *
  */
-public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
+public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 {
 	private User user;
-	private Channel ch;
-	
 	private Logger logger;
 	private boolean isLogined=false;
 	private int activeDataPortNo=-1;
 	private MyFtpServer myFtpServer=null;
-	private ServerConfig serverConfig=null;
+	private FtpServerConfig serverConfig=null;
 	private MessageBundle messageBundle=null;
 	private PassiveServer passiveServer=null;
 	public boolean isPassiveModeTransfer=false;
-	private FtpCommandExecutor ftpCommandHandler=null; 
+	private FtpCommandExecutor ftpCommandExecuter=null; 
 	private File downloadFile=null,uploadTempFile=null, uploadFile=null;
-	private String userName=new String(),dataType="A",currentPath=new String();
+	private String userName=new String(),dataType="I",currentPath=new String();
 	private String clientIp=new String(),commandString=new String(),reNameFrom=new String();
 	/**
 	 * FTP session handler
-	 * @param ch {@link io.netty.channel.Channel}
-	 * @param myFtpServer {@link MyFtpServer}
-	 * @param remoteIp {@link String} Client IP address
+	 * @param myFtpServer {@link com.myftpserver.MyFtpServer}
+	 * @param remoteIp {@link String Client IP address} 
 	 */
-	public FtpSessionHandler(Channel ch, MyFtpServer myFtpServer, String remoteIp)
+	public FtpSessionHandler(MyFtpServer myFtpServer, String remoteIp)
 	{
-		this.ch=ch;
 		this.currentPath="/";
 		this.clientIp=remoteIp;
 		
@@ -65,13 +65,13 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 		this.logger=myFtpServer.getLogger();
 
 		this.serverConfig=myFtpServer.getServerConfig();
-		this.ftpCommandHandler=new FtpCommandExecutor(this);
-		messageBundle=serverConfig.getMessageBundle();
+		this.ftpCommandExecuter=new FtpCommandExecutor(this);
+		messageBundle=new MessageBundle(new Locale(serverConfig.getServerLocale()));
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx)
 	{
-		Utility.sendMessageToClient(ch,logger,clientIp,"220 "+serverConfig.getFtpMessage("Greeting_Message"));
+		Utility.sendMessageToClient(ctx.channel(),logger,clientIp,"220 "+messageBundle.getMessage("Greeting_Message"));
 	}
 	/**
 	 * User input command event handler
@@ -82,9 +82,8 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception 
 	{ 
 		commandString=msg.trim();
-		this.ch=ctx.channel();
 		logger.info("Command:"+commandString+" received from "+this.clientIp);
-		ftpCommandHandler.doCommand(ctx,commandString, logger);
+		ftpCommandExecuter.doCommand(ctx,commandString, logger);
 	}
 	/**
 	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
@@ -135,18 +134,10 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
      * Get Server Configuration object for retrieving server configuration setting
      * @return ServerConfig object
      */
-	public ServerConfig getServerConfig() 
+	public FtpServerConfig getServerConfig() 
 	{
 		return serverConfig;
-	}
-	/**
-	 * Get user interaction channel
-	 * @return io.netty.channel.Channel object
-	 */
-	public Channel getChannel() 
-	{
-		return ch;
-	}
+	}	
 	/**
 	 * Set User login name for current ftp session
 	 * @param userName User login name
@@ -239,9 +230,9 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	/**
 	 * Reinitialize Command Session
 	 */
-	public void reinitialize() 
+	public void reinitialize(ChannelHandlerContext ctx) 
 	{
-		myFtpServer.reinitializeSession(this.ch,this.clientIp);
+		myFtpServer.reinitializeSession(ctx.channel(),this.clientIp);
 	}
 	/**
 	 * Set original file name for rename
@@ -352,7 +343,7 @@ public class FtpSessionHandler  extends SimpleChannelInboundHandler<String>
 	 */
 	public void close()
 	{
-		ch.close();
-		ch=null;		
+		/*ch.close();
+		ch=null;*/		
 	}
 }

@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 
@@ -33,7 +35,7 @@ public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 	public USER()
 	{}
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		String message=new String();
 		Logger logger=fs.getLogger();
@@ -47,7 +49,7 @@ public class USER implements com.myftpserver.interfaces.FtpCommandInterface
 			message=message.replace("%1", param);
 			fs.setUserName(param);
 		}
-		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
+		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 	@Override
 	public String helpMessage(com.myftpserver.handler.FtpSessionHandler fs) 

@@ -10,9 +10,9 @@ import com.myftpserver.PassiveServer;
 import com.myftpserver.interfaces.SendHandler;
 
 import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.CharsetUtil;
 
 import org.apache.logging.log4j.Logger;
 /*
@@ -43,15 +43,17 @@ public class SendTextFileHandler extends SendHandler
 	private BufferedReader br;
 	private String remoteIp,line;
 	private FtpSessionHandler fs;
+	private ChannelHandlerContext ctx;
 	ByteBuffer buffer=ByteBuffer.allocate(1024);
 	/**
 	 * Send binary file handler
 	 * It send file listing to client and then close the channel.
 	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object 
 	 */
-	public SendTextFileHandler(FtpSessionHandler fs) 
+	public SendTextFileHandler(FtpSessionHandler fs,ChannelHandlerContext ctx) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.logger=fs.getLogger();
 		this.remoteIp=fs.getClientIp();
 	}
@@ -121,7 +123,7 @@ public class SendTextFileHandler extends SendHandler
 	public void operationComplete(ChannelFuture cf) throws Exception
 	{
 		String message=fs.getFtpMessage("226_Transfer_Ok");
-		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
+		Utility.sendMessageToClient(this.ctx.channel(),logger, remoteIp,message);
 	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)	throws Exception 

@@ -1,26 +1,20 @@
 package com.myftpserver;
+import java.io.IOException;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
-
-import com.myftpserver.User;
+import com.util.MyServer;
 import com.myftpserver.interfaces.SendHandler;
+import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.handler.SendTextFileHandler;
 import com.myftpserver.handler.SendBinaryFileHandler;
 import com.myftpserver.handler.SendFileNameListHandler;
-import com.myftpserver.handler.SendTextFileHandler;
-import com.myftpserver.channelinitializer.PassiveChannelInitializer;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -49,44 +43,32 @@ public class PassiveServer
 	private Channel ch;
 	private Logger logger;
 	private FtpSessionHandler fs;
-	private MyFtpServer myFtpServer;  
-	private EventLoopGroup bossGroup = new NioEventLoopGroup();
-    private EventLoopGroup workerGroup = new NioEventLoopGroup();
+	private MyFtpServer myFtpServer;
+	private ChannelHandlerContext ctx;
+	private MyServer<Integer> myServer=null;
 	/**
 	 * This is passive mode server object for provide passive mode transfer
 	 * @param fs FTP Session Handler
 	 * @param localIP Server IP address
 	 * @param port Passive port no.
 	 */
-	public PassiveServer(FtpSessionHandler fs, String localIP, int port) 
+	public PassiveServer(ChannelHandlerContext ctx,FtpSessionHandler fs, String localIP, int port) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.port=port;
 		this.user=fs.getUser();
 		this.myFtpServer=fs.getServer();
 		this.logger=fs.getLogger();
 		fs.setPassiveServer(this);
-		InetSocketAddress inSocketAddress=new InetSocketAddress(localIP,port); 
-		try 
-        {
-            ServerBootstrap bootStrap = new ServerBootstrap();
-            bootStrap.group(bossGroup, workerGroup);
-            bootStrap.channel(NioServerSocketChannel.class);
-            bootStrap.childOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
-            bootStrap.childOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 1);
-            bootStrap.childHandler(new PassiveChannelInitializer(fs));
-            bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-            bootStrap.bind(inSocketAddress);
-            logger.info("Passive Server listening " +localIP+":" + port);
-            
-            // Wait until the server socket is closed.
-            //ch.closeFuture().sync();
-        }
-		catch (Exception eg)
-		{
-			eg.printStackTrace();
-			stop();
-		}
+		myServer=new MyServer<Integer>(MyServer.ACCEPT_SINGLE_CONNECTION,logger);
+		myServer.setChildOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK,  1);
+		myServer.setChildOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK,  1);
+		myServer.setBindAddress(localIP.split(","));
+		myServer.setServerPort(port);
+		myServer.setChildHandlers(new PassiveChannelInitializer(ctx,fs));
+		myServer.start();
+		logger.info("Passive Server listening " +localIP+":" + port);
 	}
 	/**
 	 * Send a file to client
@@ -102,22 +84,24 @@ public class PassiveServer
 		}
 		SendHandler sendFileHandler;
 		if (fs.getDataType().equals("I"))
-			sendFileHandler=new SendBinaryFileHandler(fs);
+			sendFileHandler=new SendBinaryFileHandler(fs,ctx);
 		else
-			sendFileHandler=new SendTextFileHandler(fs);
+			sendFileHandler=new SendTextFileHandler(fs,ctx);
 		ch.closeFuture().addListener(sendFileHandler);
 		ch.pipeline().addLast(sendFileHandler);
 	}
 	/**
 	 * Send a file name list to client
+	 * @param ctx2 
 	 * @param fileNameList A StringBuffer object that contains file listing
 	 */
-	public void sendFileNameList(StringBuffer fileNameList) 
+	public void sendFileNameList(ChannelHandlerContext ctx2, StringBuffer fileNameList) 
 	{
 		ch.pipeline().remove("ReceiveHandler");
-		SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs);
+		SendHandler sendFileNameListHandler=new SendFileNameListHandler(fileNameList, fs,ctx2);
+		
 		ch.closeFuture().addListener(sendFileNameListHandler);
-		ch.pipeline().addLast(sendFileNameListHandler);		
+		ch.pipeline().addLast(sendFileNameListHandler);
 	}
 	/**
 	 * Set a channel for passive mode
@@ -127,19 +111,15 @@ public class PassiveServer
 	{
 		logger.debug("Set Channel is triggered");
 		this.ch=ch;
-	}
+	}	
 	/**
 	 * Stop the passive server and return passive port to passive port pool 
 	 */
 	public void stop()
 	{
-		bossGroup.shutdownGracefully();
-		workerGroup.shutdownGracefully();
+		myServer.stop();
 		myFtpServer.returnPassivePort(port);
-		bossGroup=null;
-		workerGroup=null;
 		logger.info("Passive Mode Server is shutdown gracefully.");
 		
 	}	
 }
-

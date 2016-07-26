@@ -1,15 +1,20 @@
 package com.myftpserver.command;
 
+import com.util.Utility;
+
+import io.netty.channel.ChannelHandlerContext;
+
 import java.net.InetSocketAddress;
+
+import com.myftpserver.MyFtpServer;
+import com.myftpserver.PassiveServer;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.MyFtpServer;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.PassiveServer;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
-import com.util.Utility;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -51,11 +56,11 @@ public class EPSV implements FtpCommandInterface
 	 * And then return the data port no. &nbsp; to ftp client for passive mode operation. 
 	 */
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		int port;
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		String message=new String(),localIp=new String();
 		MyFtpServer myFtpServer=fs.getServer();
 		if (serverConfig.isSupportPassiveMode())
@@ -67,9 +72,9 @@ public class EPSV implements FtpCommandInterface
 			{	
 				message=fs.getFtpMessage("229_EPSV_Ok");
 				message=message.replace("%1", String.valueOf(port));
-				localIp=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
+				localIp=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
 				fs.isPassiveModeTransfer=true;						
-				PassiveServer passiveServer=new PassiveServer(fs,localIp,port);
+				PassiveServer passiveServer=new PassiveServer(ctx, fs,localIp,port);
 				fs.setPassiveServer(passiveServer);
 			}
 		}
@@ -77,7 +82,7 @@ public class EPSV implements FtpCommandInterface
 		{
 			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
-		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);	
+		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);	
 		
 	}
 

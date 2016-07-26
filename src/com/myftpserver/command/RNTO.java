@@ -1,13 +1,15 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -50,11 +52,11 @@ public class RNTO implements FtpCommandInterface {
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs,String inPath) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs,String inPath) 
 	{
 		String newFileName;
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("inPath="+inPath+"|");
 		newFileName=inPath;
@@ -63,16 +65,16 @@ public class RNTO implements FtpCommandInterface {
 		try
 		{
 			fm.renameTo(fs, newFileName);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Rename_Ok"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Rename_Ok"));
 		}
 		catch (AccessDeniedException|NotAFileException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		
 		catch (PathNotFoundException|InvalidPathException|IOException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("450_File_Rename_Fail")+":"+err.getMessage());
 		} 
 	}
 	/*@Override

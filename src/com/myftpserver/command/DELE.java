@@ -1,15 +1,17 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
 import com.util.Utility;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.exception.NotAFileException;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
-import com.myftpserver.exception.NotAFileException;
 import com.myftpserver.exception.PathNotFoundException;
 
 import org.apache.logging.log4j.Logger;
@@ -54,24 +56,24 @@ public class DELE implements FtpCommandInterface {
 	 * if one of these tests fail, it will return error message.  
 	 */
 	@Override
-	public void execute(FtpSessionHandler fs, String inPath)
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String inPath)
 	{
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("param="+inPath+"|");
 		try
 		{
 			fm.deleteFile(fs, inPath);
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("250_Delete_Ok"));
 		}
 		catch (IOException|AccessDeniedException|NotAFileException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Delete_Failure")+":"+err.getMessage());
 		}
 	}
 	/*@Override

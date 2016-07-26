@@ -1,18 +1,22 @@
 package com.myftpserver.command;
+import com.util.Utility;
+
+import io.netty.channel.ChannelHandlerContext;
 
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.ServerConfig;
+import java.nio.file.InvalidPathException;
+
+import com.myftpserver.abstracts.FileManager;
+import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.exception.NotAFileException;
+import com.myftpserver.interfaces.FtpCommandInterface;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.PathNotFoundException;
-import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
-import com.myftpserver.interfaces.FtpCommandInterface;
-import com.util.Utility;
+
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -51,24 +55,24 @@ public class RETR implements FtpCommandInterface
 		return null;
 	}
 	@Override
-	public void execute(FtpSessionHandler fs, String inPath) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String inPath) 
 	{
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("inPath="+inPath+"|");
 		try 
 		{
 			fs.setDownloadFile(fm.getDownloadFileObject(fs, inPath));
-			Utility.sendFileToClient(fs);
+			Utility.sendFileToClient(ctx,fs);
 		} 
 		catch (InterruptedException|NotAFileException |AccessDeniedException |IOException err) 
 		{
-			Utility.handleTransferException(fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		}
 		catch (PathNotFoundException|InvalidPathException err) 
 		{
-			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 	}
 	/*@Override

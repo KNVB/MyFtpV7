@@ -1,4 +1,4 @@
-package com.myftpserver.interfaces;
+package com.myftpserver.abstracts;
 
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
@@ -39,7 +39,7 @@ public abstract class UserManager
 	 */
 	public Logger logger;
 	/**
-	 * User Manager interface
+	 * The UserManager class is an abstract class that provide method for FTP user management
 	 * @param logger Message logger
 	 */
 	public UserManager(Logger logger)

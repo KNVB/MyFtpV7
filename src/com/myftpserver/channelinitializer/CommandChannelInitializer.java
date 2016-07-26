@@ -6,7 +6,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
 import com.myftpserver.MyFtpServer;
-import com.myftpserver.ServerConfig;
+import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.handler.CommandChannelTimeoutHandler;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.listener.CommandChannelClosureListener;
 
@@ -36,6 +37,8 @@ import io.netty.handler.codec.string.StringDecoder;
  * @author SITO3
  *
  */
+
+
 public class CommandChannelInitializer extends ChannelInitializer<Channel>
 {
 	private Logger logger;
@@ -61,12 +64,13 @@ public class CommandChannelInitializer extends ChannelInitializer<Channel>
 		}
 		else
 		{
-			ServerConfig serverConfig=myFtpServer.getServerConfig();
+			FtpServerConfig serverConfig=myFtpServer.getServerConfig();
 			ch.closeFuture().addListener(new CommandChannelClosureListener(myFtpServer,remoteIp));
 			ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(serverConfig.getCommandChannelConnectionTimeOut(), 30, 0));
+			ch.pipeline().addLast("CommandChannelTimeoutHandler", new CommandChannelTimeoutHandler(logger,remoteIp));
 			ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
 			ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
-			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,myFtpServer,remoteIp));
+			ch.pipeline().addLast("MyHandler",new FtpSessionHandler(myFtpServer,remoteIp));
 		}
 	}
 

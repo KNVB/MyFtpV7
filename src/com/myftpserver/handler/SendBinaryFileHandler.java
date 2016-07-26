@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 * @author SITO3
 *
 */
+
 public class SendBinaryFileHandler extends SendHandler
 {
 	
@@ -41,6 +42,7 @@ public class SendBinaryFileHandler extends SendHandler
 	private FileChannel fc;
 	private String remoteIp;
 	private FtpSessionHandler fs;
+	private ChannelHandlerContext ctx;
 	private boolean isCompleted=false;
 	private RandomAccessFile downloadFile;
 	private ByteBuffer buffer=ByteBuffer.allocate(1024);
@@ -49,9 +51,10 @@ public class SendBinaryFileHandler extends SendHandler
 	 * It send file listing to client and then close the channel.
 	 * @param fs  {@link FtpSessionHandler} FtpSessionHandler object 
 	 */
-	public SendBinaryFileHandler(FtpSessionHandler fs) 
+	public SendBinaryFileHandler(FtpSessionHandler fs,ChannelHandlerContext ctx) 
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.logger=fs.getLogger();
 		this.remoteIp=fs.getClientIp();
 	}
@@ -132,7 +135,7 @@ public class SendBinaryFileHandler extends SendHandler
 	public void operationComplete(ChannelFuture cf) throws Exception
 	{
 		String message=fs.getFtpMessage("226_Transfer_Ok");
-		Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
+		Utility.sendMessageToClient(this.ctx.channel(),logger, remoteIp,message);
 	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)	throws Exception 

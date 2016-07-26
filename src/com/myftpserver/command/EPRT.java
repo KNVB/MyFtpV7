@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
@@ -46,12 +48,12 @@ public class EPRT implements FtpCommandInterface
 	 * It gets port no.&nbsp; from ftp client response for active mode operation. 
 	 */
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		String temp[]=param.trim().split("\\|");
 		Logger logger=fs.getLogger();
 		if (temp.length!=4)
-			Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
+			Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("500_Null_Command"));
 		else
 		{	
 			try
@@ -60,11 +62,11 @@ public class EPRT implements FtpCommandInterface
 				logger.debug("Port="+portNo);
 				fs.isPassiveModeTransfer=false;
 				fs.setActiveDataPortNo(portNo);
-				Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), fs.getFtpMessage("200_Port_Ok"));
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("200_Port_Ok"));
 			}
 			catch (Exception e)
 			{
-				Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), fs.getFtpMessage("550_CANT_CONNECT_CLNT"));
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), fs.getFtpMessage("550_CANT_CONNECT_CLNT"));
 			}
 		}
 	}

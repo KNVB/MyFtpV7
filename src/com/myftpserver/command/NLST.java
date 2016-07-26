@@ -1,12 +1,14 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import java.nio.file.InvalidPathException;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.Utility;
-import com.myftpserver.ServerConfig;
-import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
@@ -49,12 +51,12 @@ public class NLST implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		boolean fullList=false;
 		Logger logger=fs.getLogger();
 		String clientPath=new String();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		StringBuffer resultList=new StringBuffer();
 		FileManager fm=serverConfig.getFileManager();
 
@@ -75,20 +77,20 @@ public class NLST implements FtpCommandInterface
 				resultList=fm.getFullDirList(fs,clientPath);
 			else
 				resultList=fm.getFileNameList(fs,clientPath);
-			Utility.sendFileListToClient(fs,resultList);
+			Utility.sendFileListToClient(ctx,fs,resultList);
 		}		
 		catch (InterruptedException |AccessDeniedException|NotADirectoryException err) 
 		{
-			Utility.handleTransferException(fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		}
 		catch (PathNotFoundException |InvalidPathException err)
 		{
-			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}
 		catch (Exception err)
 		{
-			Utility.handleTransferException(fs,err.getMessage());
-		}
+			Utility.handleTransferException(ctx,fs,err.getMessage());
+		}		
 	}
 
 }

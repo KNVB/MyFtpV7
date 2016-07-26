@@ -1,4 +1,5 @@
 com.myftpserver
+com.myftpserver.abstracts
 com.myftpserver.channelinitializer
 com.myftpserver.command
 com.myftpserver.exception

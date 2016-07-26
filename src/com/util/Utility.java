@@ -2,21 +2,20 @@ package com.util;
 
 import com.myftpserver.*;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.SessionClosureListener;
-//import com.myftpserver.listener.TransferExceptionListener;
-
+import com.myftpserver.listener.CommandCompleteListener;
 import com.myftpserver.listener.TransferExceptionListener;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 
-
-
-
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.PropertyResourceBundle;
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.net.NetworkInterface;
@@ -81,21 +80,21 @@ public class Utility
 	 * @param resultList File List
 	 * @throws InterruptedException
 	 */
-	public static void sendFileListToClient(FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
+	public static void sendFileListToClient(ChannelHandlerContext ctx,FtpSessionHandler fs,StringBuffer resultList) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Transfer File Listing in Passive mode");
 			PassiveServer ps=fs.getPassiveServer();
-			ps.sendFileNameList(resultList);
-			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ps.sendFileNameList(ctx,resultList);
+			sendMessageToClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
 			logger.info("Transfer File Listing in Active mode");
-			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs);
+			sendMessageToClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(ctx,fs);
 			activeClient.sendFileNameList(resultList);
 		}
 	}
@@ -105,7 +104,7 @@ public class Utility
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static void sendFileToClient(FtpSessionHandler fs) throws InterruptedException, IOException 
+	public static void sendFileToClient(ChannelHandlerContext ctx,FtpSessionHandler fs) throws InterruptedException, IOException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
@@ -113,13 +112,13 @@ public class Utility
 			logger.info("Transfer File in Passive mode");
 			PassiveServer ps=fs.getPassiveServer();
 			ps.sendFile();
-			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			sendMessageToClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
 			logger.info("Transfer File in Active mode");
-			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs);
+			sendMessageToClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(ctx,fs);
 			activeClient.sendFile();
 		}
 	}
@@ -128,31 +127,32 @@ public class Utility
 	 * @param fs ftp session
 	 * @throws InterruptedException
 	 */
-	public static void receiveFileFromClient(FtpSessionHandler fs) throws InterruptedException 
+	public static void receiveFileFromClient(ChannelHandlerContext ctx,FtpSessionHandler fs) throws InterruptedException 
 	{
 		Logger logger=fs.getLogger();
 		if (fs.isPassiveModeTransfer)
 		{
 			logger.info("Receive File in Passiveive mode");
-			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			sendMessageToClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
 		}
 		else
 		{
 			logger.info("Receive File in Active mode");
-			sendMessageToClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
-			ActiveClient activeClient=new ActiveClient(fs);
+			sendMessageToClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("150_Open_Data_Conn"));
+			ActiveClient activeClient=new ActiveClient(ctx,fs);
 			activeClient.receiveFile();
 		}
 		
 	}
 	/**
 	 * It handle an transfer exception; it sends an error message and then close data transfer channel if necessary 
+	 * @param ctx response channel
 	 * @param fs ftp session
 	 * @param message The error message that to be send to client
 	 */
-	public static void handleTransferException(FtpSessionHandler fs, String message) 
+	public static void handleTransferException(ChannelHandlerContext ctx,FtpSessionHandler fs, String message) 
 	{
-		fs.getChannel().writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
+		ctx.channel().writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(new TransferExceptionListener(fs,message));
 	}	
 	/**
 	 * Prepare response for system inquiry
@@ -174,12 +174,12 @@ public class Utility
 	        return result;
 	}
 	/**
-	 * Get all IP address of the machine
+	 * Get all IP address of the current machine.<br>
 	 * http://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java
-	 * @return Array of IP address
+	 * @return Array of IP addresses
 	 * @throws UnknownHostException
 	 */
-	public static final ArrayList<String> getLocalHostLANAddress() throws UnknownHostException
+	public static final String[] getLocalHostLANAddress() throws UnknownHostException
 	{
 		String ip;
 		ArrayList<String> result = new ArrayList<String>();
@@ -250,7 +250,7 @@ public class Utility
 			unknownHostException.initCause(e);
 			throw unknownHostException;
 		}
-		return result;
+		return (String[]) result.toArray();
 	}
 	/**
 	 * Extract IP address 
@@ -269,5 +269,56 @@ public class Utility
 		   result=result.substring(0,index);                 
 		} 
 		return result; 
+	}
+	/**
+	 * Instantiate a class from key of a bundle
+	 * @param key 
+	 * @param bundle Resource bundle
+	 * @return object
+	 * @throws ClassNotFoundException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 */
+	public static final Constructor<?> getObject(String key,PropertyResourceBundle bundle) throws NoSuchMethodException, SecurityException, ClassNotFoundException
+	{
+		@SuppressWarnings("rawtypes")
+		Constructor c=null;
+		c=Class.forName(bundle.getString(key)).getConstructor(Logger.class);
+		return c;
+	}
+	/**
+	 * Get all supporting raw FTP command
+	 * @throws ClassNotFoundException 
+	 */
+	public static final String getAllSupportingCommand() throws ClassNotFoundException
+	{
+		int i=1;
+		File directory=null;
+		StringBuffer temp=new StringBuffer();
+		
+		String pckgname="com.myftpserver.command";
+		try { 
+		      directory=new File(Thread.currentThread().getContextClassLoader().getResource(pckgname.replace('.', '/')).getFile());
+		      for (String fileName :directory.list())
+		      {
+		    	  
+		    	  fileName =fileName.substring(0,fileName.lastIndexOf(".class"));
+		    	  if (i==10)
+		    	  {
+		    		 temp.append(fileName+"\r\n");
+		    		 i=1;
+		    	  }
+		    	  else
+		    	  { 
+		    		  temp.append(String.format("%1$-5s", fileName));
+		    		  i++;
+		    	  } 
+		      }
+		      return temp.toString();
+		    } 
+		catch(NullPointerException x) 
+		{ 
+		      throw new ClassNotFoundException(pckgname+" does not appear to be a valid package"); 
+		} 
 	}
 }

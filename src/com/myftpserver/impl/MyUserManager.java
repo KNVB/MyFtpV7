@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.User;
 import com.myftpserver.UserGroup;
 import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.UserManager;
+import com.myftpserver.abstracts.UserManager;
 import com.myftpserver.handler.FtpSessionHandler;
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -38,7 +38,7 @@ public class MyUserManager extends UserManager
 	String strSql=new String();
 	ArrayList<Object> values=null;
 	/**
-	 * An File Manager implementation
+	 * MyUserManager is a concrete subclass of {@link com.myftpserver.abstracts.UserManager}
 	 * @param logger Message logger
 	 */
 	public MyUserManager(Logger logger) 

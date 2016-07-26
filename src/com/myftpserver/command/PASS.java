@@ -1,14 +1,18 @@
 package com.myftpserver.command;
 
-import org.apache.logging.log4j.Logger;
+import io.netty.channel.ChannelHandlerContext;
 
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
 import com.myftpserver.exception.*;
-import com.myftpserver.interfaces.FileManager;
+
+import org.apache.logging.log4j.Logger;
+
+import com.myftpserver.abstracts.FileManager;
+import com.myftpserver.abstracts.UserManager;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
-import com.myftpserver.interfaces.UserManager;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -49,10 +53,10 @@ public class PASS implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		String message=new String();
 		if ((param==null) || (param.isEmpty()))
 		{
@@ -71,11 +75,16 @@ public class PASS implements FtpCommandInterface
 				fs.setCurrentPath("/");
 				fm.getRealHomePath(fs);
 				message=fs.getFtpMessage("230_Login_Ok").replace("%1", fs.getUserName());
-				Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
-			} 
-			catch (AccessDeniedException | InvalidHomeDirectoryException | LoginFailureException e) 
+				Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
+			}
+			catch (LoginFailureException e)
 			{
-				Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),e.getMessage());
+				Utility.disconnectFromClient(ctx.channel(), logger,fs.getClientIp(),fs.getFtpMessage("530_Invalid_Login"));
+			}
+			catch (AccessDeniedException | InvalidHomeDirectoryException e) 
+			{
+				Utility.disconnectFromClient(ctx.channel(), logger,fs.getClientIp(),e.getMessage());
+				//Utility.disconnectFromClient(fs.getChannel(), logger,fs.getClientIp(),fs.getFtpMessage(e.getMessage()));
 			} 
 		}
 	}

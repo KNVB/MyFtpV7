@@ -1,16 +1,20 @@
 package com.myftpserver.command;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.nio.file.InvalidPathException;
 
 import com.util.Utility;
-import com.myftpserver.*;
+
+import org.apache.logging.log4j.Logger;
+
+import com.myftpserver.abstracts.FileManager;
 import com.myftpserver.handler.FtpSessionHandler;
-import com.myftpserver.interfaces.FileManager;
+import com.myftpserver.abstracts.FtpServerConfig;
 import com.myftpserver.interfaces.FtpCommandInterface;
 import com.myftpserver.exception.AccessDeniedException;
 import com.myftpserver.exception.NotADirectoryException;
 import com.myftpserver.exception.PathNotFoundException;
 
-import org.apache.logging.log4j.Logger;
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -35,8 +39,8 @@ import org.apache.logging.log4j.Logger;
 public class LIST implements FtpCommandInterface 
 {
 	/**
-	 * It returns a list of files in the specified directory.<br>
-	 * For detail information about LIST command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>     
+	 *It returns a list of files in the specified directory.<br>
+	 *For detail information about LIST command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>     
 	 */
 	public LIST()
 	{
@@ -50,12 +54,12 @@ public class LIST implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		Logger logger=fs.getLogger();
 		String p[]=param.split(" ");
 		String clientPath=new String();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		StringBuffer resultList=new StringBuffer();
 		FileManager fm=serverConfig.getFileManager();
 		logger.debug("param="+param);
@@ -84,17 +88,17 @@ public class LIST implements FtpCommandInterface
 		try
 		{
 			resultList=fm.getFullDirList(fs,clientPath);
-			Utility.sendFileListToClient(fs,resultList);
+			Utility.sendFileListToClient(ctx,fs,resultList);
 		}
 		catch (InterruptedException |AccessDeniedException|NotADirectoryException err)
 		{
 			//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),err.getMessage());
-			Utility.handleTransferException(fs,err.getMessage());
+			Utility.handleTransferException(ctx,fs,err.getMessage());
 		} 
 		catch (PathNotFoundException |InvalidPathException err)
 		{
 			//Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(),fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
-			Utility.handleTransferException(fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
+			Utility.handleTransferException(ctx,fs,fs.getFtpMessage("550_File_Path_Not_Found")+":"+err.getMessage());
 		}	
 	}	
 }

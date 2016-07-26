@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import com.util.Utility;
 import com.myftpserver.User;
 import com.myftpserver.PassiveServer;
-import com.myftpserver.interfaces.UserManager;
+import com.myftpserver.abstracts.UserManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -45,6 +45,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 	private FtpSessionHandler fs;
 	boolean isUploadSuccess=true;
 	private String remoteIp,message;
+	private ChannelHandlerContext ctx;
 	private BufferedOutputStream bos=null;
 	private PassiveServer passiveServer=null;
 	/**
@@ -52,9 +53,10 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 	 * It also handle channel close event.
 	 * @param fs FtpSessionHandler object
 	 */
-	public ReceiveFileHandler(FtpSessionHandler fs)
+	public ReceiveFileHandler(FtpSessionHandler fs,ChannelHandlerContext ctx)
 	{
 		this.fs=fs;
+		this.ctx=ctx;
 		this.user=fs.getUser();
 		this.logger=fs.getLogger();
 		this.remoteIp=fs.getClientIp();
@@ -152,7 +154,7 @@ public class ReceiveFileHandler extends ChannelInboundHandlerAdapter implements 
 				tempFile=null;
 				fs.setUploadFile(null);
 				fs.setUploadTempFile(tempFile);
-				Utility.sendMessageToClient(fs.getChannel(),logger, remoteIp,message);
+				Utility.sendMessageToClient(this.ctx.channel(),logger, remoteIp,message);
 			}
 			catch (Exception err)
 			{

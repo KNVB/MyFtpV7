@@ -1,4 +1,6 @@
 package com.myftpserver.command;
+import io.netty.channel.ChannelHandlerContext;
+
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
 
@@ -39,8 +41,8 @@ public class XRMD extends RMD implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs,String param) 
 	{
-		super.execute(fs,param);
+		super.execute(ctx,fs,param);
 	}
 }

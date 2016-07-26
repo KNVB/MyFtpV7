@@ -1,12 +1,12 @@
 package com.myftpserver;
 
+import com.util.MyServer;
+import com.util.ConfigurationFactory;
+import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.handler.FtpSessionHandler;
+import com.myftpserver.channelinitializer.CommandChannelInitializer;
+
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.File;
 import java.util.Stack;
@@ -15,10 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
-
-import com.myftpserver.channelinitializer.CommandChannelInitializer;
-import com.myftpserver.handler.FtpSessionHandler;
-
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -34,7 +30,12 @@ import com.myftpserver.handler.FtpSessionHandler;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public final class MyFtpServer 
+/**
+ * 
+ * @author SITO3
+ *
+ */
+public class MyFtpServer 
 {
 	/**
 	 * Specify the transfer is send a file to client
@@ -48,29 +49,36 @@ public final class MyFtpServer
 	 * Specify the transfer is send a file listing to client
 	 */
 	public static final int SENDDIRLIST=2;
+
+	
 	
 	private static Logger logger=null;
-	private Stack<Integer> passivePorts;
 	private static int connectionCount=0;
-	private ServerConfig serverConfig=null;
-		
-	private EventLoopGroup bossGroup=new NioEventLoopGroup();
-    private EventLoopGroup workerGroup=new NioEventLoopGroup(); 
+	private boolean serverInitOk=false;
+	private Stack<Integer> passivePorts;
+	private FtpServerConfig serverConfig=null;
+	private MyServer<Integer> myServer=null;
 //-------------------------------------------------------------------------------------------    
 	/**
      * FTP Server object
+	 * @throws Exception 
      */
 	public MyFtpServer()
 	{
+		int loadConfigResult=FtpServerConfig.LOAD_FAIL;
 		File file = new File("conf/MyFtpServer.xml");
 		LoggerContext context =(org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
 		context.setConfigLocation(file.toURI());
 		
 		logger = LogManager.getLogger(MyFtpServer.class.getName()); 
 		logger.debug("Log4j2 is ready.");
-		serverConfig=new ServerConfig(logger);
-		if (serverConfig.load(this))
-		{	
+		myServer=new MyServer<Integer>(MyServer.ACCEPT_MULTI_CONNECTION,logger);
+		myServer.setChildHandlers(new CommandChannelInitializer(this,logger));
+		ConfigurationFactory cf=new ConfigurationFactory(logger);
+		serverConfig=cf.getServerConfiguration();
+		loadConfigResult=serverConfig.load();
+		if (loadConfigResult==FtpServerConfig.LOAD_OK)
+		{
 			logger.info("Server locale="+ serverConfig.getServerLocale());
 			logger.info("support passive mode="+serverConfig.isSupportPassiveMode());
 			if (serverConfig.isSupportPassiveMode()) 
@@ -83,28 +91,11 @@ public final class MyFtpServer
 				else
 					logger.info("NO passive port is/are specified!!!");
 			}
+			myServer.setServerPort(serverConfig.getServerPort());
+			myServer.setBindAddress(serverConfig.getAllBindAddress());
+			serverInitOk=true;
 		}
-		else
-			logger.debug("Server Configuration cannot be loaded");
 	}
-//-------------------------------------------------------------------------------------------	
-    /**
-	 * Get message logger
-	 * @return message logger 
-	 */
-    public Logger getLogger() 
-	{
-		return logger;
-	}
-//-------------------------------------------------------------------------------------------
-	/**
-	 * Get Configuration object
-	 * @return Configuration object
-	 */
-	public ServerConfig getServerConfig()
-	{
-		return serverConfig;
-	}	
 //-------------------------------------------------------------------------------------------	
 	/**
 	 * Called by CommandChannelClosureListener object when a FTP session is ended.
@@ -115,7 +106,8 @@ public final class MyFtpServer
 		logger.debug("Before:"+connectionCount);
 		connectionCount--;
 		logger.info("Concurrent Connection Count:"+connectionCount);
-	}	
+	}		
+//-------------------------------------------------------------------------------------------	
 	/**
 	 * Check whether the concurrent connection is over the limit
 	 * @return true when the concurrent connection is over the limit
@@ -129,6 +121,37 @@ public final class MyFtpServer
 		}
 		else			
 			return true;
+	}
+//-------------------------------------------------------------------------------------------	
+	/**
+	 * Get message logger
+	 * @return message logger 
+	 */
+    public Logger getLogger() 
+	{
+		return logger;
+	}
+//-------------------------------------------------------------------------------------------
+	/**
+	 * Get Configuration object
+	 * @return ServerConfiguration object
+	 */
+	public FtpServerConfig getServerConfig()
+	{
+		return serverConfig;
+	}	
+//-------------------------------------------------------------------------------------------	
+	/**
+	 * It is an API support raw ftp command REIN.<br>
+	 * For detail information about REIN command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
+	 *  
+	 * @param ch The user channel
+	 * @param remoteIp The remote user IP address. 
+	 */
+	public void reinitializeSession(Channel ch,String remoteIp) 
+	{
+		ch.pipeline().remove("MyHandler");
+		ch.pipeline().addLast("MyHandler",new FtpSessionHandler(this,remoteIp));
 	}
 //-------------------------------------------------------------------------------------------	
 	/**
@@ -161,77 +184,42 @@ public final class MyFtpServer
 			passivePorts.push(port);
 			logger.info("Passive Port:"+port+" return");
 		}
-	}
+	}	
 //-------------------------------------------------------------------------------------------	
 	/**
 	 *  start FTP server
 	 */
 	public void start()
 	{
-		String message=serverConfig.getFtpMessage("Server_Started");
-		try 
-        {
-			ServerBootstrap bootStrap = new ServerBootstrap();
-            bootStrap.group(bossGroup, workerGroup);
-            bootStrap.localAddress(serverConfig.getServerPort());
-            bootStrap.channel(NioServerSocketChannel.class);
-            bootStrap.childHandler(new CommandChannelInitializer(this,logger));
-            bootStrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-            
-            // Wait until the server socket is closed.
-            bootStrap.bind();
-            message=message.replace("%1",String.valueOf(serverConfig.getServerPort())); 
-            logger.info(message);
-        } 
-        catch (Exception e) 
-        {
-			e.printStackTrace();
-			this.stop();
-		}	        
-	}
-//-------------------------------------------------------------------------------------------	
-	/**
-	 * It is an API support raw ftp command REIN.<br>
-	 * For detail information about REIN command,please refer <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>
-	 *  
-	 * @param ch The user channel
-	 * @param remoteIp The remote user IP address. 
-	 */
-	public void reinitializeSession(Channel ch,String remoteIp) 
-	{
-		ch.pipeline().remove("MyHandler");
-		ch.pipeline().addLast("MyHandler",new FtpSessionHandler(ch,this,remoteIp));
-	}
-//-------------------------------------------------------------------------------------------	
+		//String message=serverConfig.getFtpMessage("Server_Started");
+		try
+		{
+			myServer.start();
+		}
+		catch (IllegalArgumentException e)
+		{
+			logger.info("Something Wrong:"+e.getMessage());
+		}
+		//message=message.replace("%1",String.valueOf(serverConfig.getServerPort())); 
+        //logger.info(message);
+	}	
 	/**
 	*  stop FTP server
 	*/
 	public void stop()
 	{
-		bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
-        bossGroup=null;
-        workerGroup=null;
-        logger.info("Server shutdown gracefully.");
+		myServer.stop();
+		logger.info("FTP Server shutdown gracefully.");
 		LoggerContext context = (LoggerContext) LogManager.getContext();
 		Configurator.shutdown(context);
 	}
-//-------------------------------------------------------------------------------------------
-	public static void main(String[] args) 
+//-------------------------------------------------------------------------------------------	
+	public static void main(String[] args)  
 	{
-		MyFtpServer m=new MyFtpServer();
-		m.start();
-		/*try 
-		{
-			ArrayList <String> Ip=Utility.getLocalHostLANAddress();
-			for (int i=0;i<Ip.size();i++)
-			{
-				System.out.println(Ip.get(i));
-			}
-		} 
-		catch (UnknownHostException e) 
-		{
-			e.printStackTrace();
-		}*/
+		MyFtpServer m;
+		m = new MyFtpServer();
+		if (m.serverInitOk)
+			m.start();
 	}
+
 }

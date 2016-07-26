@@ -3,11 +3,15 @@ package com.myftpserver.command;
 import com.util.Utility;
 import com.myftpserver.*;
 import com.myftpserver.handler.*;
-import com.myftpserver.interfaces.FtpCommandInterface;
+
+import io.netty.channel.ChannelHandlerContext;
 
 import java.net.InetSocketAddress;
 
 import org.apache.logging.log4j.Logger;
+
+import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.interfaces.FtpCommandInterface;
 
 /*
  * Copyright 2004-2005 the original author or authors.
@@ -48,13 +52,13 @@ public class PASV implements FtpCommandInterface
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs, String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs, String param) 
 	{
 		int port;
 		Logger logger=fs.getLogger();
-		ServerConfig serverConfig=fs.getServerConfig();
+		FtpServerConfig serverConfig=fs.getServerConfig();
 		MyFtpServer server=fs.getServer();
-		String message=new String(),localIP=((InetSocketAddress)fs.getChannel().localAddress()).getAddress().getHostAddress();
+		String message=new String(),localIP=((InetSocketAddress)ctx.channel().localAddress()).getAddress().getHostAddress();
 		if (serverConfig.isSupportPassiveMode())
 		{
 			port=server.getNextPassivePort();
@@ -70,7 +74,7 @@ public class PASV implements FtpCommandInterface
 				message=message.replaceAll("%1", localIP.replaceAll("\\.", ","));
 				message=message.replaceAll("%2", String.valueOf(port/256));
 				message=message.replaceAll("%3", String.valueOf(port % 256));
-				PassiveServer ps=new PassiveServer(fs,localIP,port);
+				PassiveServer ps=new PassiveServer(ctx, fs,localIP,port);
 				fs.setPassiveServer(ps);				
 			}				
 		}
@@ -79,6 +83,6 @@ public class PASV implements FtpCommandInterface
 			fs.isPassiveModeTransfer=false;
 			message=fs.getFtpMessage("502_Command_Not_Implemeneted");
 		}
-		Utility.sendMessageToClient(fs.getChannel(),logger,fs.getClientIp(), message);
+		Utility.sendMessageToClient(ctx.channel(),logger,fs.getClientIp(), message);
 	}
 }

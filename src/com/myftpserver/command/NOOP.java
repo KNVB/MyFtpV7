@@ -1,5 +1,7 @@
 package com.myftpserver.command;
 
+import io.netty.channel.ChannelHandlerContext;
+
 import com.util.Utility;
 import com.myftpserver.handler.FtpSessionHandler;
 import com.myftpserver.interfaces.FtpCommandInterface;
@@ -28,7 +30,7 @@ public class NOOP implements FtpCommandInterface {
 
 	/**
 	 * This command does not affect any parameters or previously<br>
-     * entered commands. It specifies no action other than that the<br>
+     * entered commands.It specifies no action other than that the<br>
      * server send an OK reply.<br>
 	 * For detail information about NOOP command,please refer  <a href="https://tools.ietf.org/html/rfc959">RFC 959</a>     
 	 */
@@ -43,9 +45,9 @@ public class NOOP implements FtpCommandInterface {
 	}
 
 	@Override
-	public void execute(FtpSessionHandler fs,String param) 
+	public void execute(ChannelHandlerContext ctx,FtpSessionHandler fs,String param) 
 	{
-		Utility.sendMessageToClient(fs.getChannel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Ok"));
+		Utility.sendMessageToClient(ctx.channel(),fs.getLogger(),fs.getClientIp(),fs.getFtpMessage("200_Ok"));
 	}
 
 }
