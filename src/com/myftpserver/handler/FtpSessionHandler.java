@@ -14,7 +14,9 @@ import com.myftpserver.FtpCommandExecutor;
 import com.myftpserver.abstracts.FtpServerConfig;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.SimpleChannelInboundHandler;
+
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -35,6 +37,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author SITO3
  *
  */
+@Sharable
 public class FtpSessionHandler extends SimpleChannelInboundHandler<String>
 {
 	private User user;
