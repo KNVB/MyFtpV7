@@ -46,7 +46,7 @@ public class SendTextFileHandler extends SendHandler
 	private ChannelHandlerContext ctx;
 	ByteBuffer buffer=ByteBuffer.allocate(1024);
 	/**
-	 * Send binary file handler
+	 * Send text file handler
 	 * It send file listing to client and then close the channel.
 	 * @param fs {@link FtpSessionHandler} FtpSessionHandler object 
 	 */
