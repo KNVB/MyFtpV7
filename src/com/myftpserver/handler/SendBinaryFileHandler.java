@@ -36,7 +36,6 @@ import org.apache.logging.log4j.Logger;
 
 public class SendBinaryFileHandler extends SendHandler
 {
-	
 	private Logger logger;
 	private int byteRead=0;
 	private FileChannel fc;
@@ -49,7 +48,8 @@ public class SendBinaryFileHandler extends SendHandler
 	/**
 	 * Send binary file handler
 	 * It send file listing to client and then close the channel.
-	 * @param fs  {@link FtpSessionHandler} FtpSessionHandler object 
+	 * @param fs  {@link FtpSessionHandler} FtpSessionHandler object
+	 * @param ctx ChannelHandlerContext
 	 */
 	public SendBinaryFileHandler(FtpSessionHandler fs,ChannelHandlerContext ctx) 
 	{
