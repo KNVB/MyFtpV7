@@ -11,6 +11,7 @@ import com.myftpserver.interfaces.SendHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler.Sharable;
 
 import org.apache.logging.log4j.Logger;
 /*
@@ -33,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 * @author SITO3
 *
 */
-
+@Sharable
 public class SendBinaryFileHandler extends SendHandler
 {
 	private Logger logger;

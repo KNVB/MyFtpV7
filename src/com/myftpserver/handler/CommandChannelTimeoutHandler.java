@@ -3,6 +3,7 @@ package com.myftpserver.handler;
 import org.apache.logging.log4j.Logger;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 /*
@@ -25,6 +26,7 @@ import io.netty.handler.timeout.IdleStateEvent;
  * @author SITO3
  *
  */
+@Sharable
 public class CommandChannelTimeoutHandler extends ChannelDuplexHandler
 {
 	Logger logger;

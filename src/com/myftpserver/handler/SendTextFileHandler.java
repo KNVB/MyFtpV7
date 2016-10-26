@@ -13,7 +13,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-
+import io.netty.channel.ChannelHandler.Sharable;
 import org.apache.logging.log4j.Logger;
 /*
 * Copyright 2004-2005 the original author or authors.
@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 * @author SITO3
 *
 */
+@Sharable
 public class SendTextFileHandler extends SendHandler
 {
 	private Logger logger;
