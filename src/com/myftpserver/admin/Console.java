@@ -2,16 +2,23 @@ package com.myftpserver.admin;
 
 import java.io.File;
 import java.util.Stack;
+
+import javax.swing.JMenu;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+
 import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.util.ConfigurationFactory;
 import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.admin.popup_windows.ConnectAdminServerPopup;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -19,9 +26,11 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 public class Console 
 {
+	private JMenu menu;
 	private JFrame frame;
 	private JMenuBar menuBar;
 	private JToolBar toolBar;
+	private JMenuItem menuItem;
 	
 	private static Logger logger=null;
 	private FtpServerConfig serverConfig=null;
@@ -50,6 +59,17 @@ public class Console
 		
 		// Create the menu bar.
 		menuBar = new JMenuBar();
+		
+		// Build the first menu.
+		menu = new JMenu("Server");
+		menu.setMnemonic(KeyEvent.VK_S);
+		menu.getAccessibleContext().setAccessibleDescription("Server related function.");
+		// a group of JMenuItems
+		menuItem = new JMenuItem("Connect", KeyEvent.VK_C);
+		menuItem.getAccessibleContext().setAccessibleDescription("Connect to Admin. server");
+		menuItem.addActionListener(new ConnectAdminServerPopup());
+		menu.add(menuItem);
+		menuBar.add(menu);
 		frame.setJMenuBar(menuBar);
 		frame.setVisible(true);
 	}
