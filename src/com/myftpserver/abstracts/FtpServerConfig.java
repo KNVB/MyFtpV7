@@ -89,20 +89,15 @@ public abstract class FtpServerConfig
 	 * Get User Manager object
 	 * @return UserManager object
 	 */
-	public abstract UserManager getUserManager();
-	/**
-	 * Get File Manager object
-	 * @return FileManager object
-	 */
-	public abstract FileManager getFileManager();
-	/**
-	 * Get Server default locale
-	 * @return Server default locale
-	 */
 	public abstract String getServerLocale();
 	/**
 	 * Get all binding address(es)
 	 * @return Array of IP address
 	 */
 	public abstract String[] getAllBindAddress();
+	/**
+	 * Get Server console heading
+	 * @return Server console heading
+	 */
+	public abstract String getConsoleHeading();
 }

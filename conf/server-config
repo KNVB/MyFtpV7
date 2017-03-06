@@ -1,6 +1,6 @@
 #FTP Server Configurations
 #FTP Server Console Heading
-ftpServerConsoleHeading="MyFtpServer console"
+ftpServerConsoleHeading=MyFtpServer admin. console
 #It specify the concrete subclass of com.myftpserver.abstracts.FileManager.
 fileManager.classname=com.myftpserver.impl.MyFileManager
 
