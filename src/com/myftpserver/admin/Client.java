@@ -4,9 +4,9 @@ import javax.swing.*;
 
 import java.awt.GridLayout;
 
-public class Console 
+public class Client 
 {	
-	public Console()
+	public Client()
 	{
         JTextField adminServerIpAddress = new JTextField();
         JTextField adminServerPort = new JTextField();
@@ -48,7 +48,7 @@ public class Console
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                new Console();
+                new Client();
             }
         });		
 	}
