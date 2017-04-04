@@ -1,39 +1,34 @@
 package com.myftpserver.admin;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 
-public class Client 
+public class LoginBox 
 {	
-	public Client()
+	public LoginBox()
 	{
-        JTextField adminServerIpAddress = new JTextField();
+        JFrame frame=new JFrame("Connect to Admin. server");
+		JTextField adminServerIpAddress = new JTextField();
         JTextField adminServerPort = new JTextField();
-        JPanel panel = new JPanel(new GridLayout(2, 2));
-       
+        JButton OkButton=new JButton("Ok");
+        JButton cancelButton=new JButton("Cancel");
+        JPanel panel = new JPanel(new GridLayout(3, 2));
+        Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
+        panel.setBorder(padding);
         panel.add(new JLabel("Admin. Server Host name/IP Address:"));
         panel.add(adminServerIpAddress);
         panel.add(new JLabel("Admin. Server Port No.:"));
         panel.add(adminServerPort);
-        UIManager.put("OptionPane.cancelButtonText", "Cancel");
-        UIManager.put("OptionPane.okButtonText", "Connect");
-        int result = JOptionPane.showConfirmDialog(null, panel, "Connect to Admin. server",
-            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            System.out.println(
-                 " " + adminServerIpAddress.getText()
-                + " " + adminServerPort.getText());
-        } else {
-            System.out.println("Cancelled");
-        }
-        panel=null;
-        try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        panel.add(OkButton);
+        panel.add(cancelButton);
+        frame.setContentPane(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
 	}
 	public static void main(String[] args) 
 	{
@@ -48,7 +43,7 @@ public class Client
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                new Client();
+                new LoginBox();
             }
         });		
 	}
