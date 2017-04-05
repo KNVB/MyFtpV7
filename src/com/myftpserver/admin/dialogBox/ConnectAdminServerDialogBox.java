@@ -1,22 +1,20 @@
-package com.myftpserver.admin;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-
-import java.awt.Dimension;
+package com.myftpserver.admin.dialogBox;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LoginBox implements ActionListener
+import javax.swing.*;
+import javax.swing.border.Border;
+
+public class ConnectAdminServerDialogBox implements ActionListener
 {	
     JFrame frame=new JFrame("Connect to Admin. server");
     JButton okButton=new JButton("Ok");
     JButton cancelButton=new JButton("Cancel");
-	public LoginBox()
+	JTextField adminServerIpAddress = new JTextField();
+    JTextField adminServerPort = new JTextField();
+	public ConnectAdminServerDialogBox()
 	{
-		JTextField adminServerIpAddress = new JTextField();
-        JTextField adminServerPort = new JTextField();
         JPanel panel = new JPanel(new GridLayout(3, 2));
         Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
         panel.setBorder(padding);
@@ -59,7 +57,7 @@ public class LoginBox implements ActionListener
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                new LoginBox();
+                new ConnectAdminServerDialogBox();
             }
         });		
 	}
