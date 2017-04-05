@@ -1,8 +1,9 @@
 package com.myftpserver.admin;
-
+import java.io.*;
 import javax.swing.*;
-
+import java.net.Socket;
 import java.awt.GridLayout;
+import java.net.InetSocketAddress;
 
 public class Client 
 {	
@@ -20,7 +21,27 @@ public class Client
         UIManager.put("OptionPane.okButtonText", "Connect");
         int result = JOptionPane.showConfirmDialog(null, panel, "Connect to Admin. server",
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
+        if (result == JOptionPane.OK_OPTION)
+        {
+        	 Socket client = new Socket();
+             InetSocketAddress isa = new InetSocketAddress(adminServerIpAddress.getText(),Integer.valueOf(adminServerPort.getText()));
+             try
+             {
+            	 client.connect(isa);
+            	 BufferedOutputStream out = new BufferedOutputStream(client.getOutputStream());
+            	 out.flush();
+                 out.close();
+            	 client.close();
+             }
+             catch (java.io.IOException e) 
+             {
+                 System.out.println("Socket連線有問題 !");
+                 System.out.println("IOException :" + e.toString());
+             }
+        }
+        
+        	
+        /*if (result == JOptionPane.OK_OPTION) {
             System.out.println(
                  " " + adminServerIpAddress.getText()
                 + " " + adminServerPort.getText());
@@ -33,7 +54,7 @@ public class Client
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	public static void main(String[] args) 
 	{
