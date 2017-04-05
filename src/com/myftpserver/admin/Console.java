@@ -5,14 +5,11 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
-import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -32,7 +29,8 @@ import org.apache.logging.log4j.LogManager;
 public class Console 
 {
 	private JFrame frame;
-	private JMenuItem menuItem;
+	private JScrollPane detailView = new JScrollPane();
+    private JScrollPane serverView = new JScrollPane();
 	private static Logger logger=null;
 	private FtpServerConfig serverConfig=null;
 	public int loadConfigResult=FtpServerConfig.LOAD_FAIL;
@@ -47,13 +45,13 @@ public class Console
 	}
 	public void loadConfigfailure()
 	{
-		frame = new JFrame("MyFtpServer console");
+		frame = new JFrame("Admin. Server console");
 		JOptionPane.showMessageDialog(null,
 			    "Loading Configuration File failure.");
 	}
 	private void initUI() 
 	{
-		
+		JMenuItem menuItem;
 		JPanel consolePanel=new JPanel(new GridLayout(1,2));
 		//Create a toolbar and give it an etched border.
 		JToolBar toolBar = new JToolBar();
@@ -62,11 +60,9 @@ public class Console
 		// Build the first menu.
 		JMenu menu = new JMenu("Server");
 		
-		
 		//Add the scroll panes to a split pane.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        JScrollPane detailView = new JScrollPane();
-        JScrollPane serverView = new JScrollPane();
+      
         frame = new JFrame(serverConfig.getConsoleHeading());
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -99,37 +95,7 @@ public class Console
 		frame.setVisible(true);
 		//serverView.setViewportView(builtTree());
 	}
-	private JTree builtTree()
-	{
-		JTree tree;
-		//Create the nodes.
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode("Servers");
-        DefaultMutableTreeNode user1 =new DefaultMutableTreeNode("User1");
-        DefaultMutableTreeNode user2 =new DefaultMutableTreeNode("User2");
-        DefaultMutableTreeNode server1 =new DefaultMutableTreeNode("Server1");
-        DefaultMutableTreeNode server2 =new DefaultMutableTreeNode("Server2");
-        top.add(server1);
-        server1.add(user1);
-        top.add(server2);
-        server2.add(user2);
-        //Create a tree that allows one selection at a time.
-        tree = new JTree(top);
-        
-        //Optionally play with line styles.  Possible values are
-        //"Angled" (the default), "Horizontal", and "None".
-        tree.putClientProperty("JTree.lineStyle", "Angled");
-        
-        //That allows one selection at a time.
-        tree.getSelectionModel().setSelectionMode
-                (TreeSelectionModel.SINGLE_TREE_SELECTION);
-        
-        //Listen for when the selection changes.
-       // tree.addTreeSelectionListener(this);
-        
-        //Collapse all child nodes
-        //tree.collapseRow(0);
-        return tree;
-	}
+	
 	private static void start() 
 	{
 		try {
