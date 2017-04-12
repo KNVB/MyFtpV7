@@ -19,14 +19,15 @@ import javax.swing.border.Border;
 
 public class ConnectAdminServerDialogBox implements ActionListener
 {
-	JFrame father=null; 
 	JButton okButton=new JButton("Ok");
     JButton cancelButton=new JButton("Cancel");
 	JTextField adminServerName = new JTextField();
     JTextField adminServerPort = new JTextField();
-    JDialog dialog=new JDialog(father,"Connect to Admin. server",true);
-    public ConnectAdminServerDialogBox()
+    JDialog dialog=null;
+    Socket client = null;
+    public ConnectAdminServerDialogBox(JFrame father)
     {
+    	 dialog=new JDialog(father,"Connect to Admin. server",true); 
     	 JPanel panel = new JPanel(new GridLayout(3, 2));
          Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
          panel.setBorder(padding);
@@ -48,7 +49,7 @@ public class ConnectAdminServerDialogBox implements ActionListener
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(okButton))
 		{
-			Socket client = new Socket();
+			client = new Socket();
 			try
 			{
 				 InetSocketAddress isa = new InetSocketAddress(adminServerName.getText(), Integer.parseInt(adminServerPort.getText()));
@@ -62,6 +63,15 @@ public class ConnectAdminServerDialogBox implements ActionListener
 		else
 		{
 			dialog.dispose();
+			if (client!=null)
+			{	
+				try {
+					client.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 	}	
 

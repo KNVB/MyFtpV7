@@ -75,7 +75,7 @@ public class Console
 		menuItem.getAccessibleContext().setAccessibleDescription("Connect to Admin. server");
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new ConnectAdminServerDialogBox();
+				new ConnectAdminServerDialogBox(frame);
 			}		
 		});
 		menu.add(menuItem);
@@ -118,8 +118,8 @@ public class Console
             public void run() {
             	 try {
                      UIManager.setLookAndFeel(
-                                  // "javax.swing.plaf.metal.MetalLookAndFeel");
-                                  // "com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+                                   //"javax.swing.plaf.metal.MetalLookAndFeel");
+                                   //"com.sun.java.swing.plaf.motif.MotifLookAndFeel");
                                  //UIManager.getCrossPlatformLookAndFeelClassName());
                              UIManager.getSystemLookAndFeelClassName());
                      start();
