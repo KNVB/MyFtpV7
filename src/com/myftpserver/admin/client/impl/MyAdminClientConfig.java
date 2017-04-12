@@ -1,9 +1,9 @@
-package com.myftpserver.admin.impl;
+package com.myftpserver.admin.client.impl;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.admin.abstracts.AdminClientConfig;
-import com.myftpserver.admin.util.MessageBundle;
+import com.myftpserver.admin.client.abstracts.AdminClientConfig;
+import com.myftpserver.admin.client.util.MessageBundle;
 
 import java.util.Locale;
 import java.io.IOException;
@@ -19,9 +19,9 @@ public class MyAdminClientConfig extends AdminClientConfig
 	private FileInputStream fis=null;
 	private MessageBundle ftpMessageBundle;
 	private PropertyResourceBundle bundle=null;
-	private String configFile = "conf/server-config";
+	private String configFile = "conf/adminClient-config";
 	/**
-	 *  MyFtpServerConfig is a concrete subclass of {@link com.myftpserver.admin.abstracts.AdminClientConfig}
+	 *  MyFtpServerConfig is a concrete subclass of {@link com.myftpserver.admin.client.abstracts.AdminClientConfig}
 	 * @param logger
 	 */
 	public MyAdminClientConfig(Logger logger) {

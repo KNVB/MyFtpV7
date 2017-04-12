@@ -1,4 +1,4 @@
-package com.myftpserver.admin.abstracts;
+package com.myftpserver.admin.client.abstracts;
 
 import java.util.Stack;
 

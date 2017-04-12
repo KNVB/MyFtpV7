@@ -1,1 +1,1 @@
-adminClientConfig.classname=com.myftpserver.admin.impl.MyAdminClientConfig
+adminClientConfig.classname=com.myftpserver.admin.client.impl.MyAdminClientConfig

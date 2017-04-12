@@ -1,4 +1,4 @@
-package com.myftpserver.admin.util;
+package com.myftpserver.admin.client.util;
 import java.io.File;
 
 import java.util.ArrayList;

@@ -1,5 +1,5 @@
-package com.myftpserver.admin.util;
-import com.myftpserver.admin.abstracts.AdminClientConfig;
+package com.myftpserver.admin.client.util;
+import com.myftpserver.admin.client.abstracts.AdminClientConfig;
 
 import java.io.IOException;
 import java.io.FileInputStream;
