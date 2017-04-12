@@ -20,8 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.util.ConfigurationFactory;
+import com.myftpserver.admin.abstracts.AdminClientConfig;
 import com.myftpserver.admin.dialogBox.*;
-import com.myftpserver.abstracts.FtpServerConfig;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -32,8 +32,8 @@ public class Console
 	private JScrollPane detailView = new JScrollPane();
     private JScrollPane serverView = new JScrollPane();
 	private static Logger logger=null;
-	private FtpServerConfig serverConfig=null;
-	public int loadConfigResult=FtpServerConfig.LOAD_FAIL;
+	private AdminClientConfig serverConfig=null;
+	public int loadConfigResult=AdminClientConfig.LOAD_FAIL;
 	public Console() throws Exception
 	{
 		logger = LogManager.getLogger(Console.class.getName()); 
@@ -100,7 +100,7 @@ public class Console
 	{
 		try {
 			Console c=new Console();
-			if (c.loadConfigResult==FtpServerConfig.LOAD_FAIL)
+			if (c.loadConfigResult==AdminClientConfig.LOAD_FAIL)
 				c.loadConfigfailure();
 			else
 			{

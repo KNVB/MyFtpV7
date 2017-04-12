@@ -1,4 +1,4 @@
-package com.myftpserver.abstracts;
+package com.myftpserver.admin.abstracts;
 
 import java.util.Stack;
 
@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  * @author SITO3
  *
  */
-public abstract class FtpServerConfig 
+public abstract class AdminClientConfig 
 {
 	/**
 	 * It indicated the FTP server configuration file is loaded successfully
@@ -45,13 +45,13 @@ public abstract class FtpServerConfig
 	 * The FtpServerConfig  class is an abstract class that provide method for FTP Server Configuration management
 	 * @param logger Message logger
 	 */
-	public FtpServerConfig(Logger logger)
+	public AdminClientConfig(Logger logger)
 	{
 		this.logger=logger;
 	}
 	/**
 	 * Load all server configuration
-	 * @return return whether load configuration {@link FtpServerConfig#LOAD_OK success} or {@link FtpServerConfig#LOAD_FAIL not} 
+	 * @return return whether load configuration {@link AdminClientConfig#LOAD_OK success} or {@link AdminClientConfig#LOAD_FAIL not} 
 	 */
 	public abstract int load();
 	/**

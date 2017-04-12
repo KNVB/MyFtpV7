@@ -1,9 +1,9 @@
-package com.myftpserver.impl;
+package com.myftpserver.admin.impl;
 
 import org.apache.logging.log4j.Logger;
 
 import com.util.MessageBundle;
-import com.myftpserver.abstracts.FtpServerConfig;
+import com.myftpserver.admin.abstracts.AdminClientConfig;
 
 import java.util.Locale;
 import java.io.IOException;
@@ -14,17 +14,17 @@ import java.util.MissingResourceException;
 import java.lang.reflect.InvocationTargetException;
 
 
-public class MyFtpServerConfig extends FtpServerConfig 
+public class MyAdminClientConfig extends AdminClientConfig 
 {
 	private FileInputStream fis=null;
 	private MessageBundle ftpMessageBundle;
 	private PropertyResourceBundle bundle=null;
 	private String configFile = "conf/server-config";
 	/**
-	 *  MyFtpServerConfig is a concrete subclass of {@link com.myftpserver.abstracts.FtpServerConfig}
+	 *  MyFtpServerConfig is a concrete subclass of {@link com.myftpserver.admin.abstracts.AdminClientConfig}
 	 * @param logger
 	 */
-	public MyFtpServerConfig(Logger logger) {
+	public MyAdminClientConfig(Logger logger) {
 		super(logger);
 		// TODO Auto-generated constructor stub
 	}
@@ -34,7 +34,7 @@ public class MyFtpServerConfig extends FtpServerConfig
 	{
 		String start,end;
 		int i,startPort,endPort;
-		int initResult=FtpServerConfig.LOAD_OK;
+		int initResult=AdminClientConfig.LOAD_OK;
 		try
 		{
 			fis=new FileInputStream(configFile);
@@ -44,12 +44,12 @@ public class MyFtpServerConfig extends FtpServerConfig
 		}
 		catch (FileNotFoundException e) 
 		{
-			initResult=FtpServerConfig.LOAD_FAIL;
+			initResult=AdminClientConfig.LOAD_FAIL;
 			logger.info("Config. file not found.");
 		} 
 		catch (IOException e) 
 		{
-			initResult=FtpServerConfig.LOAD_FAIL;
+			initResult=AdminClientConfig.LOAD_FAIL;
 			logger.info("An exception occur when loading config. file.");
 		} 
 		finally
