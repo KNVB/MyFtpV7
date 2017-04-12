@@ -1,4 +1,4 @@
-package com.util;
+package com.myftpserver.admin.util;
 import com.myftpserver.admin.abstracts.AdminClientConfig;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class ConfigurationFactory
 	private Logger logger=null;
 	private FileInputStream fis=null;
 	PropertyResourceBundle bundle = null;
-	private String configFile = "conf/server-config";
+	private String configFile = "conf/adminClient-config";
 	
 	/**
 	 * This is factory class for loading user specified class for UserManager, FileManager and Configuration abstract class   
@@ -55,11 +55,11 @@ public class ConfigurationFactory
 			fis=null;
 		}		
 	}
-	public AdminClientConfig getServerConfiguration()
+	public AdminClientConfig getAdminClientConfiguration()
 	{
 		AdminClientConfig sc=null;
 		try {
-			sc = (AdminClientConfig) Utility.getObject("ftpServerConfig.classname",bundle).newInstance(this.logger);
+			sc = (AdminClientConfig) Utility.getObject("adminClientConfig.classname",bundle).newInstance(this.logger);
 		} catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException

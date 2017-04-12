@@ -19,9 +19,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.util.ConfigurationFactory;
 import com.myftpserver.admin.abstracts.AdminClientConfig;
 import com.myftpserver.admin.dialogBox.*;
+import com.myftpserver.admin.util.ConfigurationFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +32,7 @@ public class Console
 	private JScrollPane detailView = new JScrollPane();
     private JScrollPane serverView = new JScrollPane();
 	private static Logger logger=null;
-	private AdminClientConfig serverConfig=null;
+	private AdminClientConfig adminConfig=null;
 	public int loadConfigResult=AdminClientConfig.LOAD_FAIL;
 	public Console() throws Exception
 	{
@@ -40,8 +40,8 @@ public class Console
 		logger.debug("Log4j2 is ready.");
 		
 		ConfigurationFactory cf=new ConfigurationFactory(logger);
-		serverConfig=cf.getServerConfiguration();
-		loadConfigResult=serverConfig.load();
+		adminConfig=cf.getAdminClientConfiguration();
+		loadConfigResult=adminConfig.load();
 	}
 	public void loadConfigfailure()
 	{
@@ -63,7 +63,7 @@ public class Console
 		//Add the scroll panes to a split pane.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
       
-        frame = new JFrame(serverConfig.getConsoleHeading());
+        frame = new JFrame(adminConfig.getConsoleHeading());
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(toolBar, BorderLayout.NORTH);

@@ -2,8 +2,8 @@ package com.myftpserver.admin.impl;
 
 import org.apache.logging.log4j.Logger;
 
-import com.util.MessageBundle;
 import com.myftpserver.admin.abstracts.AdminClientConfig;
+import com.myftpserver.admin.util.MessageBundle;
 
 import java.util.Locale;
 import java.io.IOException;

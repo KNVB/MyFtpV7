@@ -1,4 +1,4 @@
-package com.util;
+package com.myftpserver.admin.util;
 import java.util.*;
 
 import net.sf.j18n.J18n;

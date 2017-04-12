@@ -1,16 +1,14 @@
-package com.util;
-
-import com.myftpserver.*;
-
+package com.myftpserver.admin.util;
 import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.PropertyResourceBundle;
-import java.lang.reflect.Constructor;
-import java.net.InetAddress;
 import java.util.Enumeration;
+
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.lang.reflect.Constructor;
+import java.util.PropertyResourceBundle;
 
 import org.apache.logging.log4j.Logger;
 
