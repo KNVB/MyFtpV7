@@ -54,50 +54,5 @@ public abstract class AdminClientConfig
 	 * @return return whether load configuration {@link AdminClientConfig#LOAD_OK success} or {@link AdminClientConfig#LOAD_FAIL not} 
 	 */
 	public abstract int load();
-	/**
-	 * Does the server support passive mode transfer or not? 
-	 * @return return true when the server is support passive mode transfer
-	 */
-	public abstract boolean isSupportPassiveMode(); 
-	/**
-	 * Is there any passive port specified?
-	 * @return return true when passive port is specified.
-	 */
-	public abstract boolean isPassivePortSpecified();
-	/**
-	 * Get FTP server port 
-	 * @return the port no. that server is listening
-	 */
-	public abstract int getServerPort();
-	/**
-	 *Get properly message text for specified return code 
-	 * @param key the message key
-	 * @return value the corresponding message text
-	 */
-	public abstract String getFtpMessage(String key);
-	/**
-	 * Get FTP server maximum current connection 
-	 * @return FTP server maximum current connection
-	 */	
-	public abstract int getMaxConnection();
-	/**
-	 * Get FTP command channel time out in second
-	 * @return FTP command channel time out in second
-	 */		
-	public abstract int getCommandChannelConnectionTimeOut();
-	/**
-	 * Get User Manager object
-	 * @return UserManager object
-	 */
-	public abstract String getServerLocale();
-	/**
-	 * Get all binding address(es)
-	 * @return Array of IP address
-	 */
-	public abstract String[] getAllBindAddress();
-	/**
-	 * Get Server console heading
-	 * @return Server console heading
-	 */
 	public abstract String getConsoleHeading();
 }

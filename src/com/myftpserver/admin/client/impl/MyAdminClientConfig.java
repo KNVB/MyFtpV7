@@ -5,13 +5,13 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.admin.client.abstracts.AdminClientConfig;
 import com.myftpserver.admin.client.util.MessageBundle;
 
-import java.util.Locale;
+
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.PropertyResourceBundle;
-import java.util.MissingResourceException;
-import java.lang.reflect.InvocationTargetException;
+
+
 
 
 public class MyAdminClientConfig extends AdminClientConfig 
@@ -32,14 +32,12 @@ public class MyAdminClientConfig extends AdminClientConfig
 	@Override
 	public int load() 
 	{
-		String start,end;
-		int i,startPort,endPort;
 		int initResult=AdminClientConfig.LOAD_OK;
 		try
 		{
 			fis=new FileInputStream(configFile);
 			bundle = new PropertyResourceBundle(fis);
-			logger.debug("FTP Server Configuration is loaded successfully.");
+			logger.debug("Admin. Client Configuration is loaded successfully.");
 			fis.close();
 		}
 		catch (FileNotFoundException e) 
@@ -60,58 +58,10 @@ public class MyAdminClientConfig extends AdminClientConfig
 	}
 
 	@Override
-	public boolean isSupportPassiveMode() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isPassivePortSpecified() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int getServerPort() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String getFtpMessage(String key) 
-	{
-		return ftpMessageBundle.getMessage(key);
-	}
-
-	@Override
-	public int getMaxConnection() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getCommandChannelConnectionTimeOut() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String getServerLocale() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String[] getAllBindAddress() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getConsoleHeading() 
 	{
-		if (bundle.containsKey("ftpServerConsoleHeading"))
-			return bundle.getString("ftpServerConsoleHeading");
+		if (bundle.containsKey("adminConsoleHeading"))
+			return bundle.getString("adminConsoleHeading");
 		else
 			return null;
 	}

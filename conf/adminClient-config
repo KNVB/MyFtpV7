@@ -1,1 +1,2 @@
 adminClientConfig.classname=com.myftpserver.admin.client.impl.MyAdminClientConfig
+adminConsoleHeading=MyFtpServer admin. console

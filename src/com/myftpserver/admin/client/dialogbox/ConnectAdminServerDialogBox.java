@@ -16,8 +16,8 @@ import javax.swing.border.Border;
 
 import org.apache.logging.log4j.Logger;
 
-import com.myftpserver.admin.client.Client;
-import com.myftpserver.admin.client.Console;
+import com.myftpserver.admin.client.AdminClient;
+import com.myftpserver.admin.client.AdminConsole;
 
 public class ConnectAdminServerDialogBox implements ActionListener
 {
@@ -27,8 +27,8 @@ public class ConnectAdminServerDialogBox implements ActionListener
     JTextField adminServerPort = new JTextField();
     JDialog dialog=null;
     Logger logger=null;
-    Console console=null;
-    public ConnectAdminServerDialogBox(Console console,JFrame father, Logger logger)
+    AdminConsole console=null;
+    public ConnectAdminServerDialogBox(AdminConsole console,JFrame father, Logger logger)
     {
     	 dialog=new JDialog(father,"Connect to Admin. server",true); 
     	 JPanel panel = new JPanel(new GridLayout(3, 2));
@@ -58,14 +58,14 @@ public class ConnectAdminServerDialogBox implements ActionListener
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(okButton))
 		{
-			Client adminClient;
+			AdminClient adminClient;
 			try
 			{
-				 adminClient = new Client(adminServerName.getText(), Integer.parseInt(adminServerPort.getText()),logger);
+				 adminClient = new AdminClient(adminServerName.getText(), Integer.parseInt(adminServerPort.getText()),logger);
 				 console.updateUI(adminClient);
 				 dialog.dispose();
 			}
-			catch (NumberFormatException|InterruptedException ex)
+			catch (InterruptedException|IllegalArgumentException ex)
 			{
 				JOptionPane.showMessageDialog(dialog, "Connection to Admin. Server failured.");
 			}

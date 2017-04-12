@@ -28,20 +28,20 @@ import com.myftpserver.admin.client.util.ConfigurationFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class Console 
+public class AdminConsole 
 {
 	private JFrame frame;
 	private JScrollPane detailView = new JScrollPane();
     private JScrollPane serverView = new JScrollPane();
     
-    private Client adminClient=null;
+    private AdminClient adminClient=null;
     private static Logger logger=null;
 	private AdminClientConfig adminConfig=null;
 	public int loadConfigResult=AdminClientConfig.LOAD_FAIL;
 	private ConnectAdminServerDialogBox connectAdminServerDialogBox;
-	public Console() throws Exception
+	public AdminConsole() throws Exception
 	{
-		logger = LogManager.getLogger(Console.class.getName()); 
+		logger = LogManager.getLogger(AdminConsole.class.getName()); 
 		logger.debug("Log4j2 is ready.");
 		
 		ConfigurationFactory cf=new ConfigurationFactory(logger);
@@ -64,7 +64,7 @@ public class Console
 		//Create the menu bar.
 		JMenuBar menuBar = new JMenuBar();
 		// Build the first menu.
-		JMenu menu = new JMenu("Server");
+		JMenu menu = new JMenu("Admin. Server");
 		
 		connectAdminServerDialogBox=new ConnectAdminServerDialogBox(this,frame,logger);
 		//Add the scroll panes to a split pane.
@@ -110,6 +110,7 @@ public class Console
 				if (adminClient!=null)
 				{	
 					adminClient.disconnect();
+					adminClient=null;
 				}
             }
 		});
@@ -119,7 +120,7 @@ public class Console
 	private static void start() 
 	{
 		try {
-			Console c=new Console();
+			AdminConsole c=new AdminConsole();
 			if (c.loadConfigResult==AdminClientConfig.LOAD_FAIL)
 				c.loadConfigfailure();
 			else
@@ -131,7 +132,7 @@ public class Console
 			e.printStackTrace();
 		}
 	}
-	public void updateUI(Client adminClient) 
+	public void updateUI(AdminClient adminClient) 
 	{
 		this.adminClient=adminClient;
 	}
