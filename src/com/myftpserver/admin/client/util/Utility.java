@@ -1,10 +1,12 @@
 package com.myftpserver.admin.client.util;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.util.CharsetUtil;
+
 import java.io.File;
-
 import java.util.ArrayList;
-import java.util.Enumeration;
-
 import java.net.InetAddress;
+import java.util.Enumeration;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.lang.reflect.Constructor;
@@ -40,6 +42,17 @@ public class Utility
 	public Utility()
 	{
 		
+	}
+	/**
+	 * It sends a response message to client
+	 * @param ch ftp channel
+	 * @param logger  message logger
+	 * @param remoteIp client IP address 
+	 * @param ftpMessage response message
+	 */
+	public static void sendMessageToServer(Channel ch, Logger logger,String msg) 
+	{
+		ch.writeAndFlush(Unpooled.copiedBuffer(msg+"\r\n",CharsetUtil.UTF_8));
 	}
 	/**
 	 * Prepare response for system inquiry

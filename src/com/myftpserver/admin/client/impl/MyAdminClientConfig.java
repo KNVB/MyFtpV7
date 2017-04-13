@@ -17,7 +17,7 @@ import java.util.PropertyResourceBundle;
 public class MyAdminClientConfig extends AdminClientConfig 
 {
 	private FileInputStream fis=null;
-	private MessageBundle ftpMessageBundle;
+	private MessageBundle adminMessageBundle;
 	private PropertyResourceBundle bundle=null;
 	private String configFile = "conf/adminClient-config";
 	/**

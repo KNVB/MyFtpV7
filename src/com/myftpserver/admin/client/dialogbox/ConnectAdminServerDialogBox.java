@@ -3,6 +3,10 @@ package com.myftpserver.admin.client.dialogbox;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.JPanel;
 import javax.swing.JFrame;
@@ -19,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 import com.myftpserver.admin.client.AdminClient;
 import com.myftpserver.admin.client.AdminConsole;
 
-public class ConnectAdminServerDialogBox implements ActionListener
+public class ConnectAdminServerDialogBox  implements ActionListener 
 {
 	JButton okButton=new JButton("Ok");
     JButton cancelButton=new JButton("Cancel");
@@ -27,8 +31,8 @@ public class ConnectAdminServerDialogBox implements ActionListener
     JTextField adminServerPort = new JTextField();
     JDialog dialog=null;
     Logger logger=null;
-    AdminConsole console=null;
-    public ConnectAdminServerDialogBox(AdminConsole console,JFrame father, Logger logger)
+    AdminConsole adminConsole=null;
+    public ConnectAdminServerDialogBox(AdminConsole adminConsole,JFrame father, Logger logger)
     {
     	 dialog=new JDialog(father,"Connect to Admin. server",true); 
     	 JPanel panel = new JPanel(new GridLayout(3, 2));
@@ -47,7 +51,7 @@ public class ConnectAdminServerDialogBox implements ActionListener
          dialog.pack();
          dialog.setLocationRelativeTo(null); // show in the center of screen
         
-         this.console=console;
+         this.adminConsole=adminConsole;
          this.logger=logger;
     }
     public void show() 
@@ -58,16 +62,18 @@ public class ConnectAdminServerDialogBox implements ActionListener
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(okButton))
 		{
-			AdminClient adminClient;
 			try
 			{
-				 adminClient = new AdminClient(adminServerName.getText(), Integer.parseInt(adminServerPort.getText()),logger);
-				 console.updateUI(adminClient);
-				 dialog.dispose();
+				new AdminClient(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()),adminConsole,logger);
+				dialog.dispose();
 			}
-			catch (InterruptedException|IllegalArgumentException ex)
+			catch (IllegalArgumentException ex)
 			{
-				JOptionPane.showMessageDialog(dialog, "Connection to Admin. Server failured.");
+				JOptionPane.showMessageDialog(dialog, "Invalid host name or port no.");
+			}
+			catch (Exception ex)
+			{
+				JOptionPane.showMessageDialog(dialog, "Connection to admin. server failure");
 			}
 		}
 		else
@@ -75,7 +81,6 @@ public class ConnectAdminServerDialogBox implements ActionListener
 			dialog.dispose();
 		}
 	}
-	
 
 }
 

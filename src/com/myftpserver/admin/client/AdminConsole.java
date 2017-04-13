@@ -1,5 +1,9 @@
 package com.myftpserver.admin.client;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler.Sharable;
+
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
@@ -21,20 +25,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import com.myftpserver.admin.client.abstracts.AdminClientConfig;
 import com.myftpserver.admin.client.dialogbox.*;
 import com.myftpserver.admin.client.util.ConfigurationFactory;
+import com.myftpserver.admin.client.abstracts.AdminClientConfig;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-public class AdminConsole 
+@Sharable
+public class AdminConsole
 {
 	private JFrame frame;
 	private JScrollPane detailView = new JScrollPane();
     private JScrollPane serverView = new JScrollPane();
-    
-    private AdminClient adminClient=null;
+    private Channel adminServerChannel=null;
     private static Logger logger=null;
 	private AdminClientConfig adminConfig=null;
 	public int loadConfigResult=AdminClientConfig.LOAD_FAIL;
@@ -72,7 +75,7 @@ public class AdminConsole
         
         
         frame = new JFrame(adminConfig.getConsoleHeading());
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(toolBar, BorderLayout.NORTH);
 		detailView.setWheelScrollingEnabled(true);
@@ -107,16 +110,27 @@ public class AdminConsole
 			@Override
             public void windowClosing(WindowEvent e)
             {
-				if (adminClient!=null)
+				logger.debug("Windows Close");
+				if (adminServerChannel!=null)
 				{	
-					adminClient.disconnect();
-					adminClient=null;
+					adminServerChannel.close();
+					logger.debug("I am Here 2");
 				}
             }
 		});
 		//serverView.setViewportView(builtTree());
 	}
-	
+	public void processServerResponse(ChannelHandlerContext ctx,String responseMsg) 
+	{
+		this.adminServerChannel=ctx.channel();
+		responseMsg=responseMsg.replaceAll("\r\n","");
+		logger.debug("server response message:"+responseMsg+"|");
+		logger.debug(responseMsg.equals("220"));
+	}
+	public void showErrorMessage(String message) 
+	{
+		JOptionPane.showMessageDialog(null, message);
+	}	
 	private static void start() 
 	{
 		try {
@@ -132,10 +146,7 @@ public class AdminConsole
 			e.printStackTrace();
 		}
 	}
-	public void updateUI(AdminClient adminClient) 
-	{
-		this.adminClient=adminClient;
-	}
+	
 	public static void main(String[] args) 
 	{
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -153,6 +164,5 @@ public class AdminConsole
             	
             }
         });
-	}
-	
+	}	
 }
