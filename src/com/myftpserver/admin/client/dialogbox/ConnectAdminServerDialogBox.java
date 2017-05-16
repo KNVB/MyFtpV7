@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
@@ -29,19 +30,26 @@ public class ConnectAdminServerDialogBox  implements ActionListener
     JButton cancelButton=new JButton("Cancel");
 	JTextField adminServerName = new JTextField();
     JTextField adminServerPort = new JTextField();
+    JTextField adminUserName = new JTextField();
+    JTextField adminPassword = new JPasswordField();
     JDialog dialog=null;
     Logger logger=null;
     AdminConsole adminConsole=null;
     public ConnectAdminServerDialogBox(AdminConsole adminConsole,JFrame father, Logger logger)
     {
     	 dialog=new JDialog(father,"Connect to Admin. server",true); 
-    	 JPanel panel = new JPanel(new GridLayout(3, 2));
+    	 JPanel panel = new JPanel(new GridLayout(5, 2));
          Border padding = BorderFactory.createEmptyBorder(10,10,10,10);
          panel.setBorder(padding);
          panel.add(new JLabel("Admin. Server Host name/IP Address:"));
          panel.add(adminServerName);
          panel.add(new JLabel("Admin. Server Port No.:"));
          panel.add(adminServerPort);
+         panel.add(new JLabel("Admin. User Name:"));
+         panel.add(adminUserName);
+         panel.add(new JLabel("Admin. Password:"));
+         panel.add(adminPassword);
+         
          panel.add(okButton);
          panel.add(cancelButton);
          okButton.addActionListener(this);
