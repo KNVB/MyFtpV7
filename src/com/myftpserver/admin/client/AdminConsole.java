@@ -1,6 +1,5 @@
 package com.myftpserver.admin.client;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 
@@ -37,8 +36,9 @@ public class AdminConsole
 	private JFrame frame;
 	private JScrollPane detailView = new JScrollPane();
     private JScrollPane serverView = new JScrollPane();
-    private Channel adminServerChannel=null;
+
     private static Logger logger=null;
+    private AdminClient adminClient=null;
 	private AdminClientConfig adminConfig=null;
 	public int loadConfigResult=AdminClientConfig.LOAD_FAIL;
 	private ConnectAdminServerDialogBox connectAdminServerDialogBox;
@@ -111,9 +111,9 @@ public class AdminConsole
             public void windowClosing(WindowEvent e)
             {
 				logger.debug("Windows Close");
-				if (adminServerChannel!=null)
+				if (adminClient!=null)
 				{	
-					adminServerChannel.close();
+					adminClient.shutdown();
 					logger.debug("I am Here 2");
 				}
             }
@@ -122,11 +122,14 @@ public class AdminConsole
 	}
 	public void processServerResponse(ChannelHandlerContext ctx,String responseMsg) 
 	{
-		this.adminServerChannel=ctx.channel();
 		responseMsg=responseMsg.replaceAll("\r\n","");
 		logger.debug("server response message:"+responseMsg+"|");
 		logger.debug(responseMsg.equals("220"));
 	}
+	public void setAdminClient(AdminClient adminClient) 
+	{
+		this.adminClient=adminClient;
+	}	
 	public void showErrorMessage(String message) 
 	{
 		JOptionPane.showMessageDialog(null, message);

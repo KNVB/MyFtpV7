@@ -3,10 +3,6 @@ package com.myftpserver.admin.client.dialogbox;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 
 import javax.swing.JPanel;
 import javax.swing.JFrame;
@@ -72,7 +68,9 @@ public class ConnectAdminServerDialogBox  implements ActionListener
 		{
 			try
 			{
-				new AdminClient(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()),adminConsole,logger);
+				AdminClient adminClient=new AdminClient(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()),adminUserName.getText(),adminPassword.getText(),adminConsole,logger);
+				adminClient.connect();
+				adminConsole.setAdminClient(adminClient);
 				dialog.dispose();
 			}
 			catch (IllegalArgumentException ex)
