@@ -68,8 +68,9 @@ public class ConnectAdminServerDialogBox  implements ActionListener
 		{
 			try
 			{
-				AdminClient adminClient=new AdminClient(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()),adminUserName.getText(),adminPassword.getText(),adminConsole,logger);
+				AdminClient adminClient=new AdminClient(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()),adminConsole,logger);
 				adminClient.connect();
+				adminClient.login(adminUserName.getText(),adminPassword.getText());
 				adminConsole.setAdminClient(adminClient);
 				dialog.dispose();
 			}

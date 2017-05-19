@@ -3,8 +3,7 @@ package com.myftpserver.admin.client.impl;
 import org.apache.logging.log4j.Logger;
 
 import com.myftpserver.admin.client.abstracts.AdminClientConfig;
-import com.myftpserver.admin.client.util.MessageBundle;
-
+import com.myftpserver.admin.util.MessageBundle;
 
 import java.io.IOException;
 import java.io.FileInputStream;

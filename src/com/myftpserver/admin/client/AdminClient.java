@@ -4,27 +4,30 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
+import com.myftpserver.admin.client.handler.AdminClientSessionHandler;
+import com.myftpserver.admin.object.AdminUser;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.oio.OioEventLoopGroup;
+import io.netty.channel.socket.oio.OioSocketChannel;
+
 public class AdminClient 
 {
-	private Logger logger;
-	private int adminServerPort;
+	private AdminClientSessionHandler handler;
 	private AdminConsole adminConsole;
-	private String adminUserName = new String();
-	private String adminPassword = new String();
+	private Channel ch;
+	private EventLoopGroup group = new OioEventLoopGroup();
+	private int adminServerPort;
+	private Logger logger;
 	private String adminServerName = new String();
-	private EventLoopGroup group = new NioEventLoopGroup();
-	public AdminClient(String adminServerName,int adminServerPort,String adminUserName,String adminPassword,AdminConsole adminConsole,Logger logger)
+	public AdminClient(String adminServerName,int adminServerPort,AdminConsole adminConsole,Logger logger)
 	{
 		this.adminServerName = adminServerName;
 		this.adminServerPort = adminServerPort;
-		this.adminUserName = adminUserName;
-		this.adminPassword = adminPassword;
 		this.adminConsole=adminConsole;
 		this.logger=logger;
 	}
@@ -32,10 +35,15 @@ public class AdminClient
 	{
 		Bootstrap b = new Bootstrap(); 
 		b.group(group);
-		b.channel(NioSocketChannel.class);
-		b.handler(new AdminChannelInitializer(this.adminUserName,this.adminPassword,logger,this));
+		b.channel(OioSocketChannel.class);
+		b.handler(new AdminChannelInitializer(logger,this));
 		b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-		b.connect(adminServerName ,adminServerPort).sync();
+		ch=b.connect(adminServerName ,adminServerPort).sync().channel();
+		handler = ch.pipeline().get(AdminClientSessionHandler.class);
+	}
+	public void login(String adminUserName,String adminPassword) throws Exception
+	{
+		handler.sendRequest(new AdminUser(adminUserName,adminPassword,"login"));
 	}
 	public void shutdown() 
 	{

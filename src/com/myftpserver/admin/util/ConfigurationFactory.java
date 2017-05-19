@@ -1,4 +1,4 @@
-package com.myftpserver.admin.client.util;
+package com.myftpserver.admin.util;
 import com.myftpserver.admin.client.abstracts.AdminClientConfig;
 
 import java.io.IOException;

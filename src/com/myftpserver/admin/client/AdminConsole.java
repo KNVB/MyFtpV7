@@ -25,8 +25,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import com.myftpserver.admin.client.dialogbox.*;
-import com.myftpserver.admin.client.util.ConfigurationFactory;
 import com.myftpserver.admin.client.abstracts.AdminClientConfig;
+import com.myftpserver.admin.util.ConfigurationFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

@@ -1,36 +1,63 @@
 package com.myftpserver.admin.client.handler;
 
-import org.apache.logging.log4j.Logger;
-
 import com.myftpserver.admin.client.AdminClient;
-import com.myftpserver.admin.client.util.Utility;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class AdminClientSessionHandler extends SimpleChannelInboundHandler<String> 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.logging.log4j.Logger;
+
+public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Object> 
 {
-	private Logger logger;
 	private AdminClient adminClient;
-	private String adminUserName = new String();
-	private String adminPassword = new String();
-	public AdminClientSessionHandler(String adminUserName,String adminPassword, Logger logger, AdminClient adminClient) 
+	// Stateful properties
+    private volatile Channel channel;
+	private Logger logger;
+	
+	
+	private final BlockingQueue<Object> answer = new LinkedBlockingQueue<Object>();
+	public AdminClientSessionHandler(Logger logger, AdminClient adminClient) 
 	{
 		this.logger=logger;
 		this.adminClient=adminClient;
-		this.adminUserName = adminUserName;
-		this.adminPassword = adminPassword;
+	
+	}
+	@Override
+    public void channelRegistered(ChannelHandlerContext ctx) 
+	{
+        channel = ctx.channel();
+    }
+	public Object sendRequest(Object obj)
+	{
+		boolean interrupted = false;
+		Object result;
+		channel.writeAndFlush(obj);
+		for (;;) {
+	            try {
+	                result = answer.take();
+	                break;
+	            } catch (InterruptedException ignore) {
+	                interrupted = true;
+	            }
+	        }
+
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
+        return result;
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx)
 	{
-		Utility.sendMessageToServer(ctx.channel(), logger, adminUserName+"\n"+adminPassword);
 	}
 	@Override
-	protected void channelRead0(ChannelHandlerContext arg0, String arg1)
-			throws Exception {
-		
-		
+	protected void channelRead0(ChannelHandlerContext ctx, Object obj)throws Exception 
+	{
+		 answer.add(obj);
 	}
 	/**
 	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.

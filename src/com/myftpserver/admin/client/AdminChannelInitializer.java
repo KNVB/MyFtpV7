@@ -15,20 +15,16 @@ public class AdminChannelInitializer extends ChannelInitializer<Channel>
 {
 	private Logger logger;
 	private AdminClient adminClient;
-	private String adminUserName = new String();
-	private String adminPassword = new String();
-	public AdminChannelInitializer(String adminUserName,String adminPassword,Logger logger,AdminClient adminClient) 
+	public AdminChannelInitializer(Logger logger,AdminClient adminClient) 
 	{
 		this.logger=logger;
 		this.adminClient=adminClient;
-		this.adminUserName = adminUserName;
-		this.adminPassword = adminPassword;
 	}
 
 	@Override
 	protected void initChannel(Channel ch) throws Exception 
 	{
-		AdminClientSessionHandler adminClientSessionHandler=new AdminClientSessionHandler(this.adminUserName,this.adminPassword,this.logger,this.adminClient);
+		AdminClientSessionHandler adminClientSessionHandler=new AdminClientSessionHandler(this.logger,this.adminClient);
 		ch.closeFuture().addListener(new AdminChannelCloseListner(adminClient));
 		ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
 		ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
