@@ -1,8 +1,9 @@
-package com;
+package com.myftpserver.admin.server.tx;
 import java.net.InetSocketAddress;
+
 import org.apache.logging.log4j.Logger;
 
-import com.AdminServer;
+import com.myftpserver.admin.server.AdminServer;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

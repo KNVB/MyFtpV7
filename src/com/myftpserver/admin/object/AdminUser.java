@@ -1,15 +1,15 @@
-package com;
+package com.myftpserver.admin.object;
 
 import java.io.Serializable;
 
-public class User implements Serializable 
+public class AdminUser implements Serializable 
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9001969874305526543L;
 	String name,password;
-	public User()
+	public AdminUser()
 	{
 		name="AA";
 		password="pwd";

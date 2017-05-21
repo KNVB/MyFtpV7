@@ -1,8 +1,10 @@
-package com;
+package com.myftpserver.admin.server.tx;
 
 import java.net.InetSocketAddress;
 
 import org.apache.logging.log4j.Logger;
+
+import com.myftpserver.admin.server.AdminServer;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -12,7 +14,6 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.CharsetUtil;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -33,11 +34,11 @@ import io.netty.util.CharsetUtil;
  * @author SITO3
  *
  */
-public class AdminChannelInitializer extends ChannelInitializer<Channel>
+public class AdminServerChannelInitializer extends ChannelInitializer<Channel>
 {
 	private Logger logger;
-	private AdminServer<Integer> adminServer;
-	public AdminChannelInitializer(AdminServer<Integer> t, Logger logger)
+	private AdminServer<Object> adminServer;
+	public AdminServerChannelInitializer(AdminServer<Object> t, Logger logger)
 	{
 		this.adminServer=t;
 		this.logger=logger;
@@ -46,9 +47,11 @@ public class AdminChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
+	//	ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
+	//	ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
 		ch.pipeline().addLast(new ObjectEncoder());
 		ch.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
-		ch.pipeline().addLast("adminSessionHandler",new AdminServerSessionHandler(this.logger));
+		ch.pipeline().addLast(new AdminServerSessionHandler(logger));
 	}
 
 }

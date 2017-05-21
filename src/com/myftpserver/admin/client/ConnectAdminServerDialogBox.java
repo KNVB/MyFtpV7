@@ -1,4 +1,4 @@
-package com;
+package com.myftpserver.admin.client;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +16,8 @@ import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 
 import org.apache.logging.log4j.Logger;
+
+import com.myftpserver.admin.object.AdminUser;
 
 public class ConnectAdminServerDialogBox  implements ActionListener 
 {
@@ -66,8 +68,11 @@ public class ConnectAdminServerDialogBox  implements ActionListener
 			try
 			{
 				AdminClient adminClient=new AdminClient(logger);
+				AdminUser adminUser=new AdminUser();
+				adminUser.setName(adminUserName.getText());
+				adminUser.setPassword(adminPassword.getText());
 				adminClient.connect(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()));
-				adminClient.login(adminUserName.getText(),adminPassword.getText());
+				adminClient.login(adminUser);
 				adminConsole.setAdminClient(adminClient);
 				dialog.dispose();
 			}

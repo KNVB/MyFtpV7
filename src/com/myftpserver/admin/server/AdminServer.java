@@ -1,21 +1,33 @@
-package com;
+package com.myftpserver.admin.server;
+
 import io.netty.channel.ChannelFutureListener;
 
 import java.util.List;
 //import java.util.Scanner;
 
+
+
+
+
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import com.myftpserver.abstracts.MyServer;
+import com.myftpserver.admin.server.tx.AdminServerChannelInitializer;
+import com.myftpserver.admin.server.tx.ServerBindListener;
 public class AdminServer<T> extends MyServer<T>
 {
-
+	
 	private Logger logger;
 	private static int connectionCount=0;
 	public AdminServer(Logger logger) 
 	{
-		super(MyServer.ACCEPT_SINGLE_CONNECTION);
+		super(logger);
 		try 
 		{
+			//super.setConnectionAcceptanceType(MyServer.ACCEPT_SINGLE_CONNECTION);
+			//super.setServerIOType(BLOCKED_IO_TYPE);
 			this.logger=logger;
 		} 
 		catch (Exception e) 
@@ -76,9 +88,9 @@ public class AdminServer<T> extends MyServer<T>
 	{
 		//Scanner scanIn = new Scanner(System.in);
 		Logger logger = LogManager.getLogger(AdminServer.class.getName());
-		AdminServer<Integer> adminServer=new AdminServer<Integer>(logger);
+		AdminServer<Object> adminServer=new AdminServer<Object>(logger);
 		adminServer.setServerPort(4466);
-		adminServer.setChildHandlers(new AdminChannelInitializer(adminServer,logger));
+		adminServer.setChildHandlers(new AdminServerChannelInitializer(adminServer,logger));
 		adminServer.start(new ServerBindListener(logger,adminServer));
 		//scanIn.nextInt();
 		//adminServer.stop();

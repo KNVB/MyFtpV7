@@ -1,4 +1,4 @@
-package com;
+package com.myftpserver.admin.client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
