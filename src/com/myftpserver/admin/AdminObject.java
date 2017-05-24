@@ -1,13 +1,11 @@
 package com.myftpserver.admin;
 
-import java.io.Serializable;
 
-public class AdminObject implements Serializable 
+public class AdminObject 
 {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 	private int adminFunctionCode=-1;
 	private Object adminObject=null;
 	public int getAdminFunctionCode() {

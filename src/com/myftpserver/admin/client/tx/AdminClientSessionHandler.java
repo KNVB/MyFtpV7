@@ -5,6 +5,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myftpserver.Utility;
 import com.myftpserver.admin.AdminFunction;
 import com.myftpserver.admin.AdminObject;
 import com.myftpserver.admin.object.AdminUser;
@@ -13,12 +16,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Object> 
+public class AdminClientSessionHandler extends SimpleChannelInboundHandler<String> 
 {
 	private AdminObject adminObject=new AdminObject(); 
-	private final BlockingQueue<Object> answer = new LinkedBlockingQueue<Object>();
+	private final BlockingQueue<String> answer = new LinkedBlockingQueue<String>();
 	private Logger logger;
 	private Object serverAnswer;
+	private ObjectMapper mapper = new ObjectMapper();
 	private volatile Channel ch=null;
 	public AdminClientSessionHandler(Logger logger) 
 	{
@@ -36,13 +40,13 @@ public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Objec
 		logger.debug("client channel registered.");
 		ch=ctx.channel();
 	}
-	public void login(AdminUser adminUser)
+	public void login(AdminUser adminUser) throws JsonProcessingException
 	{
 		logger.debug("client login server");
 		
 		adminObject.setAdminFunctionCode(AdminFunction.ADMIN_LOGIN);
 		adminObject.setAdminObject(adminUser);
-		ch.writeAndFlush(adminObject);
+		Utility.sendTextMessage(ch, logger, mapper.writeValueAsString(adminObject),null);
 		boolean interrupted = false;
 		for (;;) {
 		    try {
@@ -59,7 +63,7 @@ public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Objec
 		logger.debug("Login result:"+serverAnswer);
 	}
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, Object msg)
+	protected void channelRead0(ChannelHandlerContext ctx, String msg)
 			throws Exception {
 		logger.debug("client receive:"+msg+"|");
 		answer.add(msg);

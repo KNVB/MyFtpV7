@@ -7,5 +7,8 @@
 	<classpathentry kind="lib" path="lib/j18n-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/netty-all-4.1.9.Final.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

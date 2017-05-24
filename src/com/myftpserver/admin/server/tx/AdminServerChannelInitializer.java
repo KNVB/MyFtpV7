@@ -14,6 +14,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.CharsetUtil;
 /*
  * Copyright 2004-2005 the original author or authors.
  *
@@ -47,10 +48,10 @@ public class AdminServerChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		String remoteIp=(((InetSocketAddress) ch.remoteAddress()).getAddress().getHostAddress());
-	//	ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
-	//	ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
-		ch.pipeline().addLast(new ObjectEncoder());
-		ch.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
+		ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
+		ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
+		//ch.pipeline().addLast(new ObjectEncoder());
+		//ch.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 		ch.pipeline().addLast(new AdminServerSessionHandler(logger));
 	}
 

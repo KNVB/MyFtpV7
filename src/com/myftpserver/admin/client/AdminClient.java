@@ -1,4 +1,5 @@
 package com.myftpserver.admin.client;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.myftpserver.admin.client.tx.AdminClientChannelInitializer;
 import com.myftpserver.admin.client.tx.AdminClientSessionHandler;
 import com.myftpserver.admin.object.AdminUser;
@@ -33,7 +34,7 @@ public class AdminClient
 		b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 		ch=b.connect(adminServerName,portNo).sync().channel();
 	}
-	public void login(AdminUser adminUser) 
+	public void login(AdminUser adminUser) throws JsonProcessingException 
 	{
 		AdminClientSessionHandler adminClientSessionHandler=ch.pipeline().get(AdminClientSessionHandler.class);
 		adminClientSessionHandler.login(adminUser);
