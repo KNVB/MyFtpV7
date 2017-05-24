@@ -2,14 +2,6 @@ package com.myftpserver.admin.server;
 
 import io.netty.channel.ChannelFutureListener;
 
-import java.util.List;
-//import java.util.Scanner;
-
-
-
-
-
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 

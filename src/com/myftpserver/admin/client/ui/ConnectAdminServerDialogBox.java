@@ -1,4 +1,4 @@
-package com.myftpserver.admin.client;
+package com.myftpserver.admin.client.ui;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,6 +17,8 @@ import javax.swing.border.Border;
 
 import org.apache.logging.log4j.Logger;
 
+import com.myftpserver.admin.client.AdminClient;
+import com.myftpserver.admin.client.AdminConsole;
 import com.myftpserver.admin.object.AdminUser;
 
 public class ConnectAdminServerDialogBox  implements ActionListener 

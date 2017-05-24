@@ -13,8 +13,8 @@ public class Utility
 	public static void sendTextMessage(Channel ch, Logger logger,String message,GenericFutureListener<? extends Future<? super Void>> listener)
 	{
 		if (listener==null)
-			ch.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8));
+			ch.writeAndFlush(Unpooled.copiedBuffer(message,CharsetUtil.UTF_8));
 		else
-			ch.writeAndFlush(Unpooled.copiedBuffer(message+"\r\n",CharsetUtil.UTF_8)).addListener(listener);
+			ch.writeAndFlush(Unpooled.copiedBuffer(message,CharsetUtil.UTF_8)).addListener(listener);
 	}
 }

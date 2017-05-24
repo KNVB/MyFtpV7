@@ -45,7 +45,7 @@ public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Strin
 		logger.debug("client login server");
 		
 		adminObject.setAdminFunctionCode(AdminFunction.ADMIN_LOGIN);
-		adminObject.setAdminObject(adminUser);
+		adminObject.setJsonString(mapper.writeValueAsString(adminUser));
 		Utility.sendTextMessage(ch, logger, mapper.writeValueAsString(adminObject),null);
 		boolean interrupted = false;
 		for (;;) {

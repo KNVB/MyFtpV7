@@ -1,11 +1,15 @@
 package com.myftpserver.admin.server.tx;
 
+import java.net.InetSocketAddress;
+
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myftpserver.Utility;
+import com.myftpserver.admin.AdminFunction;
 import com.myftpserver.admin.AdminObject;
 import com.myftpserver.admin.object.AdminUser;
+
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -34,7 +38,7 @@ public class AdminServerSessionHandler extends SimpleChannelInboundHandler<Strin
 {
 	private AdminObject adminObject;
 	private Logger logger;
-	
+	private String remoteIp;
 	private ObjectMapper mapper = new ObjectMapper();
 	public AdminServerSessionHandler(Logger logger) 
 	{
@@ -43,15 +47,20 @@ public class AdminServerSessionHandler extends SimpleChannelInboundHandler<Strin
 	@Override
 	public void channelActive(ChannelHandlerContext ctx)
 	{
-		//Utility.sendMessageToClient(ctx.channel(),logger,remoteIp,"220");
-		//ctx.writeAndFlush(new String("220"));
+		remoteIp=(((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress());
+		logger.debug("remote IP address:"+remoteIp);
 	}
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, String obj) throws Exception 
 	{
-		//logger.debug("server receive:"+((AdminObject)obj).getAdminFunctionCode()+"|");
 		logger.debug("server receive:"+obj+"|");
 		adminObject=mapper.readValue(obj,AdminObject.class);
+		switch (adminObject.getAdminFunctionCode())
+		{
+			case AdminFunction.ADMIN_LOGIN:	AdminUser adminUser=mapper.readValue(adminObject.getJsonString(),AdminUser.class);
+											logger.debug(adminUser.getName());
+											break;
+		}
 		Utility.sendTextMessage(ctx.channel(),logger,new String("Login Success."),null);
 	}
 	/**

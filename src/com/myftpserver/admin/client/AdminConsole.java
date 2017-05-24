@@ -28,8 +28,11 @@ import java.awt.event.WindowEvent;
 /*import com.myftpserver.admin.client.abstracts.AdminClientConfig;
 import com.myftpserver.admin.util.ConfigurationFactory;*/
 
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import com.myftpserver.admin.client.ui.ConnectAdminServerDialogBox;
 @Sharable
 public class AdminConsole
 {
@@ -114,7 +117,7 @@ public class AdminConsole
 				if (adminClient!=null)
 				{	
 					adminClient.shutdown();
-					logger.debug("I am Here 2");
+					logger.debug("AdminClient is shutdown");
 				}
             }
 		});

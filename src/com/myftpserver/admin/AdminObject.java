@@ -7,17 +7,17 @@ public class AdminObject
 	 * 
 	 */
 	private int adminFunctionCode=-1;
-	private Object adminObject=null;
+	private String jsonString=null;
 	public int getAdminFunctionCode() {
 		return adminFunctionCode;
 	}
 	public void setAdminFunctionCode(int adminFunctionCode) {
 		this.adminFunctionCode = adminFunctionCode;
 	}
-	public Object getAdminObject() {
-		return adminObject;
+	public String getJsonString() {
+		return jsonString;
 	}
-	public void setAdminObject(Object adminObject) {
-		this.adminObject = adminObject;
+	public void setJsonString(String jsonString) {
+		this.jsonString = jsonString;
 	}
 }

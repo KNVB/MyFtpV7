@@ -5,10 +5,6 @@ import org.apache.logging.log4j.Logger;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
 
@@ -24,9 +20,6 @@ public class AdminClientChannelInitializer extends ChannelInitializer<Channel>
 	protected void initChannel(Channel ch) throws Exception 
 	{
 		ch.pipeline().addLast("decoder",new StringDecoder(CharsetUtil.UTF_8));
-		ch.pipeline().addLast("frameDecoder",new LineBasedFrameDecoder(1024));
-		//ch.pipeline().addLast(new ObjectEncoder());
-		//ch.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 		ch.pipeline().addLast(new AdminClientSessionHandler(logger));
 	}	
 
