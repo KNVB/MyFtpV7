@@ -2,6 +2,7 @@ package com.myftpserver.admin.server.tx;
 
 import org.apache.logging.log4j.Logger;
 
+import com.myftpserver.admin.AdminObject;
 import com.myftpserver.admin.object.AdminUser;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -40,9 +41,9 @@ public class AdminServerSessionHandler extends SimpleChannelInboundHandler<Objec
 		//ctx.writeAndFlush(new String("220"));
 	}
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception 
+	protected void channelRead0(ChannelHandlerContext ctx, Object obj) throws Exception 
 	{
-		logger.debug("server receive:"+((AdminUser)msg).getName()+"|");
+		logger.debug("server receive:"+((AdminObject)obj).getAdminFunctionCode()+"|");
 		ctx.writeAndFlush(new String("Login Success."));
 	}
 	/**

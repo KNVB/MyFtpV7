@@ -5,6 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.Logger;
 
+import com.myftpserver.admin.AdminFunction;
+import com.myftpserver.admin.AdminObject;
 import com.myftpserver.admin.object.AdminUser;
 
 import io.netty.channel.Channel;
@@ -13,10 +15,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Object> 
 {
+	private AdminObject adminObject=new AdminObject(); 
 	private final BlockingQueue<Object> answer = new LinkedBlockingQueue<Object>();
 	private Logger logger;
 	private Object serverAnswer;
-	private Channel ch=null;
+	private volatile Channel ch=null;
 	public AdminClientSessionHandler(Logger logger) 
 	{
 		this.logger=logger;
@@ -36,7 +39,10 @@ public class AdminClientSessionHandler extends SimpleChannelInboundHandler<Objec
 	public void login(AdminUser adminUser)
 	{
 		logger.debug("client login server");
-		ch.writeAndFlush(adminUser);
+		
+		adminObject.setAdminFunctionCode(AdminFunction.ADMIN_LOGIN);
+		adminObject.setAdminObject(adminUser);
+		ch.writeAndFlush(adminObject);
 		boolean interrupted = false;
 		for (;;) {
 		    try {
