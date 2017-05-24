@@ -34,7 +34,7 @@ public class AdminClient
 		b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 		ch=b.connect(adminServerName,portNo).sync().channel();
 	}
-	public void login(AdminUser adminUser) throws JsonProcessingException 
+	public void login(AdminUser adminUser) throws JsonProcessingException,Exception 
 	{
 		AdminClientSessionHandler adminClientSessionHandler=ch.pipeline().get(AdminClientSessionHandler.class);
 		adminClientSessionHandler.login(adminUser);

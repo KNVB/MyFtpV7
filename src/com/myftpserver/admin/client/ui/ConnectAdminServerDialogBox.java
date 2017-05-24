@@ -84,7 +84,7 @@ public class ConnectAdminServerDialogBox  implements ActionListener
 			}
 			catch (Exception ex)
 			{
-				JOptionPane.showMessageDialog(dialog, "Connection to admin. server failure");
+				JOptionPane.showMessageDialog(dialog, ex.getMessage());
 			}
 		}
 		else

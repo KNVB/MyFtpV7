@@ -9,6 +9,7 @@ import com.myftpserver.Utility;
 import com.myftpserver.admin.AdminFunction;
 import com.myftpserver.admin.AdminObject;
 import com.myftpserver.admin.object.AdminUser;
+import com.myftpserver.admin.server.AdminUserManager;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,6 +38,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class AdminServerSessionHandler extends SimpleChannelInboundHandler<String>
 {
 	private AdminObject adminObject;
+	private AdminUserManager adminManager=new AdminUserManager();
 	private Logger logger;
 	private String remoteIp;
 	private ObjectMapper mapper = new ObjectMapper();
@@ -58,10 +60,10 @@ public class AdminServerSessionHandler extends SimpleChannelInboundHandler<Strin
 		switch (adminObject.getAdminFunctionCode())
 		{
 			case AdminFunction.ADMIN_LOGIN:	AdminUser adminUser=mapper.readValue(adminObject.getJsonString(),AdminUser.class);
-											logger.debug(adminUser.getName());
+											Utility.sendTextMessage(ctx.channel(), logger, String.valueOf(adminManager.login(adminUser)), null);
 											break;
 		}
-		Utility.sendTextMessage(ctx.channel(),logger,new String("Login Success."),null);
+
 	}
 	/**
 	 * Calls ChannelHandlerContext.fireExceptionCaught(Throwable) to forward to the next ChannelHandler in the ChannelPipeline. Sub-classes may override this method to change behavior.
