@@ -65,12 +65,12 @@ public class ConnectAdminServerDialogBox  implements ActionListener
 	}	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		AdminClient adminClient=new AdminClient(logger);
+		AdminUser adminUser=new AdminUser();
 		if (e.getSource().equals(okButton))
 		{
 			try
 			{
-				AdminClient adminClient=new AdminClient(logger);
-				AdminUser adminUser=new AdminUser();
 				adminUser.setName(adminUserName.getText());
 				adminUser.setPassword(adminPassword.getText());
 				adminClient.connect(adminServerName.getText(),Integer.parseInt(adminServerPort.getText()));
@@ -81,10 +81,16 @@ public class ConnectAdminServerDialogBox  implements ActionListener
 			catch (IllegalArgumentException ex)
 			{
 				JOptionPane.showMessageDialog(dialog, "Invalid host name or port no.");
+				adminUser=null;
+				adminClient.shutdown();
+				adminClient=null;
 			}
 			catch (Exception ex)
 			{
 				JOptionPane.showMessageDialog(dialog, ex.getMessage());
+				adminUser=null;
+				adminClient.shutdown();
+				adminClient=null;
 			}
 		}
 		else
